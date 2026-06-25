@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Form Time — Year 12</title>
+<style>
+/* ══════════════════════════════════════════
+   CSS VARIABLES — DARK / LIGHT THEMES
+══════════════════════════════════════════ */
+:root {
+  --bg:        #0c1628;
+  --bg2:       #0f1e3a;
+  --surface:   #1a2a45;
+  --surface2:  #121f38;
+  --text:      #e8eaf0;
+  --text2:     #8fa0c0;
+  --accent:    #c9a84c;
+  --accent2:   #a88830;
+  --border:    #1e3060;
+  --sidebar:   #0a1628;
+  --tag-bg:    #1a2a45;
+  --otd-bg:    #151f38;
+  --ticker-bg: #c9a84c;
+  --ticker-fg: #0c1628;
+  --quote-bg:  linear-gradient(135deg,#1a2a45,#101a30);
+  --input-bg:  #1a2a45;
+  --input-bd:  #2a3a5a;
+  --modal-bg:  #0f1e38;
+  --task-bd:   #c9a84c;
+  --note-bg:   rgba(201,168,76,.08);
+  --note-bd:   rgba(201,168,76,.2);
+  --news-bg:   #1a2a45;
+  --news-bd:   #2a509a;
+  --shadow:    rgba(0,0,0,.4);
+}
+[data-theme="light"] {
+  --bg:        #eef2fb;
+  --bg2:       #e2e8f8;
+  --surface:   #ffffff;
+  --surface2:  #f4f7ff;
+  --text:      #1a2440;
+  --text2:     #5060a0;
+  --accent:    #8a6a10;
+  --accent2:   #6a5008;
+  --border:    #c8d4ee;
+  --sidebar:   #e8edf8;
+  --tag-bg:    #dde6f8;
+  --otd-bg:    #dde6f8;
+  --ticker-bg: #1a2440;
+  --ticker-fg: #eef2fb;
+  --quote-bg:  linear-gradient(135deg,#e8edf8,#dde6f8);
+  --input-bg:  #f0f4ff;
+  --input-bd:  #c0ccee;
+  --modal-bg:  #f0f4ff;
+  --task-bd:   #8a6a10;
+  --note-bg:   rgba(138,106,16,.07);
+  --note-bd:   rgba(138,106,16,.22);
+  --news-bg:   #e8eef8;
+  --news-bd:   #3060c0;
+  --shadow:    rgba(20,40,100,.15);
+}
+
+/* ══════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════ */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html,body { height:100%; overflow:hidden; }
+body {
+  font-family:'Segoe UI',Arial,sans-serif;
+  font-size:17px;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  flex-direction:column;
+  transition:background .3s,color .3s;
+}
+
+/* ══════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════ */
+header {
+  background:var(--bg2);
+  border-bottom:2.5px solid var(--accent);
+  padding:10px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+  gap:14px;
+  box-shadow:0 2px 12px var(--shadow);
+}
+.hdr-left { display:flex; align-items:center; gap:14px; }
+.school-badge {
+  background:var(--accent);
+  color:var(--ticker-fg);
+  font-weight:900;
+  font-size:0.68rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  padding:4px 10px;
+  border-radius:6px;
+  white-space:nowrap;
+}
+.form-title  { font-size:1.6rem; font-weight:900; color:var(--text); letter-spacing:-0.02em; line-height:1.1; }
+.year-label  { font-size:0.72rem; color:var(--accent); font-weight:700; letter-spacing:0.08em; }
+.hdr-right   { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.date-block  { text-align:right; }
+#date-display { font-size:0.8rem; color:var(--text2); line-height:1.3; }
+#week-display { font-size:0.76rem; color:var(--accent); font-weight:700; }
+#day-select {
+  background:var(--surface);
+  color:var(--text);
+  border:1.5px solid var(--accent);
+  border-radius:8px;
+  padding:9px 14px;
+  font-size:1rem;
+  font-weight:800;
+  cursor:pointer;
+  font-family:inherit;
+}
+.hdr-btn {
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text2);
+  border-radius:7px;
+  padding:8px 12px;
+  cursor:pointer;
+  font-size:0.82rem;
+  font-family:inherit;
+  transition:all .2s;
+  white-space:nowrap;
+}
+.hdr-btn:hover { border-color:var(--accent); color:var(--accent); }
+#theme-btn { font-size:1.1rem; padding:7px 10px; }
+
+/* ══════════════════════════════════════════
+   NEWS TICKER
+══════════════════════════════════════════ */
+#ticker-wrap {
+  background:var(--ticker-bg);
+  height:34px;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  flex-shrink:0;
+  transition:background .3s;
+}
+.ticker-label {
+  background:var(--bg);
+  color:var(--accent);
+  font-weight:900;
+  font-size:0.7rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  padding:0 14px;
+  height:100%;
+  display:flex;
+  align-items:center;
+  flex-shrink:0;
+  border-right:2px solid var(--accent);
+}
+.ticker-track  { overflow:hidden; flex:1; }
+.ticker-scroll {
+  display:inline-flex;
+  white-space:nowrap;
+  animation:tickermove 80s linear infinite;
+}
+@keyframes tickermove { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.ticker-item {
+  padding:0 32px;
+  font-size:0.96rem;
+  font-weight:600;
+  color:var(--ticker-fg);
+  display:inline-block;
+}
+.ticker-sep { color:rgba(0,0,0,.3); }
+
+/* ══════════════════════════════════════════
+   MAIN LAYOUT
+══════════════════════════════════════════ */
+#main { flex:1; display:flex; overflow:hidden; min-height:0; }
+
+/* ══════════════════════════════════════════
+   DAY PANEL
+══════════════════════════════════════════ */
+#day-panel {
+  flex:1;
+  padding:22px 28px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  min-width:0;
+}
+.day-header { border-bottom:2.5px solid var(--accent); padding-bottom:12px; }
+.day-name   { font-size:3.6rem; font-weight:900; color:var(--text); line-height:1; }
+.day-sub    { font-size:1.25rem; color:var(--accent); font-weight:700; margin-top:4px; }
+.task-head  { font-size:1.1rem; font-weight:800; color:var(--accent); margin-bottom:10px; letter-spacing:0.04em; text-transform:uppercase; }
+.task-list  { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.task-item  {
+  background:var(--surface);
+  border-left:5px solid var(--task-bd);
+  padding:14px 20px;
+  border-radius:0 10px 10px 0;
+  font-size:1.15rem;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  box-shadow:0 2px 8px var(--shadow);
+}
+.ti-icon { font-size:1.2rem; flex-shrink:0; }
+.note-box {
+  background:var(--note-bg);
+  border:1px solid var(--note-bd);
+  border-radius:10px;
+  padding:13px 18px;
+  font-size:0.95rem;
+  color:var(--text2);
+  font-style:italic;
+  line-height:1.6;
+}
+
+/* Wednesday Wisdom */
+.wisdom-layout { display:flex; gap:18px; align-items:flex-start; }
+.wisdom-main   { flex:1; display:flex; flex-direction:column; gap:14px; min-width:0; }
+.book-cover-wrap {
+  flex-shrink:0;
+  width:120px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+}
+.book-cover {
+  width:120px;
+  height:180px;
+  object-fit:cover;
+  border-radius:6px;
+  box-shadow:4px 4px 16px var(--shadow);
+  display:block;
+}
+.book-cover-placeholder {
+  width:120px; height:180px;
+  background:var(--surface);
+  border:2px dashed var(--border);
+  border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:2.5rem; color:var(--text2);
+}
+.quote-card {
+  background:var(--quote-bg);
+  border-left:5px solid var(--accent);
+  border-radius:10px;
+  padding:20px 22px 16px;
+  box-shadow:0 2px 10px var(--shadow);
+}
+.quote-text   { font-size:1.35rem; font-style:italic; line-height:1.7; color:var(--text); margin-bottom:10px; }
+.quote-attr   { font-size:1rem; color:var(--accent); font-weight:700; }
+.quote-note   { font-size:0.88rem; color:var(--text2); font-style:italic; margin-top:5px; }
+.wq-box       { background:var(--surface); border-radius:10px; padding:18px 20px; box-shadow:0 2px 8px var(--shadow); }
+.wq-title     { font-size:0.85rem; font-weight:900; text-transform:uppercase; letter-spacing:0.12em; color:var(--accent); margin-bottom:12px; }
+.wq-list      { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.wq-item      { font-size:1.1rem; line-height:1.6; color:var(--text); padding-left:24px; position:relative; }
+.wq-item::before { content:"?"; position:absolute; left:0; color:var(--accent); font-weight:900; font-size:1.1rem; }
+
+/* Tuesday — News */
+.yt-wrap {
+  position:relative; width:100%;
+  padding-top:56.25%;
+  border-radius:12px; overflow:hidden;
+  box-shadow:0 4px 20px var(--shadow);
+}
+.yt-wrap iframe {
+  position:absolute; top:0; left:0;
+  width:100%; height:100%;
+  border:none; display:block;
+}
+.news-grid { display:flex; flex-direction:column; gap:8px; }
+.news-card {
+  background:var(--news-bg);
+  border-radius:9px;
+  padding:11px 16px;
+  border-left:4px solid var(--news-bd);
+  cursor:pointer;
+  text-decoration:none;
+  display:block;
+  transition:background .15s;
+}
+.news-card:hover { filter:brightness(1.1); }
+.nc-title { font-size:0.95rem; font-weight:600; color:var(--text); line-height:1.4; }
+.nc-src   { font-size:0.72rem; color:var(--text2); margin-top:2px; }
+
+/* Friday */
+.fri-body { display:flex; flex-direction:column; gap:9px; }
+.fri-p    { color:var(--text2); font-size:1rem; line-height:1.65; }
+
+/* ══════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════ */
+#sidebar {
+  width:310px;
+  min-width:270px;
+  background:var(--sidebar);
+  border-left:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;
+  flex-shrink:0;
+  transition:background .3s;
+}
+.s-panel { border-bottom:1px solid var(--border); padding:15px 17px; }
+.s-panel.hidden { display:none; }
+.s-panel-hdr {
+  font-size:0.7rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:0.14em;
+  color:var(--accent);
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.refresh-btn {
+  background:none; border:none; color:var(--text2); cursor:pointer;
+  font-size:0.9rem; padding:0 2px; transition:color .2s; line-height:1;
+}
+.refresh-btn:hover { color:var(--accent); }
+
+/* Key Dates */
+.date-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.date-item { font-size:1rem; line-height:1.5; color:var(--text2); display:flex; gap:7px; align-items:flex-start; }
+.date-bull { color:var(--accent); flex-shrink:0; margin-top:1px; font-weight:700; }
+
+.loading-txt { color:var(--text2); font-style:italic; font-size:0.88rem; }
+
+/* ── ON THIS DAY BOTTOM BAR ── */
+#otd-bar {
+  background:var(--bg2);
+  border-top:2.5px solid var(--accent);
+  display:flex;
+  align-items:stretch;
+  flex-shrink:0;
+  min-height:82px;
+  overflow:hidden;
+}
+.otd-bar-hdr {
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+  gap:3px;
+  padding:10px 18px;
+  border-right:1px solid var(--border);
+  flex-shrink:0;
+  min-width:120px;
+}
+.otd-bar-label {
+  font-size:0.66rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:0.14em;
+  color:var(--accent);
+}
+.otd-bar-date {
+  font-size:0.72rem;
+  color:var(--text2);
+  font-weight:600;
+}
+.otd-bar-refresh {
+  background:none;border:none;color:var(--text2);
+  cursor:pointer;font-size:1rem;padding:0;
+  transition:color .2s;line-height:1;margin-top:2px;
+}
+.otd-bar-refresh:hover { color:var(--accent); }
+#otd-content {
+  display:flex;
+  flex:1;
+  gap:0;
+}
+.otd-card {
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:10px 18px;
+  border-right:1px solid var(--border);
+}
+.otd-card:last-child { border-right:none; }
+.otd-meta {
+  flex-shrink:0;
+  text-align:center;
+  min-width:56px;
+}
+.otd-type {
+  font-size:0.65rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:0.09em;
+  color:var(--text2);
+  display:block;
+  margin-bottom:3px;
+}
+.otd-year {
+  font-size:1.5rem;
+  font-weight:900;
+  color:var(--accent);
+  display:block;
+  line-height:1;
+}
+.otd-text {
+  font-size:0.88rem;
+  line-height:1.5;
+  color:var(--text2);
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+}
+
+/* ══════════════════════════════════════════
+   EDIT MODAL
+══════════════════════════════════════════ */
+#edit-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.78); z-index:200;
+  align-items:center; justify-content:center;
+}
+#edit-overlay.open { display:flex; }
+#edit-modal {
+  background:var(--modal-bg);
+  border:1.5px solid var(--accent);
+  border-radius:14px;
+  padding:24px 26px;
+  width:92%;
+  max-width:700px;
+  max-height:88vh;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+.em-title { font-size:1.15rem; font-weight:900; color:var(--accent); margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+.em-s     { margin-bottom:16px; }
+.em-lbl   { font-size:0.68rem; font-weight:900; text-transform:uppercase; letter-spacing:0.12em; color:var(--accent); margin-bottom:7px; display:block; }
+.em-in,.em-ta {
+  width:100%; background:var(--input-bg); border:1px solid var(--input-bd);
+  color:var(--text); border-radius:7px; padding:9px 12px;
+  font-size:0.9rem; font-family:inherit;
+}
+.em-ta   { resize:vertical; min-height:65px; line-height:1.5; }
+.em-row  { display:flex; gap:8px; margin-top:8px; }
+.em-row .em-in { margin-top:0; }
+hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
+.tog-row { display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border); }
+.tog-lbl { font-size:0.92rem; color:var(--text); }
+.tog     { position:relative; width:40px; height:22px; flex-shrink:0; }
+.tog input { opacity:0; width:0; height:0; }
+.tog-sl  { position:absolute; inset:0; background:var(--border); border-radius:22px; cursor:pointer; transition:background .2s; }
+.tog-sl::before { content:""; position:absolute; width:16px; height:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .2s; }
+.tog input:checked+.tog-sl { background:var(--accent); }
+.tog input:checked+.tog-sl::before { transform:translateX(18px); }
+.ord-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); }
+.ord-lbl { font-size:0.92rem; color:var(--text); }
+.ord-btns { display:flex; gap:4px; }
+.ord-btn { background:var(--surface); border:1px solid var(--border); color:var(--text2); border-radius:5px; padding:3px 9px; cursor:pointer; font-size:0.82rem; transition:all .15s; }
+.ord-btn:hover { border-color:var(--accent); color:var(--accent); }
+.ord-btn:disabled { opacity:.3; cursor:default; }
+.em-save   { background:var(--accent); color:var(--ticker-fg); border:none; border-radius:8px; padding:12px; font-size:0.95rem; font-weight:900; cursor:pointer; width:100%; margin-top:6px; font-family:inherit; }
+.em-cancel { background:transparent; color:var(--text2); border:1px solid var(--border); border-radius:8px; padding:10px; font-size:0.88rem; cursor:pointer; width:100%; margin-top:7px; font-family:inherit; }
+
+/* ══════════════════════════════════════════
+   UTILITY
+══════════════════════════════════════════ */
+.hidden { display:none !important; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="hdr-left">
+    <div class="school-badge">Mayfield Grammar</div>
+    <div>
+      <div class="form-title">Form Time</div>
+      <div class="year-label">YEAR 12 · SIXTH FORM</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="date-block">
+      <div id="date-display"></div>
+      <div id="week-display"></div>
+    </div>
+    <select id="day-select">
+      <option value="monday">Monday</option>
+      <option value="tuesday">Tuesday</option>
+      <option value="wednesday">Wednesday</option>
+      <option value="thursday">Thursday</option>
+      <option value="friday">Friday</option>
+    </select>
+    <button class="hdr-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
+    <span id="sync-indicator" title="Cloud sync active — tutors see your latest edits" style="display:none;font-size:1rem;">🌐</span>
+    <button class="hdr-btn" onclick="openEdit()">⚙ Edit</button>
+  </div>
+</header>
+
+<!-- ══ TICKER ══ -->
+<div id="ticker-wrap">
+  <div class="ticker-label">📰 NEWS</div>
+  <div class="ticker-track">
+    <div class="ticker-scroll" id="ticker-scroll">
+      <span class="ticker-item">Loading latest headlines…</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div id="main">
+  <div id="day-panel"></div>
+
+  <aside id="sidebar">
+    <div id="panel-dates" class="s-panel">
+      <div class="s-panel-hdr">📅 Key Dates</div>
+      <ul class="date-list" id="dates-list"></ul>
+    </div>
+  </aside>
+</div>
+
+<!-- ══ ON THIS DAY — BOTTOM BAR ══ -->
+<div id="otd-bar">
+  <div class="otd-bar-hdr">
+    <span class="otd-bar-label">📖 On This Day</span>
+    <span class="otd-bar-date" id="otd-date-lbl"></span>
+    <button class="otd-bar-refresh" onclick="fetchOTD(document.getElementById('day-select').value)" title="Shuffle events">↻</button>
+  </div>
+  <div id="otd-content"><div style="padding:10px 18px;color:var(--text2);font-style:italic;font-size:0.88rem;">Loading…</div></div>
+</div>
+
+<!-- ══ EDIT MODAL ══ -->
+<div id="edit-overlay">
+  <div id="edit-modal">
+    <div class="em-title">⚙ Edit Form Time</div>
+
+    <div class="em-s">
+      <span class="em-lbl">Week Label (leave blank to auto-calculate)</span>
+      <input class="em-in" id="ed-week" type="text" placeholder="Auto: current Mon–Fri week">
+      <span style="font-size:0.72rem;color:var(--text2);margin-top:4px;display:block">Leave empty and the page works out this week's dates itself. Only fill in for holidays/exceptions.</span>
+    </div>
+    <div class="em-s">
+      <span class="em-lbl">This Week's Wisdom Day</span>
+      <select class="em-in" id="ed-wisdomday">
+        <option value="wednesday">Wednesday (default)</option>
+        <option value="thursday">Thursday — Assembly on Wednesday this week</option>
+      </select>
+    </div>
+    <div class="em-s">
+      <span class="em-lbl">Key Dates (one per line)</span>
+      <textarea class="em-ta" id="ed-dates" rows="8"></textarea>
+    </div>
+
+    <hr class="em-div">
+
+    <div class="em-s">
+      <span class="em-lbl">📚 Quote Library — Classic Literature</span>
+      <div class="em-row" style="margin-top:0;">
+        <select class="em-in" id="ed-lib-select" style="flex:1;"></select>
+        <button type="button" class="ord-btn" style="white-space:nowrap;padding:9px 16px;font-size:0.85rem;" onclick="loadFromLibrary()">📥 Load</button>
+        <button type="button" class="ord-btn" style="white-space:nowrap;padding:9px 12px;font-size:0.85rem;" onclick="toggleQuoteUsed()" title="Mark selected as used / unused">✓ ↺</button>
+      </div>
+      <span style="font-size:0.72rem;color:var(--text2);margin-top:4px;display:block">Loading a quote marks it "used" automatically and moves it to the bottom of the list. Click ✓ ↺ to undo, or to manually mark/unmark any quote.</span>
+    </div>
+
+    <div class="em-s">
+      <span class="em-lbl">Wisdom — Quote</span>
+      <textarea class="em-ta" id="ed-quote" rows="3" placeholder="Quote text…"></textarea>
+      <div class="em-row">
+        <input class="em-in" id="ed-attr" placeholder="Author – Book">
+        <input class="em-in" id="ed-booknote" placeholder="e.g. A Mr. Zanier must-read">
+      </div>
+      <span class="em-lbl" style="margin-top:10px;display:block">Book Cover — ISBN (optional, for auto cover)</span>
+      <input class="em-in" id="ed-isbn" placeholder="e.g. 9780140447927">
+      <span class="em-lbl" style="margin-top:8px;display:block">— or direct cover image URL</span>
+      <input class="em-in" id="ed-coverurl" placeholder="https://…">
+      <span class="em-lbl" style="margin-top:10px;display:block">Discussion Questions (one per line)</span>
+      <textarea class="em-ta" id="ed-questions" rows="4"></textarea>
+    </div>
+
+    <hr class="em-div">
+
+    <div class="em-s">
+      <span class="em-lbl">Mon / Thu Tasks (one per line)</span>
+      <textarea class="em-ta" id="ed-tasks" rows="5"></textarea>
+      <span class="em-lbl" style="margin-top:8px;display:block">Reminder Note</span>
+      <input class="em-in" id="ed-indepnote">
+    </div>
+
+    <hr class="em-div">
+
+    <div class="em-s">
+      <span class="em-lbl">Tuesday — Sky News / YouTube Embed URL</span>
+      <input class="em-in" id="ed-yturl" placeholder="https://www.youtube.com/embed/…">
+      <span style="font-size:0.72rem;color:var(--text2);margin-top:4px;display:block">Default: Sky News UK live stream. Update if the link stops working.</span>
+    </div>
+
+    <hr class="em-div">
+
+    <div class="em-s">
+      <span class="em-lbl">Friday — Title &amp; Content (use • for bullet points)</span>
+      <input class="em-in" id="ed-fri-title" placeholder="e.g. Week Reflection">
+      <textarea class="em-ta" id="ed-fri-content" rows="5" style="margin-top:8px"></textarea>
+    </div>
+
+    <hr class="em-div">
+
+    <div class="em-s">
+      <span class="em-lbl">Show / Hide Panels</span>
+      <div class="tog-row">
+        <span class="tog-lbl">News Ticker</span>
+        <label class="tog"><input type="checkbox" id="tog-ticker"><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row">
+        <span class="tog-lbl">Key Dates</span>
+        <label class="tog"><input type="checkbox" id="tog-dates"><span class="tog-sl"></span></label>
+      </div>
+    </div>
+
+    <div class="em-s">
+      <span class="em-lbl">Sidebar Panel Order</span>
+      <div id="order-list"></div>
+    </div>
+
+    <hr class="em-div">
+
+    <div class="em-s">
+      <span class="em-lbl">🌐 Cloud Sync — make tutors see your edits live</span>
+      <div id="sync-status" style="font-size:0.8rem;color:var(--text2);margin-bottom:10px;">Not yet set up — see steps below.</div>
+
+      <span class="em-lbl" style="font-size:0.64rem;">1. GitHub Personal Access Token (this device only — never shared)</span>
+      <input class="em-in" id="ed-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+
+      <div class="em-row">
+        <button type="button" class="ord-btn" style="flex:1;padding:9px;font-size:0.85rem;" onclick="createSharedGist()">🆕 Create Shared Gist</button>
+      </div>
+
+      <span class="em-lbl" style="font-size:0.64rem;margin-top:10px;display:block;">2. Shared Gist ID (auto-fills above, or paste an existing one)</span>
+      <input class="em-in" id="ed-gistid" type="text" placeholder="e.g. 8f3a1c9b2e7d4f6a...">
+
+      <span style="font-size:0.72rem;color:var(--text2);margin-top:8px;display:block;line-height:1.5">
+        Once a Gist ID is set and you click Save, your edits push to the cloud automatically.
+        Tutors' pages check this Gist on load and every few minutes — no token or setup needed on their end.
+      </span>
+    </div>
+
+    <button class="em-save" onclick="saveEdit()">💾 Save Changes</button>
+    <button class="em-cancel" onclick="closeEdit()">Cancel</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//  DEFAULTS  (pre-filled from your PowerPoint)
+// ════════════════════════════════════════════════
+const DEFAULTS = {
+  week:"",
+  wisdomDay:"wednesday",
+  syncGistId:"b0f84c0d1abc42090b0be988623ff407",
+  usedQuotes:[],
+  keyDates:[
+    "23rd Feb – Start of Term 4",
+    "23rd–27th Feb – Final Preparation Examinations",
+    "17th Mar – Whole School Careers Fair",
+    "19th Mar – School Photographs",
+    "20th Mar – AR3 Published",
+    "30th Mar – Parents Evening 2",
+    "1st–2nd Apr – Culture Days",
+    "2nd Apr – End of Term 4"
+  ],
+  tasks:[
+    "Read ahead or review your subject material",
+    "Complete outstanding homework or prep work",
+    "Read independently around your A-level subjects",
+    "Organise your notes, folders, or weekly planner"
+  ],
+  indepNote:"Please use this time productively. Phones should be away. No talking. This is your opportunity to take ownership of your learning.",
+  wisdom:{
+    quote:"There are two kinds of idiots… those who don't know they are idiots, and those who know it and use it.",
+    attr:"Fyodor Dostoevsky – The Idiot",
+    questions:[
+      "Is there power in playing the fool — in refusing to take the serious adult world of status and money as seriously as everyone else does?",
+      "Who is more awake: the student working 18 hours a day for a status they don't enjoy, or the person who is content with less but remains kind?"
+    ],
+    bookNote:"A Mr. Zanier must-read",
+    isbn:"9780140447927",
+    coverUrl:""
+  },
+  ytUrl:"https://www.youtube.com/embed/YDvsBbKfLPA?autoplay=0&rel=0&modestbranding=1",
+  friday:{ title:"Week Reflection", content:"Take a few minutes to reflect on this week.\n• What went well in your studies?\n• What could you improve next week?\n• Are you on track with upcoming deadlines?\n\nUse remaining time for independent study or reading." },
+  panels:{ ticker:true, dates:true },
+  panelOrder:["dates"],
+  theme:"dark"
+};
+
+// ════════════════════════════════════════════════
+//  QUOTE LIBRARY — classic literature, Year 12-level
+//  Pick from the Edit panel; loads quote + questions
+//  + book cover automatically.
+// ════════════════════════════════════════════════
+const QUOTE_LIBRARY = [
+  {
+    id:"dostoevsky-idiot",
+    quote:"There are two kinds of idiots… those who don't know they are idiots, and those who know it and use it.",
+    attr:"Fyodor Dostoevsky – The Idiot",
+    bookNote:"A Mr. Zanier must-read",
+    isbn:"9780140447927",
+    questions:[
+      "Is there power in playing the fool — in refusing to take the serious adult world of status and money as seriously as everyone else does?",
+      "Who is more awake: the student working 18 hours a day for a status they don't enjoy, or the person who is content with less but remains kind?"
+    ]
+  },
+  {
+    id:"dostoevsky-crime",
+    quote:"Power is given only to those who dare to lower themselves and pick it up.",
+    attr:"Fyodor Dostoevsky – Crime and Punishment",
+    bookNote:"A study of guilt, pride and redemption",
+    isbn:"9780140449136",
+    questions:[
+      "Can a person ever justify a wrong action by appealing to a greater good?",
+      "What does the novel suggest about the relationship between guilt and conscience?"
+    ]
+  },
+  {
+    id:"dickens-tale-two-cities",
+    quote:"It was the best of times, it was the worst of times.",
+    attr:"Charles Dickens – A Tale of Two Cities",
+    bookNote:"Set against the backdrop of the French Revolution",
+    isbn:"9780141439600",
+    questions:[
+      "Can a single era really be both the best and worst of times? What makes that true of any period in history?",
+      "What does the novel suggest about the true cost of revolution and justice?"
+    ]
+  },
+  {
+    id:"dumas-monte-cristo",
+    quote:"All human wisdom is contained in these two words – wait and hope.",
+    attr:"Alexandre Dumas – The Count of Monte Cristo",
+    bookNote:"A masterclass in patience, betrayal and revenge",
+    isbn:"9780140449266",
+    questions:[
+      "Is revenge ever truly satisfying, or does it cost the avenger something they can't get back?",
+      "What's the difference between waiting with hope and simply waiting?"
+    ]
+  },
+  {
+    id:"shakespeare-hamlet",
+    quote:"To be, or not to be, that is the question.",
+    attr:"William Shakespeare – Hamlet",
+    bookNote:"The most quoted line in English literature",
+    isbn:"9780743477123",
+    questions:[
+      "Is Hamlet's hesitation a flaw, or is overthinking sometimes the wiser choice?",
+      "What does the soliloquy reveal about how Hamlet sees life versus death?"
+    ]
+  },
+  {
+    id:"shakespeare-macbeth",
+    quote:"Tomorrow, and tomorrow, and tomorrow, creeps in this petty pace from day to day.",
+    attr:"William Shakespeare – Macbeth",
+    bookNote:"Macbeth's despairing reflection on time and meaning",
+    isbn:"9780743477109",
+    questions:[
+      "Does ambition inevitably lead to this kind of emptiness, or only when pursued the wrong way?",
+      "What gives life meaning, if not power or achievement?"
+    ]
+  },
+  {
+    id:"steinbeck-mice-men",
+    quote:"A guy needs somebody – to be near him.",
+    attr:"John Steinbeck – Of Mice and Men",
+    bookNote:"A short, devastating study of loneliness and friendship",
+    isbn:"9780141023571",
+    questions:[
+      "Why does loneliness affect almost every character in this novel, regardless of their strength or intelligence?",
+      "What does George's final decision say about the limits and cost of loyalty?"
+    ]
+  },
+  {
+    id:"orwell-1984",
+    quote:"Who controls the past controls the future. Who controls the present controls the past.",
+    attr:"George Orwell – Nineteen Eighty-Four",
+    bookNote:"A warning about truth, power and propaganda",
+    isbn:"9780141036144",
+    questions:[
+      "How much of what we believe about the past depends on who is telling the story?",
+      "Are there examples today of facts or history being rewritten for political convenience?"
+    ]
+  },
+  {
+    id:"lee-mockingbird",
+    quote:"Climb into his skin and walk around in it.",
+    attr:"Harper Lee – To Kill a Mockingbird",
+    bookNote:"Atticus Finch's advice on understanding other people",
+    isbn:"9780099549482",
+    questions:[
+      "How easy is it, in practice, to truly see a situation from someone else's perspective?",
+      "Who in your own life would you understand better if you tried this?"
+    ]
+  },
+  {
+    id:"golding-flies",
+    quote:"Maybe there is a beast… maybe it's only us.",
+    attr:"William Golding – Lord of the Flies",
+    bookNote:"A chilling study of civilisation and human nature",
+    isbn:"9780571191475",
+    questions:[
+      "Does the novel suggest evil is something within all of us, or something created by circumstance?",
+      "What does it take for a group of ordinary people to turn on one another?"
+    ]
+  },
+  {
+    id:"tolstoy-anna-karenina",
+    quote:"All happy families are alike; every unhappy family is unhappy in its own way.",
+    attr:"Leo Tolstoy – Anna Karenina",
+    bookNote:"One of literature's most famous opening lines",
+    isbn:"9780143035008",
+    questions:[
+      "Do you agree that happiness looks the same across families, while unhappiness is always unique?",
+      "What expectations of society shape the characters' choices in the novel?"
+    ]
+  },
+  {
+    id:"bronte-jane-eyre",
+    quote:"I am no bird; and no net ensnares me.",
+    attr:"Charlotte Brontë – Jane Eyre",
+    bookNote:"Jane's declaration of independence and self-respect",
+    isbn:"9780141441146",
+    questions:[
+      "What does this line suggest about Jane's sense of identity in a society that expects women to be dependent?",
+      "Where do you draw the line between compromise and losing yourself?"
+    ]
+  },
+  {
+    id:"camus-stranger",
+    quote:"Maman died today. Or yesterday maybe, I don't know.",
+    attr:"Albert Camus – The Stranger",
+    bookNote:"The novel's famous, unsettling opening line",
+    isbn:"9780679720201",
+    questions:[
+      "What does the narrator's flat, detached tone suggest about how he experiences the world?",
+      "Is indifference a kind of honesty, or is it a failure to feel what we should?"
+    ]
+  },
+  {
+    id:"shelley-frankenstein",
+    quote:"Beware; for I am fearless, and therefore powerful.",
+    attr:"Mary Shelley – Frankenstein",
+    bookNote:"The creature's warning to his creator",
+    isbn:"9780141439471",
+    questions:[
+      "Who is more monstrous in this novel — the creature, or the man who abandoned him?",
+      "Does having nothing left to lose make a person dangerous, free, or both?"
+    ]
+  },
+  {
+    id:"austen-pride-prejudice",
+    quote:"Vanity and pride are different things, though the words are often used synonymously.",
+    attr:"Jane Austen – Pride and Prejudice",
+    bookNote:"A sharp study of manners, judgement and self-knowledge",
+    isbn:"9780141439518",
+    questions:[
+      "What's the real difference between vanity and pride, and which one drives Mr Darcy's early behaviour?",
+      "How much do first impressions shape our judgement of other people — fairly or not?"
+    ]
+  },
+  {
+    id:"bronte-e-wuthering-heights",
+    quote:"Whatever our souls are made of, his and mine are the same.",
+    attr:"Emily Brontë – Wuthering Heights",
+    bookNote:"Catherine's declaration about Heathcliff",
+    isbn:"9780141439556",
+    questions:[
+      "Is the love in this novel romantic, destructive, or both at once?",
+      "Can two people be too alike for their relationship to be healthy?"
+    ]
+  },
+  {
+    id:"dickens-great-expectations",
+    quote:"Take nothing on its looks; take everything on evidence. There's no better rule.",
+    attr:"Charles Dickens – Great Expectations",
+    bookNote:"Mr Jaggers' lawyerly advice to Pip",
+    isbn:"9780141439563",
+    questions:[
+      "How often do we judge people or situations on looks rather than evidence?",
+      "Does Pip follow this advice himself, or does ambition cloud his judgement?"
+    ]
+  },
+  {
+    id:"dickens-oliver-twist",
+    quote:"Please, sir, I want some more.",
+    attr:"Charles Dickens – Oliver Twist",
+    bookNote:"One of literature's most famous moments of quiet defiance",
+    isbn:"9780141439747",
+    questions:[
+      "What does it take for someone with so little power to ask for more?",
+      "How does the novel use a child's hunger to criticise the adult systems around him?"
+    ]
+  },
+  {
+    id:"dickens-christmas-carol",
+    quote:"God bless us, every one!",
+    attr:"Charles Dickens – A Christmas Carol",
+    bookNote:"Tiny Tim's blessing — a fitting line for the run-up to the holidays",
+    isbn:"9780141324524",
+    questions:[
+      "What does Scrooge's transformation suggest about whether people can really change?",
+      "Is generosity something we choose, or something we have to be taught?"
+    ]
+  },
+  {
+    id:"melville-moby-dick",
+    quote:"Call me Ishmael.",
+    attr:"Herman Melville – Moby-Dick",
+    bookNote:"The most famous opening line in American literature",
+    isbn:"9780142437247",
+    questions:[
+      "Why might an author choose to open a novel with such a simple, plain line?",
+      "What does obsession cost Captain Ahab, and was the whale ever really the point?"
+    ]
+  },
+  {
+    id:"fitzgerald-gatsby",
+    quote:"So we beat on, boats against the current, borne back ceaselessly into the past.",
+    attr:"F. Scott Fitzgerald – The Great Gatsby",
+    bookNote:"The novel's famous closing line",
+    isbn:"9780743273565",
+    questions:[
+      "Can people ever truly escape their past, or do we always end up pulled back to it?",
+      "What does Gatsby's pursuit of Daisy say about the danger of chasing an idea rather than a person?"
+    ]
+  },
+  {
+    id:"hemingway-old-man-sea",
+    quote:"Every day is a new day. It is better to be lucky.",
+    attr:"Ernest Hemingway – The Old Man and the Sea",
+    bookNote:"Santiago's quiet philosophy on luck and perseverance",
+    isbn:"9780099908401",
+    questions:[
+      "Is Santiago's struggle a victory or a defeat, given how the novel ends?",
+      "What's the difference between giving up and accepting you can't control everything?"
+    ]
+  },
+  {
+    id:"twain-huckleberry-finn",
+    quote:"All right, then, I'll go to hell.",
+    attr:"Mark Twain – Adventures of Huckleberry Finn",
+    bookNote:"Huck's decision to follow his conscience over society's rules",
+    isbn:"9780141439648",
+    questions:[
+      "What does it cost Huck to make this decision, and why is that the point?",
+      "When should personal conscience override what society or law tells you is right?"
+    ]
+  },
+  {
+    id:"wilde-dorian-gray",
+    quote:"I can resist everything except temptation.",
+    attr:"Oscar Wilde – The Picture of Dorian Gray",
+    bookNote:"Lord Henry's witty, telling line",
+    isbn:"9780141442464",
+    questions:[
+      "Is this line a joke, a confession, or both? What does it reveal about the character?",
+      "Does the novel ultimately punish Dorian for his vanity, or for something deeper?"
+    ]
+  },
+  {
+    id:"stevenson-jekyll-hyde",
+    quote:"Man is not truly one, but truly two.",
+    attr:"Robert Louis Stevenson – Dr Jekyll and Mr Hyde",
+    bookNote:"Jekyll's reflection on the duality of human nature",
+    isbn:"9780141439730",
+    questions:[
+      "Do you think everyone has a 'Hyde' side, or is that just a useful story device?",
+      "What does the novel suggest happens when we try to separate our good and bad impulses completely?"
+    ]
+  },
+  {
+    id:"stoker-dracula",
+    quote:"Listen to them – the children of the night! What music they make!",
+    attr:"Bram Stoker – Dracula",
+    bookNote:"One of the novel's most chilling, theatrical lines",
+    isbn:"9780141439846",
+    questions:[
+      "What makes the unknown more frightening than something we can clearly see and name?",
+      "How does the novel use fear of outsiders to reflect anxieties of its time?"
+    ]
+  },
+  {
+    id:"frank-diary",
+    quote:"Despite everything, I believe that people are really good at heart.",
+    attr:"Anne Frank – The Diary of a Young Girl",
+    bookNote:"Written while hiding from the Nazis during WWII — a powerful testament to hope",
+    isbn:"9780141315188",
+    questions:[
+      "How is it possible to hold onto hope and belief in people during the worst circumstances imaginable?",
+      "What responsibility do we have to remember stories like Anne Frank's?"
+    ]
+  },
+  {
+    id:"conrad-heart-darkness",
+    quote:"The horror! The horror!",
+    attr:"Joseph Conrad – Heart of Darkness",
+    bookNote:"Kurtz's famous dying words",
+    isbn:"9780141441672",
+    questions:[
+      "What do you think Kurtz means by these final words — what horror is he referring to?",
+      "Does the novel suggest civilisation is a thin veneer over something darker in human nature?"
+    ]
+  },
+  {
+    id:"vonnegut-slaughterhouse-five",
+    quote:"So it goes.",
+    attr:"Kurt Vonnegut – Slaughterhouse-Five",
+    bookNote:"The novel's recurring refrain, repeated after every death",
+    isbn:"9780099801409",
+    questions:[
+      "What's the effect of repeating the same flat phrase after every tragedy in the novel?",
+      "Is this acceptance, resignation, or a kind of dark coping mechanism — or all three?"
+    ]
+  },
+  {
+    id:"bradbury-fahrenheit-451",
+    quote:"It was a pleasure to burn.",
+    attr:"Ray Bradbury – Fahrenheit 451",
+    bookNote:"The novel's unsettling opening line",
+    isbn:"9781451673319",
+    questions:[
+      "Why might a society choose to burn books rather than simply ignore them?",
+      "What's the difference between being informed and being comfortable — and which does this society choose?"
+    ]
+  },
+  {
+    id:"salinger-catcher-rye",
+    quote:"I'm the most terrific liar you ever saw in your life.",
+    attr:"J.D. Salinger – The Catcher in the Rye",
+    bookNote:"Holden Caulfield's blunt self-assessment",
+    isbn:"9780241950425",
+    questions:[
+      "Why might someone who lies constantly be so obsessed with other people's phoniness?",
+      "Is Holden a reliable narrator of his own story? Does it matter if he isn't?"
+    ]
+  },
+  {
+    id:"camus-plague",
+    quote:"What's true of all the evils in the world is true of plague as well.",
+    attr:"Albert Camus – The Plague",
+    bookNote:"Dr Rieux's reflection on suffering and collective struggle",
+    isbn:"9780141185132",
+    questions:[
+      "What does the novel suggest is the right way to respond to a crisis beyond your control?",
+      "Is finding meaning in collective struggle different from finding meaning alone?"
+    ]
+  },
+  {
+    id:"wiesel-night",
+    quote:"To forget the dead would be akin to killing them a second time.",
+    attr:"Elie Wiesel – Night",
+    bookNote:"A Holocaust memoir on memory, faith and survival",
+    isbn:"9780141034979",
+    questions:[
+      "Why does remembering matter so much to survivors of atrocity?",
+      "What is lost when a society chooses to forget difficult parts of its history?"
+    ]
+  },
+  {
+    id:"carroll-alice-wonderland",
+    quote:"We're all mad here.",
+    attr:"Lewis Carroll – Alice's Adventures in Wonderland",
+    bookNote:"The Cheshire Cat's casual, unsettling observation",
+    isbn:"9780141439761",
+    questions:[
+      "What does 'madness' even mean if everyone around you shares it?",
+      "Is Wonderland actually more honest about human nature than the 'sensible' world Alice left behind?"
+    ]
+  },
+  {
+    id:"orwell-animal-farm",
+    quote:"All animals are equal, but some animals are more equal than others.",
+    attr:"George Orwell – Animal Farm",
+    bookNote:"The novel's most famous, most damning line",
+    isbn:"9780141036133",
+    questions:[
+      "How does language get twisted in this novel to hide an obvious contradiction?",
+      "Can you think of any modern examples where 'equality' is claimed but not actually practised?"
+    ]
+  },
+  {
+    id:"shakespeare-julius-caesar",
+    quote:"Cowards die many times before their deaths; the valiant never taste of death but once.",
+    attr:"William Shakespeare – Julius Caesar",
+    bookNote:"Caesar's reflection on fear and fate",
+    isbn:"9780743482742",
+    questions:[
+      "Is courage about not feeling fear, or about acting despite it?",
+      "Does worrying about death repeatedly make life worse than death itself, as Caesar suggests?"
+    ]
+  },
+  {
+    id:"shakespeare-romeo-juliet",
+    quote:"These violent delights have violent ends.",
+    attr:"William Shakespeare – Romeo and Juliet",
+    bookNote:"Friar Laurence's warning about Romeo's haste",
+    isbn:"9780743477116",
+    questions:[
+      "Why does intense passion so often lead to disaster in this play?",
+      "Is the tragedy caused by fate, by the families' feud, or by the characters' own choices?"
+    ]
+  },
+  {
+    id:"dumas-three-musketeers",
+    quote:"All for one, and one for all!",
+    attr:"Alexandre Dumas – The Three Musketeers",
+    bookNote:"The musketeers' famous motto of loyalty",
+    isbn:"9780140449263",
+    questions:[
+      "What does true loyalty to friends look like in practice, not just in words?",
+      "Is this motto realistic, or is it an ideal that's easier to say than live by?"
+    ]
+  },
+  {
+    id:"tolstoy-war-peace",
+    quote:"The strongest of all warriors are these two — Time and Patience.",
+    attr:"Leo Tolstoy – War and Peace",
+    bookNote:"A reflection on endurance over force",
+    isbn:"9780199232765",
+    questions:[
+      "Can you think of a situation where patience achieved more than immediate action would have?",
+      "Why might patience be harder to practise than courage or strength?"
+    ]
+  },
+  {
+    id:"dumaurier-rebecca",
+    quote:"Last night I dreamt I went to Manderley again.",
+    attr:"Daphne du Maurier – Rebecca",
+    bookNote:"The novel's haunting, famous opening line",
+    isbn:"9780349010819",
+    questions:[
+      "What does it mean for a place — or a memory — to haunt someone the way Manderley does?",
+      "How does the novel use the absent character of Rebecca to drive the whole story?"
+    ]
+  },
+  {
+    id:"voltaire-candide",
+    quote:"We must cultivate our garden.",
+    attr:"Voltaire – Candide",
+    bookNote:"The novel's famous closing line, after all its chaos and misfortune",
+    isbn:"9780140440041",
+    questions:[
+      "What does 'cultivating your garden' mean as a philosophy for getting through life?",
+      "Is this an act of giving up on big ideas, or a wiser, more grounded alternative to them?"
+    ]
+  }
+];
+
+// ════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════
+let S = (()=>{ try{ const s=localStorage.getItem('ft-v3'); return s?JSON.parse(s):clone(DEFAULTS); }catch{return clone(DEFAULTS);} })();
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function persist(){localStorage.setItem('ft-v3',JSON.stringify(S));}
+
+// ════════════════════════════════════════════════
+//  THEME
+// ════════════════════════════════════════════════
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('theme-btn').textContent = t==='dark'?'☀️':'🌙';
+}
+function toggleTheme(){
+  S.theme = S.theme==='dark'?'light':'dark';
+  applyTheme(S.theme); persist();
+}
+applyTheme(S.theme||'dark');
+
+// ════════════════════════════════════════════════
+//  DATE / DAY
+// ════════════════════════════════════════════════
+const WDAYS=['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+function initDay(){
+  const d=WDAYS[new Date().getDay()];
+  document.getElementById('day-select').value=(d==='saturday'||d==='sunday')?'monday':d;
+}
+function updateHeader(){
+  document.getElementById('date-display').textContent=
+    new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const label=(S.week&&S.week.trim())?S.week.trim():autoWeekLabel();
+  document.getElementById('week-display').textContent='Week: '+label;
+}
+
+// ════════════════════════════════════════════════
+//  UTILITIES
+// ════════════════════════════════════════════════
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+// Scores an On This Day entry: UK relevance + signs of being a
+// genuinely notable/famous figure or event, rather than an obscure
+// regional one. Used to bias selection away from random minor
+// sportspeople etc. towards things a UK sixth-form class will recognise.
+const UK_REGEX=/\b(Britain|British|U\.?K\.?|United Kingdom|England|English|Scotland|Scottish|Wales|Welsh|London|Ireland|Irish|Northern Ireland)\b/i;
+function scoreOTD(item){
+  let score=0;
+  const text=item.text||'';
+  if(UK_REGEX.test(text)) score+=4;
+  const page=(item.pages||[])[0];
+  if(page){
+    if(page.thumbnail&&page.thumbnail.source) score+=2;     // has an image = usually well-documented
+    if(page.extract&&page.extract.length>400) score+=1;     // longer extract = more written about
+    if(page.description){
+      const d=page.description.toLowerCase();
+      // de-prioritise narrow/niche-sounding entries
+      if(/\b(footballer|tennis|cyclist|swimmer|athlete|skier|wrestler|boxer|curler)\b/.test(d)&&!UK_REGEX.test(text)) score-=2;
+    }
+  }
+  return score;
+}
+function pickBest(list,topN=5){
+  if(!list||!list.length) return null;
+  const scored=list.map(item=>({item,score:scoreOTD(item)}));
+  scored.sort((a,b)=>b.score-a.score);
+  const top=scored.slice(0,Math.min(topN,scored.length));
+  return shuffle(top)[0].item;
+}
+function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
+
+// Auto-calculates "DD/MM/YY – DD/MM/YY" for the current Mon–Fri week
+function autoWeekLabel(){
+  const now=new Date();
+  const dow=now.getDay();
+  const monday=new Date(now);
+  monday.setDate(now.getDate()-(dow===0?6:dow-1));
+  const friday=new Date(monday);
+  friday.setDate(monday.getDate()+4);
+  const fmt=d=>`${d.getDate()}/${d.getMonth()+1}/${String(d.getFullYear()).slice(-2)}`;
+  return `${fmt(monday)} – ${fmt(friday)}`;
+}
+
+// ════════════════════════════════════════════════
+//  DAY PANEL RENDER
+// ════════════════════════════════════════════════
+const ICONS=['📖','✏️','🔬','🗂️'];
+
+function renderDay(day){
+  const p=document.getElementById('day-panel');
+  const wisdomDay=S.wisdomDay||'wednesday';
+  const indepDay2=wisdomDay==='wednesday'?'thursday':'wednesday'; // the other indep-study day
+  if(day==='monday'||day===indepDay2) p.innerHTML=renderIndep(day);
+  else if(day==='tuesday'){ p.innerHTML=renderTuesday(); fetchNews(); }
+  else if(day===wisdomDay) p.innerHTML=renderWisdom(day);
+  else p.innerHTML=renderFriday();
+}
+
+function renderIndep(day){
+  const tasks=(S.tasks||[]).map((t,i)=>`
+    <li class="task-item"><span class="ti-icon">${ICONS[i]||'●'}</span><span>${esc(t)}</span></li>`).join('');
+  return `
+    <div class="day-header">
+      <div class="day-name">${cap(day)}</div>
+      <div class="day-sub">📚 Independent Study Time</div>
+    </div>
+    <div>
+      <div class="task-head">Use this time to:</div>
+      <ul class="task-list">${tasks}</ul>
+    </div>
+    ${S.indepNote?`<div class="note-box">⚠️  ${esc(S.indepNote)}</div>`:''}`;
+}
+
+function renderTuesday(){
+  const yt=esc(S.ytUrl||DEFAULTS.ytUrl);
+  return `
+    <div class="day-header">
+      <div class="day-name">Tuesday</div>
+      <div class="day-sub">📺 What's in the News?</div>
+    </div>
+    <div class="yt-wrap">
+      <iframe src="${yt}"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+        allowfullscreen title="Sky News Live"></iframe>
+    </div>
+    <div>
+      <div class="task-head" style="margin-bottom:8px;">Today's Headlines</div>
+      <div id="news-articles" class="news-grid">
+        <div class="loading-txt">Loading BBC headlines…</div>
+      </div>
+    </div>
+    <div class="note-box">💬 <strong>Discuss:</strong> Which story caught your attention and why?</div>`;
+}
+
+function renderWisdom(day){
+  const w=S.wisdom||DEFAULTS.wisdom;
+
+  // Resolve book cover
+  let coverHtml='';
+  const coverSrc = w.coverUrl
+    ? esc(w.coverUrl)
+    : w.isbn
+      ? `https://covers.openlibrary.org/b/isbn/${esc(w.isbn)}-L.jpg`
+      : '';
+
+  if(coverSrc){
+    coverHtml=`
+      <div class="book-cover-wrap">
+        <img class="book-cover" src="${coverSrc}" alt="Book cover"
+          onerror="this.parentElement.innerHTML='<div class=\\'book-cover-placeholder\\'>📚</div>'">
+      </div>`;
+  }
+
+  const qs=(w.questions||[]).map(q=>`<li class="wq-item">${esc(q)}</li>`).join('');
+  return `
+    <div class="day-header">
+      <div class="day-name">${cap(day)}</div>
+      <div class="day-sub">💬 ${cap(day)} Wisdom</div>
+    </div>
+    <div class="wisdom-layout">
+      <div class="wisdom-main">
+        <div class="quote-card">
+          <div class="quote-text">"${esc(w.quote)}"</div>
+          <div class="quote-attr">— ${esc(w.attr||'')}</div>
+          ${w.bookNote?`<div class="quote-note">${esc(w.bookNote)}</div>`:''}
+        </div>
+        ${qs?`<div class="wq-box"><div class="wq-title">🤔 Think about:</div><ul class="wq-list">${qs}</ul></div>`:''}
+      </div>
+      ${coverHtml}
+    </div>`;
+}
+
+function renderFriday(){
+  const f=S.friday||DEFAULTS.friday;
+  const lines=(f.content||'').split('\n');
+  const body=lines.map(l=>{
+    if(!l.trim()) return '';
+    if(l.trim().startsWith('•')||l.trim().startsWith('-'))
+      return `<div class="task-item"><span class="ti-icon">➤</span><span>${esc(l.replace(/^[•\-]\s*/,'').trim())}</span></div>`;
+    return `<p class="fri-p">${esc(l)}</p>`;
+  }).join('');
+  return `
+    <div class="day-header">
+      <div class="day-name">Friday</div>
+      <div class="day-sub">🌟 ${esc(f.title||'End of Week')}</div>
+    </div>
+    <div class="fri-body">${body}</div>`;
+}
+
+// ════════════════════════════════════════════════
+//  SIDEBAR
+// ════════════════════════════════════════════════
+function renderSidebar(){
+  document.getElementById('dates-list').innerHTML=
+    (S.keyDates||[]).map(d=>`<li class="date-item"><span class="date-bull">▸</span><span>${esc(d)}</span></li>`).join('');
+
+  const p=S.panels||DEFAULTS.panels;
+  setPV('ticker-wrap',p.ticker);
+  setPV('panel-dates',p.dates);
+
+  // Panel order
+  const sidebar=document.getElementById('sidebar');
+  const map={dates:'panel-dates'};
+  (S.panelOrder||DEFAULTS.panelOrder).forEach(k=>{
+    const el=document.getElementById(map[k]);
+    if(el) sidebar.appendChild(el);
+  });
+}
+function setPV(id,v){ const el=document.getElementById(id); if(el) el.classList.toggle('hidden',!v); }
+
+// ════════════════════════════════════════════════
+//  ON THIS DAY — looks up the actual date for the
+//  selected weekday in the current school week,
+//  then fetches events + births + deaths from
+//  Wikipedia for that specific date.
+// ════════════════════════════════════════════════
+
+// Returns the calendar Date object for a named weekday in the current week
+function weekdayDate(dayName){
+  const map={monday:1,tuesday:2,wednesday:3,thursday:4,friday:5};
+  const target=map[dayName]||1;
+  const now=new Date();
+  const dow=now.getDay(); // 0=Sun … 6=Sat
+  // Find this week's Monday
+  const monday=new Date(now);
+  monday.setDate(now.getDate()-(dow===0?6:dow-1));
+  // Offset to the chosen day
+  const result=new Date(monday);
+  result.setDate(monday.getDate()+(target-1));
+  return result;
+}
+
+async function fetchOTD(dayName){
+  dayName=dayName||document.getElementById('day-select').value;
+  const el=document.getElementById('otd-content');
+  if(!el)return;
+  el.innerHTML='<div class="loading-txt">Loading…</div>';
+
+  const date=weekdayDate(dayName);
+  const m=date.getMonth()+1, d=date.getDate();
+
+  // Update panel header to show the date being looked up
+  const hdr=document.getElementById('otd-date-lbl');
+  if(hdr) hdr.textContent=date.toLocaleDateString('en-GB',{day:'numeric',month:'long'});
+
+  const base=`https://en.wikipedia.org/api/rest_v1/feed/onthisday`;
+  try{
+    const [evR,brR,deR]=await Promise.all([
+      fetch(`${base}/events/${m}/${d}`),
+      fetch(`${base}/births/${m}/${d}`),
+      fetch(`${base}/deaths/${m}/${d}`)
+    ]);
+    const [evD,brD,deD]=await Promise.all([evR.json(),brR.json(),deR.json()]);
+    const ev=pickBest(evD.events||[]);
+    const br=pickBest(brD.births||[]);
+    const de=pickBest(deD.deaths||[]);
+    const cards=[
+      ev?{type:'🗓️ Event', year:ev.year, text:ev.text}:null,
+      br?{type:'🎂 Born',  year:br.year, text:br.text}:null,
+      de?{type:'✝️ Died',  year:de.year, text:de.text}:null
+    ].filter(Boolean);
+    if(!cards.length) throw new Error();
+    el.innerHTML=cards.map(c=>`
+      <div class="otd-card">
+        <div class="otd-meta">
+          <span class="otd-type">${c.type}</span>
+          <span class="otd-year">${c.year}</span>
+        </div>
+        <div class="otd-text">${esc(c.text)}</div>
+      </div>`).join('');
+  }catch{
+    el.innerHTML='<div class="loading-txt">Could not load — check connection.</div>';
+  }
+}
+
+// ════════════════════════════════════════════════
+//  NEWS — BBC RSS via rss2json
+// ════════════════════════════════════════════════
+async function fetchNews(){
+  const RSS='https://feeds.bbci.co.uk/news/uk/rss.xml';
+  const API=`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS)}&count=10`;
+  try{
+    const res=await fetch(API);
+    const data=await res.json();
+    if(data.status!=='ok'||!data.items?.length) throw new Error();
+
+    const items=data.items;
+
+    // Ticker — duplicate for seamless infinite scroll
+    const ts=document.getElementById('ticker-scroll');
+    ts.innerHTML=(items.concat(items)).map(i=>
+      `<span class="ticker-item">${esc(i.title)}</span><span class="ticker-sep"> ◆ </span>`
+    ).join('');
+    ts.style.animationDuration=(items.length*6)+'s';
+
+    // Tuesday news cards
+    const panel=document.getElementById('news-articles');
+    if(panel){
+      panel.innerHTML=items.slice(0,5).map(i=>`
+        <a class="news-card" href="${esc(i.link)}" target="_blank" rel="noopener">
+          <div class="nc-title">${esc(i.title)}</div>
+          <div class="nc-src">BBC News UK</div>
+        </a>`).join('');
+    }
+  }catch(e){
+    console.warn('News fetch failed:',e);
+  }
+}
+
+// ════════════════════════════════════════════════
+//  EDIT MODAL
+// ════════════════════════════════════════════════
+function openEdit(){
+  document.getElementById('ed-week').value=S.week||'';
+  document.getElementById('ed-wisdomday').value=S.wisdomDay||'wednesday';
+  document.getElementById('ed-dates').value=(S.keyDates||[]).join('\n');
+  populateLibrarySelect();
+  const w=S.wisdom||DEFAULTS.wisdom;
+  document.getElementById('ed-quote').value=w.quote||'';
+  document.getElementById('ed-attr').value=w.attr||'';
+  document.getElementById('ed-booknote').value=w.bookNote||'';
+  document.getElementById('ed-isbn').value=w.isbn||'';
+  document.getElementById('ed-coverurl').value=w.coverUrl||'';
+  document.getElementById('ed-questions').value=(w.questions||[]).join('\n');
+  document.getElementById('ed-tasks').value=(S.tasks||[]).join('\n');
+  document.getElementById('ed-indepnote').value=S.indepNote||'';
+  document.getElementById('ed-yturl').value=S.ytUrl||DEFAULTS.ytUrl;
+  document.getElementById('ed-fri-title').value=S.friday?.title||'';
+  document.getElementById('ed-fri-content').value=S.friday?.content||'';
+  const p=S.panels||DEFAULTS.panels;
+  document.getElementById('tog-ticker').checked=p.ticker!==false;
+  document.getElementById('tog-dates').checked=p.dates!==false;
+  renderOrderList();
+  document.getElementById('ed-token').value=getSyncToken();
+  document.getElementById('ed-gistid').value=S.syncGistId||DEFAULTS.syncGistId||'';
+  document.getElementById('sync-status').textContent=(S.syncGistId||DEFAULTS.syncGistId)
+    ?'✅ Sync active — Gist: '+(S.syncGistId||DEFAULTS.syncGistId)
+    :'Not yet set up — see steps below.';
+  document.getElementById('edit-overlay').classList.add('open');
+}
+
+function closeEdit(){
+  document.getElementById('edit-overlay').classList.remove('open');
+}
+
+function saveEdit(){
+  S.week=document.getElementById('ed-week').value.trim();
+  S.wisdomDay=document.getElementById('ed-wisdomday').value;
+  S.keyDates=document.getElementById('ed-dates').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  S.wisdom={
+    quote:document.getElementById('ed-quote').value.trim(),
+    attr:document.getElementById('ed-attr').value.trim(),
+    bookNote:document.getElementById('ed-booknote').value.trim(),
+    isbn:document.getElementById('ed-isbn').value.trim(),
+    coverUrl:document.getElementById('ed-coverurl').value.trim(),
+    questions:document.getElementById('ed-questions').value.split('\n').map(l=>l.trim()).filter(Boolean)
+  };
+  S.tasks=document.getElementById('ed-tasks').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  S.indepNote=document.getElementById('ed-indepnote').value.trim();
+  S.ytUrl=document.getElementById('ed-yturl').value.trim()||DEFAULTS.ytUrl;
+  S.friday={
+    title:document.getElementById('ed-fri-title').value.trim(),
+    content:document.getElementById('ed-fri-content').value
+  };
+  S.panels={
+    ticker:document.getElementById('tog-ticker').checked,
+    dates:document.getElementById('tog-dates').checked
+  };
+  const gistId=document.getElementById('ed-gistid').value.trim();
+  if(gistId) S.syncGistId=gistId;
+  const token=document.getElementById('ed-token').value.trim();
+  if(token) setSyncToken(token);
+  persist();
+  pushToGist();
+  closeEdit(); renderAll();
+}
+
+// Panel order UI
+const PLABELS={dates:'Key Dates'};
+function renderOrderList(){
+  const order=S.panelOrder||DEFAULTS.panelOrder;
+  document.getElementById('order-list').innerHTML=order.map((k,i)=>`
+    <div class="ord-row">
+      <span class="ord-lbl">${PLABELS[k]}</span>
+      <div class="ord-btns">
+        <button class="ord-btn" onclick="mvPanel(${i},-1)" ${i===0?'disabled':''}>▲</button>
+        <button class="ord-btn" onclick="mvPanel(${i}, 1)" ${i===order.length-1?'disabled':''}>▼</button>
+      </div>
+    </div>`).join('');
+}
+function mvPanel(i,dir){
+  const o=[...(S.panelOrder||DEFAULTS.panelOrder)];
+  const n=i+dir; if(n<0||n>=o.length) return;
+  [o[i],o[n]]=[o[n],o[i]]; S.panelOrder=o; renderOrderList();
+}
+
+// Quote library
+// Quote library — unused entries first, used ones pushed to the
+// bottom and labelled, so Zanman can see at a glance what's free.
+function populateLibrarySelect(){
+  const sel=document.getElementById('ed-lib-select');
+  if(!sel) return;
+  const used=new Set(S.usedQuotes||[]);
+  const unused=QUOTE_LIBRARY.filter(q=>!used.has(q.id));
+  const usedList=QUOTE_LIBRARY.filter(q=>used.has(q.id));
+  const opt=q=>`<option value="${q.id}">${esc(q.attr)}${used.has(q.id)?'  — used':''}</option>`;
+  sel.innerHTML=unused.map(opt).join('')+usedList.map(opt).join('');
+}
+
+function loadFromLibrary(){
+  const id=document.getElementById('ed-lib-select').value;
+  const q=QUOTE_LIBRARY.find(x=>x.id===id);
+  if(!q) return;
+  document.getElementById('ed-quote').value=q.quote;
+  document.getElementById('ed-attr').value=q.attr;
+  document.getElementById('ed-booknote').value=q.bookNote;
+  document.getElementById('ed-isbn').value=q.isbn;
+  document.getElementById('ed-coverurl').value='';
+  document.getElementById('ed-questions').value=q.questions.join('\n');
+  markQuoteUsed(id,true);
+}
+
+function markQuoteUsed(id,usedState){
+  const used=new Set(S.usedQuotes||[]);
+  usedState?used.add(id):used.delete(id);
+  S.usedQuotes=[...used];
+  persist();
+  populateLibrarySelect();
+  document.getElementById('ed-lib-select').value=id;
+}
+
+function toggleQuoteUsed(){
+  const id=document.getElementById('ed-lib-select').value;
+  if(!id) return;
+  const used=new Set(S.usedQuotes||[]);
+  markQuoteUsed(id,!used.has(id));
+}
+
+// ════════════════════════════════════════════════
+//  GITHUB GIST SYNC
+//  Edits push from your device (token required).
+//  Tutors' pages pull read-only — no token needed,
+//  since GitHub gists are readable by ID without auth.
+// ════════════════════════════════════════════════
+const GIST_FILE='formtime-data.json';
+
+function getSyncToken(){ return localStorage.getItem('ft-sync-token')||''; }
+function setSyncToken(t){ t?localStorage.setItem('ft-sync-token',t):localStorage.removeItem('ft-sync-token'); }
+
+async function createSharedGist(){
+  const token=document.getElementById('ed-token').value.trim();
+  if(!token){ alert('Paste your GitHub token first (with "gist" scope).'); return; }
+  setSyncToken(token);
+  try{
+    const res=await fetch('https://api.github.com/gists',{
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer '+token,
+        'Accept':'application/vnd.github+json',
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        description:'Form Time — shared sync (Mayfield Grammar Year 12)',
+        public:false,
+        files:{ [GIST_FILE]:{ content:JSON.stringify(S,null,2) } }
+      })
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    S.syncGistId=data.id;
+    document.getElementById('ed-gistid').value=data.id;
+    document.getElementById('sync-status').textContent='✅ Created! Gist ID: '+data.id;
+    persist();
+    updateSyncIndicator();
+    alert('Shared Gist created.\n\nGist ID:\n'+data.id+
+      '\n\nThis device will sync automatically from now on.\n\n'+
+      'To make this live for tutors too, this Gist ID needs to be baked into the page\'s code once and re-uploaded — copy the ID above and pass it back to Claude, or paste it into DEFAULTS.syncGistId yourself.');
+  }catch(e){
+    alert('Could not create the Gist. Check the token has "gist" scope.\n\n'+e.message);
+  }
+}
+
+async function pushToGist(){
+  const gistId=S.syncGistId;
+  const token=getSyncToken();
+  if(!gistId||!token) return;
+  try{
+    await fetch(`https://api.github.com/gists/${gistId}`,{
+      method:'PATCH',
+      headers:{
+        'Authorization':'Bearer '+token,
+        'Accept':'application/vnd.github+json',
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({ files:{ [GIST_FILE]:{ content:JSON.stringify(S,null,2) } } })
+    });
+  }catch(e){ console.warn('Gist push failed:',e); }
+}
+
+async function pullFromGist(){
+  const gistId=S.syncGistId||DEFAULTS.syncGistId;
+  if(!gistId) return false;
+  try{
+    const res=await fetch(`https://api.github.com/gists/${gistId}`);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const file=data.files[GIST_FILE];
+    if(!file) return false;
+    const remote=JSON.parse(file.content);
+    S={...clone(DEFAULTS),...remote,syncGistId:gistId};
+    persist();
+    return true;
+  }catch(e){ console.warn('Gist pull failed:',e); return false; }
+}
+
+function updateSyncIndicator(){
+  const el=document.getElementById('sync-indicator');
+  if(!el) return;
+  el.style.display=(S.syncGistId||DEFAULTS.syncGistId)?'inline':'none';
+}
+
+// Close on backdrop
+document.getElementById('edit-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('edit-overlay')) closeEdit();
+});
+
+// ════════════════════════════════════════════════
+//  DAY CHANGE
+// ════════════════════════════════════════════════
+document.getElementById('day-select').addEventListener('change',e=>{
+  renderDay(e.target.value);
+  fetchOTD(e.target.value);
+});
+
+// ════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════
+function renderAll(){
+  updateHeader();
+  renderDay(document.getElementById('day-select').value);
+  renderSidebar();
+  updateSyncIndicator();
+}
+
+async function init(){
+  initDay();
+  await pullFromGist();
+  renderAll();
+  fetchOTD(document.getElementById('day-select').value);
+  fetchNews();
+}
+init();
+
+setInterval(fetchNews,   600000);
+setInterval(()=>fetchOTD(document.getElementById('day-select').value), 3600000);
+setInterval(updateHeader,  60000);
+setInterval(async()=>{ const ok=await pullFromGist(); if(ok) renderAll(); }, 180000);
+</script>
+</body>
+</html>
