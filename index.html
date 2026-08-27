@@ -9,29 +9,30 @@
    CSS VARIABLES — DARK / LIGHT THEMES
 ══════════════════════════════════════════ */
 :root {
-  --bg:        #0c1628;
-  --bg2:       #0f1e3a;
-  --surface:   #1a2a45;
-  --surface2:  #121f38;
-  --text:      #e8eaf0;
-  --text2:     #8fa0c0;
-  --accent:    #c9a84c;
-  --accent2:   #a88830;
-  --border:    #1e3060;
-  --sidebar:   #0a1628;
-  --tag-bg:    #1a2a45;
-  --otd-bg:    #151f38;
-  --ticker-bg: #c9a84c;
-  --ticker-fg: #0c1628;
-  --quote-bg:  linear-gradient(135deg,#1a2a45,#101a30);
-  --input-bg:  #1a2a45;
-  --input-bd:  #2a3a5a;
-  --modal-bg:  #0f1e38;
-  --task-bd:   #c9a84c;
-  --note-bg:   rgba(201,168,76,.08);
-  --note-bd:   rgba(201,168,76,.2);
-  --news-bg:   #1a2a45;
-  --news-bd:   #2a509a;
+  --bg:        #211522;
+  --bg2:       #321f31;
+  --surface:   #4a3047;
+  --surface2:  #2a1b29;
+  --text:      #f8f3f7;
+  --text2:     #d9c7d5;
+  --accent:    #d5a0ce;
+  --accent2:   #a06098;
+  --border:    #65445f;
+  --sidebar:   #291a28;
+  --tag-bg:    #4a3047;
+  --otd-bg:    #321f31;
+  --ticker-bg: #50304c;
+  --ticker-fg: #ffffff;
+  --on-accent: #2d202c;
+  --quote-bg:  linear-gradient(135deg,#4a3047,#2a1b29);
+  --input-bg:  #4a3047;
+  --input-bd:  #76556f;
+  --modal-bg:  #321f31;
+  --task-bd:   #d5a0ce;
+  --note-bg:   rgba(213,160,206,.10);
+  --note-bd:   rgba(213,160,206,.28);
+  --news-bg:   #4a3047;
+  --news-bd:   #a06098;
   --shadow:    rgba(0,0,0,.4);
   --focus:     #7cc4ff;
   --control-h: 44px;
@@ -40,31 +41,32 @@
   --type-display: clamp(2.7rem,4vw,4.4rem);
 }
 [data-theme="light"] {
-  --bg:        #eef2fb;
-  --bg2:       #e2e8f8;
+  --bg:        #fbf8fa;
+  --bg2:       #ffffff;
   --surface:   #ffffff;
-  --surface2:  #f4f7ff;
-  --text:      #1a2440;
-  --text2:     #5060a0;
-  --accent:    #8a6a10;
-  --accent2:   #6a5008;
-  --border:    #c8d4ee;
-  --sidebar:   #e8edf8;
-  --tag-bg:    #dde6f8;
-  --otd-bg:    #dde6f8;
-  --ticker-bg: #1a2440;
-  --ticker-fg: #eef2fb;
-  --quote-bg:  linear-gradient(135deg,#e8edf8,#dde6f8);
-  --input-bg:  #f0f4ff;
-  --input-bd:  #c0ccee;
-  --modal-bg:  #f0f4ff;
-  --task-bd:   #8a6a10;
-  --note-bg:   rgba(138,106,16,.07);
-  --note-bd:   rgba(138,106,16,.22);
-  --news-bg:   #e8eef8;
-  --news-bd:   #3060c0;
-  --shadow:    rgba(20,40,100,.15);
-  --focus:     #145da0;
+  --surface2:  #f5edf4;
+  --text:      #2d202c;
+  --text2:     #664f63;
+  --accent:    #875080;
+  --accent2:   #50304c;
+  --border:    #decfdb;
+  --sidebar:   #f3ebf1;
+  --tag-bg:    #eee2eb;
+  --otd-bg:    #f3ebf1;
+  --ticker-bg: #50304c;
+  --ticker-fg: #ffffff;
+  --on-accent: #ffffff;
+  --quote-bg:  linear-gradient(135deg,#f3ebf1,#eadde7);
+  --input-bg:  #fbf8fa;
+  --input-bd:  #cdb9c9;
+  --modal-bg:  #fbf8fa;
+  --task-bd:   #875080;
+  --note-bg:   rgba(160,96,152,.08);
+  --note-bd:   rgba(135,80,128,.25);
+  --news-bg:   #f3ebf1;
+  --news-bd:   #a06098;
+  --shadow:    rgba(80,48,76,.15);
+  --focus:     #693e64;
 }
 
 /* ══════════════════════════════════════════
@@ -81,7 +83,7 @@ body {
   flex-direction:column;
   transition:background .3s,color .3s;
 }
-::selection { background:var(--accent); color:var(--ticker-fg); }
+::selection { background:var(--accent); color:var(--on-accent); }
 button,select,input,textarea { accent-color:var(--accent); }
 button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus-visible {
   outline:3px solid var(--focus); outline-offset:3px;
@@ -101,10 +103,10 @@ header {
   gap:14px;
   box-shadow:0 2px 12px var(--shadow);
 }
-.hdr-left { display:flex; align-items:center; gap:14px; }
+.hdr-left { display:flex; align-items:center; gap:14px; min-width:0; }
 .school-badge {
   background:var(--accent);
-  color:var(--ticker-fg);
+  color:var(--on-accent);
   font-weight:900;
   font-size:.75rem;
   letter-spacing:0.1em;
@@ -113,7 +115,7 @@ header {
   border-radius:6px;
   white-space:nowrap;
 }
-.form-title  { font-size:1.7rem; font-weight:900; color:var(--text); letter-spacing:-0.02em; line-height:1.1; }
+.form-title  { font-size:2.2rem; font-weight:900; color:var(--text); letter-spacing:-0.035em; line-height:1; }
 .year-label  { font-size:var(--type-meta); color:var(--accent); font-weight:800; letter-spacing:0.08em; }
 .hdr-right   { display:flex; align-items:center; gap:10px; flex-shrink:0; }
 .date-block  { text-align:right; }
@@ -171,13 +173,15 @@ header {
   flex-shrink:0;
   border-right:2px solid var(--accent);
 }
-.ticker-track  { overflow:hidden; flex:1; }
+.ticker-track  { overflow:hidden; flex:1; min-width:0; }
 .ticker-scroll {
-  display:block;
+  display:inline-flex;
+  width:max-content;
   white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  animation:ticker-move 80s linear infinite;
 }
+.ticker-scroll.paused,.ticker-track:hover .ticker-scroll,.ticker-track:focus-within .ticker-scroll { animation-play-state:paused; }
+@keyframes ticker-move { from { transform:translateX(0); } to { transform:translateX(-50%); } }
 .ticker-toggle {
   min-width:44px; min-height:34px; align-self:stretch; border:0; border-inline-start:1px solid rgba(255,255,255,.24);
   background:var(--ticker-bg); color:var(--ticker-fg); cursor:pointer; font:inherit; font-weight:900;
@@ -189,7 +193,7 @@ header {
   color:var(--ticker-fg);
   display:inline-block;
 }
-.ticker-sep { color:rgba(0,0,0,.3); }
+.ticker-sep { color:rgba(255,255,255,.45); }
 
 /* ══════════════════════════════════════════
    MAIN LAYOUT
@@ -224,6 +228,7 @@ header {
   gap:14px;
   box-shadow:0 2px 8px var(--shadow);
 }
+.task-item > span:last-child { min-width:0; overflow-wrap:anywhere; }
 .ti-icon { font-size:1.2rem; flex-shrink:0; }
 .note-box {
   background:var(--note-bg);
@@ -307,8 +312,12 @@ header {
 .nc-src   { font-size:.8rem; color:var(--text2); margin-top:2px; }
 
 /* Friday */
-.fri-body { display:flex; flex-direction:column; gap:9px; }
-.fri-p    { color:var(--text2); font-size:1rem; line-height:1.65; }
+.no-form-time {
+  flex:1; min-height:280px; display:grid; place-content:center; text-align:center;
+  padding:clamp(24px,6vw,72px); border:2px solid var(--border); border-radius:18px;
+  background:linear-gradient(145deg,var(--surface),var(--surface2));
+}
+.no-form-time strong { display:block; margin-top:12px; color:var(--accent); font-size:clamp(1.8rem,4vw,3.4rem); line-height:1.05; }
 
 /* ══════════════════════════════════════════
    SIDEBAR
@@ -494,7 +503,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .ord-btn:hover { border-color:var(--accent); color:var(--accent); }
 .ord-btn:disabled { opacity:.3; cursor:default; }
 .em-actions { position:sticky; bottom:0; z-index:3; display:flex; gap:10px; padding:14px 24px max(14px,env(safe-area-inset-bottom)); background:var(--modal-bg); border-top:1px solid var(--border); }
-.em-save   { background:var(--accent); color:var(--ticker-fg); border:none; border-radius:8px; min-height:46px; padding:12px; font-size:0.95rem; font-weight:900; cursor:pointer; flex:1; font-family:inherit; }
+.em-save   { background:var(--accent); color:var(--on-accent); border:none; border-radius:8px; min-height:46px; padding:12px; font-size:0.95rem; font-weight:900; cursor:pointer; flex:1; font-family:inherit; }
 .em-cancel { background:transparent; color:var(--text2); border:1px solid var(--border); border-radius:8px; min-height:46px; padding:10px 18px; font-size:0.9rem; cursor:pointer; font-family:inherit; }
 
 /* ══════════════════════════════════════════
@@ -512,7 +521,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 ══════════════════════════════════════════ */
 .purpose-line {
   font-size:.84rem; color:var(--text2); font-weight:600;
-  margin-top:3px; max-width:52ch; line-height:1.4;
+  margin-top:4px; max-width:none; line-height:1.35; white-space:nowrap;
 }
 .timer-group { display:flex; align-items:center; gap:2px; }
 #timer-pill {
@@ -571,6 +580,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
   body { min-height:100vh; min-height:100dvh; }
   header { align-items:flex-start; flex-wrap:wrap; padding:12px 16px; }
   .hdr-left { flex:1 1 320px; }
+  .purpose-line { white-space:normal; }
   .hdr-right { flex:1 1 100%; justify-content:flex-end; flex-wrap:wrap; }
   #main { overflow:visible; flex-direction:column; }
   #day-panel { overflow:visible; min-height:52vh; padding:22px 20px; }
@@ -584,11 +594,13 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
   header { gap:10px; padding:12px max(14px,env(safe-area-inset-right)) 12px max(14px,env(safe-area-inset-left)); }
   .hdr-left { align-items:flex-start; gap:10px; }
   .school-badge { font-size:.62rem; padding:5px 8px; margin-top:3px; }
-  .form-title { font-size:1.45rem; }
+  .form-title { font-size:1.8rem; }
   .year-label,.purpose-line { font-size:.78rem; }
-  .hdr-right { justify-content:flex-start; gap:8px; }
+  .hdr-right { width:100%; min-width:0; justify-content:flex-start; gap:8px; }
+  .hdr-right > * { min-width:0; }
   .date-block { flex:1 1 100%; text-align:left; display:flex; gap:8px; align-items:baseline; flex-wrap:wrap; }
-  #day-select { flex:1; min-width:130px; }
+  #day-select { flex:1 1 170px; min-width:130px; }
+  .timer-group { flex:0 0 auto; }
   #sync-indicator { min-width:44px; min-height:44px; display:inline-flex!important; align-items:center; justify-content:center; }
   #ticker-wrap { height:42px; }
   .ticker-label { padding:0 10px; }
@@ -621,7 +633,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 @media (prefers-reduced-motion:reduce) {
   html { scroll-behavior:auto; }
   body,header,#ticker-wrap,#sidebar,.hdr-btn,.ord-btn,#timer-pill,.tog-sl,.tog-sl::before { transition:none!important; }
-  #timer-pill.done { animation:none!important; }
+  #timer-pill.done,.ticker-scroll { animation:none!important; transform:none!important; }
 }
 </style>
 </head>
@@ -647,7 +659,6 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
       <option value="tuesday">Tuesday</option>
       <option value="wednesday">Wednesday</option>
       <option value="thursday">Thursday</option>
-      <option value="friday">Friday</option>
     </select>
     <div class="timer-group" role="group" aria-label="Starter timer">
       <button id="timer-pill" type="button" onclick="toggleTimer(event)" aria-pressed="false" aria-label="Start or pause the starter timer">
@@ -669,7 +680,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
       <span class="ticker-item">Loading latest headlines…</span>
     </div>
   </div>
-  <button class="ticker-toggle" id="ticker-toggle" type="button" onclick="nextHeadline()" aria-label="Show next headline">›</button>
+  <button class="ticker-toggle" id="ticker-toggle" type="button" onclick="toggleTicker()" aria-pressed="false" aria-label="Pause news headlines">Ⅱ</button>
 </div>
 
 <!-- ══ MAIN ══ -->
@@ -695,7 +706,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
   <div class="otd-bar-hdr">
     <span class="otd-bar-label">📖 On This Day</span>
     <span class="otd-bar-date" id="otd-date-lbl"></span>
-    <button class="otd-bar-refresh" onclick="fetchOTD(document.getElementById('day-select').value)" aria-label="Show different On This Day events">↻</button>
+    <button class="otd-bar-refresh" onclick="fetchOTD(currentDay())" aria-label="Show different On This Day events">↻</button>
   </div>
   <div id="otd-content"><div style="padding:10px 18px;color:var(--text2);font-style:italic;font-size:0.88rem;">Loading…</div></div>
 </div>
@@ -768,8 +779,6 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
       <input class="em-in" id="ed-act-wednesday">
       <span class="em-lbl" style="margin-top:8px;display:block">Thursday</span>
       <input class="em-in" id="ed-act-thursday">
-      <span class="em-lbl" style="margin-top:8px;display:block">Friday</span>
-      <input class="em-in" id="ed-act-friday">
     </div>
       </div>
     </details>
@@ -822,13 +831,6 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
       <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Default: Sky News UK live stream. Update if the link stops working.</span>
     </div>
 
-    <hr class="em-div">
-
-    <div class="em-s">
-      <span class="em-lbl">Friday — Title &amp; Content (use • for bullet points)</span>
-      <input class="em-in" id="ed-fri-title" placeholder="e.g. Week Reflection">
-      <textarea class="em-ta" id="ed-fri-content" rows="5" style="margin-top:8px"></textarea>
-    </div>
       </div>
     </details>
 
@@ -895,7 +897,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 // ════════════════════════════════════════════════
 //  DEFAULTS  (pre-filled from your PowerPoint)
 // ════════════════════════════════════════════════
-const CURRENT_DATA_VERSION = 2;
+const CURRENT_DATA_VERSION = 3;
 const DEFAULTS = {
   dataVersion:CURRENT_DATA_VERSION,
   week:"",
@@ -922,14 +924,12 @@ const DEFAULTS = {
     coverUrl:""
   },
   ytUrl:"https://www.youtube.com/embed/YDvsBbKfLPA?autoplay=0&rel=0&modestbranding=1",
-  friday:{ title:"Week Reflection", content:"Take a few minutes to reflect on this week.\n• What went well in your studies?\n• What could you improve next week?\n• Are you on track with upcoming deadlines?\n\nUse remaining time for independent study or reading." },
   purpose:"Your tutor writes your reference — form time is how they get to know you.",
   actions:{
     monday:"Everyone names one thing they are working towards this week.",
     tuesday:"Two questions → one minute in pairs → three students feed back.",
     wednesday:"Give a reason, not just an opinion. Two students respond aloud.",
-    thursday:"Check one futures / UCAS milestone each. Note who is behind.",
-    friday:"Shout-outs and standings. Nobody leaves until dismissed."
+    thursday:"Check one futures / UCAS milestone each. Note who is behind."
   },
   rota:"",
   // Assembly rota — one entry per week-commencing Monday (YYYY-MM-DD).
@@ -1456,6 +1456,8 @@ function migrateState(input){
     if((state.keyDates||[]).some(d=>/Start of Term 4|End of Term 4/i.test(d))) state.keyDates=[];
     delete state.noticeboard;
     delete state.values;
+    delete state.friday;
+    if(state.actions) delete state.actions.friday;
   }
 
   state.ytUrl=normaliseYouTubeUrl(state.ytUrl||DEFAULTS.ytUrl);
@@ -1482,10 +1484,13 @@ applyTheme(S.theme||'dark');
 //  DATE / DAY
 // ════════════════════════════════════════════════
 const WDAYS=['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+let showingFridayNoForm=false;
 function initDay(){
   const d=WDAYS[new Date().getDay()];
-  document.getElementById('day-select').value=(d==='saturday'||d==='sunday')?'monday':d;
+  showingFridayNoForm=d==='friday';
+  document.getElementById('day-select').value=(showingFridayNoForm||d==='saturday'||d==='sunday')?'monday':d;
 }
+function currentDay(){ return showingFridayNoForm?'friday':document.getElementById('day-select').value; }
 function updateHeader(){
   document.getElementById('date-display').textContent=
     new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -1591,11 +1596,20 @@ function renderDay(day){
   const p=document.getElementById('day-panel');
   const wisdomDay=S.wisdomDay||'wednesday';
   const indepDay2=wisdomDay==='wednesday'?'thursday':'wednesday'; // the other indep-study day
-  if(day==='monday'||day===indepDay2) p.innerHTML=renderIndep(day);
+  if(day==='friday') p.innerHTML=renderNoFormTime();
+  else if(day==='monday'||day===indepDay2) p.innerHTML=renderIndep(day);
   else if(day==='tuesday') p.innerHTML=renderTuesday();
   else if(day===wisdomDay) p.innerHTML=renderWisdom(day);
-  else p.innerHTML=renderFriday();
-  p.insertAdjacentHTML('beforeend', renderActionBar(day));
+  else p.innerHTML=renderIndep(day);
+  if(day!=='friday') p.insertAdjacentHTML('beforeend', renderActionBar(day));
+}
+
+function renderNoFormTime(){
+  return `
+    <div class="no-form-time">
+      <h1 class="day-name">Friday</h1>
+      <strong>No form time — straight to lessons.</strong>
+    </div>`;
 }
 
 // Tutor-facing prompt: what to actually DO with the screen today,
@@ -1684,23 +1698,6 @@ function renderWisdom(day){
       </div>
       ${coverHtml}
     </div>`;
-}
-
-function renderFriday(){
-  const f=S.friday||DEFAULTS.friday;
-  const lines=(f.content||'').split('\n');
-  const body=lines.map(l=>{
-    if(!l.trim()) return '';
-    if(l.trim().startsWith('•')||l.trim().startsWith('-'))
-      return `<div class="task-item"><span class="ti-icon">➤</span><span>${esc(l.replace(/^[•\-]\s*/,'').trim())}</span></div>`;
-    return `<p class="fri-p">${esc(l)}</p>`;
-  }).join('');
-  return `
-    <div class="day-header">
-      <h1 class="day-name">Friday</h1>
-      <div class="day-sub">🌟 ${esc(f.title||'End of Week')}</div>
-    </div>
-    <div class="fri-body">${body}</div>`;
 }
 
 // ════════════════════════════════════════════════
@@ -1804,18 +1801,14 @@ async function fetchOTD(dayName){
 // ════════════════════════════════════════════════
 //  NEWS — BBC RSS via rss2json
 // ════════════════════════════════════════════════
-let headlineItems=[],headlineIndex=0;
-
-function renderCurrentHeadline(){
+function toggleTicker(){
   const ts=document.getElementById('ticker-scroll');
-  if(!ts||!headlineItems.length) return;
-  ts.innerHTML=`<span class="ticker-item">${esc(headlineItems[headlineIndex].title)}</span>`;
-}
-
-function nextHeadline(){
-  if(!headlineItems.length) return;
-  headlineIndex=(headlineIndex+1)%headlineItems.length;
-  renderCurrentHeadline();
+  const btn=document.getElementById('ticker-toggle');
+  if(!ts||!btn) return;
+  const paused=ts.classList.toggle('paused');
+  btn.setAttribute('aria-pressed',String(paused));
+  btn.setAttribute('aria-label',paused?'Resume news headlines':'Pause news headlines');
+  btn.textContent=paused?'▶':'Ⅱ';
 }
 
 async function fetchNews(){
@@ -1829,9 +1822,12 @@ async function fetchNews(){
 
     const items=data.items;
 
-    headlineItems=items;
-    headlineIndex=0;
-    renderCurrentHeadline();
+    const ts=document.getElementById('ticker-scroll');
+    if(ts){
+      const headlines=items.map(i=>`<span class="ticker-item">${esc(i.title)}</span><span class="ticker-sep" aria-hidden="true">◆</span>`).join('');
+      ts.innerHTML=headlines+headlines;
+      ts.style.animationDuration=Math.max(55,items.length*7)+'s';
+    }
 
     // Tuesday news cards
     const panel=document.getElementById('news-articles');
@@ -1861,11 +1857,11 @@ function enhanceEditorA11y(){
     'ed-week':'Week label','ed-wisdomday':'Wisdom day','ed-dates':'Key dates','ed-purpose':'Purpose line',
     'ed-expect':'Our standards','ed-rota':'Student rota','ed-asm':'Assembly rota','ed-timer':'Starter timer minutes',
     'ed-act-monday':'Monday required action','ed-act-tuesday':'Tuesday required action','ed-act-wednesday':'Wednesday required action',
-    'ed-act-thursday':'Thursday required action','ed-act-friday':'Friday required action','ed-lib-select':'Quote library',
+    'ed-act-thursday':'Thursday required action','ed-lib-select':'Quote library',
     'ed-quote':'Wisdom quote','ed-attr':'Quote author and book','ed-booknote':'Book note','ed-isbn':'Book ISBN',
     'ed-coverurl':'Book cover image URL','ed-questions':'Discussion questions','ed-tasks':'Monday and Thursday tasks',
-    'ed-indepnote':'Independent study reminder','ed-yturl':'Sky News or YouTube URL','ed-fri-title':'Friday title',
-    'ed-fri-content':'Friday content','ed-token':'GitHub personal access token','ed-gistid':'Shared Gist ID'
+    'ed-indepnote':'Independent study reminder','ed-yturl':'Sky News or YouTube URL',
+    'ed-token':'GitHub personal access token','ed-gistid':'Shared Gist ID'
   };
   Object.entries(names).forEach(([id,name])=>document.getElementById(id)?.setAttribute('aria-label',name));
   [['tog-ticker','Show news ticker'],['tog-dates','Show key dates'],['tog-expect','Show our standards']]
@@ -1897,8 +1893,6 @@ function openEdit(){
   document.getElementById('ed-tasks').value=(S.tasks||[]).join('\n');
   document.getElementById('ed-indepnote').value=S.indepNote||'';
   document.getElementById('ed-yturl').value=S.ytUrl||DEFAULTS.ytUrl;
-  document.getElementById('ed-fri-title').value=S.friday?.title||'';
-  document.getElementById('ed-fri-content').value=S.friday?.content||'';
   const p=S.panels||DEFAULTS.panels;
   document.getElementById('tog-ticker').checked=p.ticker!==false;
   document.getElementById('tog-dates').checked=p.dates!==false;
@@ -1952,10 +1946,6 @@ async function saveEdit(){
   S.tasks=document.getElementById('ed-tasks').value.split('\n').map(l=>l.trim()).filter(Boolean);
   S.indepNote=document.getElementById('ed-indepnote').value.trim();
   S.ytUrl=normaliseYouTubeUrl(document.getElementById('ed-yturl').value)||DEFAULTS.ytUrl;
-  S.friday={
-    title:document.getElementById('ed-fri-title').value.trim(),
-    content:document.getElementById('ed-fri-content').value
-  };
   S.panels={
     ticker:document.getElementById('tog-ticker').checked,
     dates:document.getElementById('tog-dates').checked,
@@ -2168,6 +2158,7 @@ document.addEventListener('keydown',e=>{
 //  DAY CHANGE
 // ════════════════════════════════════════════════
 document.getElementById('day-select').addEventListener('change',e=>{
+  showingFridayNoForm=false;
   renderDay(e.target.value);
   if(e.target.value==='tuesday') fetchNews();
   fetchOTD(e.target.value);
@@ -2180,7 +2171,7 @@ document.getElementById('day-select').addEventListener('change',e=>{
 //  STARTER TIMER — closes the dead first five
 //  minutes. Click to start/pause, ↺ to reset.
 // ════════════════════════════════════════════════
-const DAYS=['monday','tuesday','wednesday','thursday','friday'];
+const DAYS=['monday','tuesday','wednesday','thursday'];
 let tRemain=0, tTick=null;
 
 function fmtTime(sec){
@@ -2228,7 +2219,7 @@ function renderAll(){
   updateHeader();
   document.getElementById('purpose-line').textContent=(S.purpose!==undefined?S.purpose:DEFAULTS.purpose);
   refreshTimerIfIdle();
-  renderDay(document.getElementById('day-select').value);
+  renderDay(currentDay());
   renderSidebar();
   updateSyncIndicator();
 }
@@ -2238,13 +2229,13 @@ async function init(){
   initDay();
   await pullFromGist();
   renderAll();
-  fetchOTD(document.getElementById('day-select').value);
+  fetchOTD(currentDay());
   fetchNews();
 }
 init();
 
 setInterval(fetchNews,   600000);
-setInterval(()=>fetchOTD(document.getElementById('day-select').value), 3600000);
+setInterval(()=>fetchOTD(currentDay()), 3600000);
 setInterval(updateHeader,  60000);
 setInterval(async()=>{ const ok=await pullFromGist(); if(ok) renderAll(); }, 180000);
 </script>
