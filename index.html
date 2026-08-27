@@ -771,7 +771,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
       </span>
     </div>
 
-    <button class="em-save" onclick="saveEdit()">💾 Save Changes</button>
+    <button class="em-save" id="edit-save" onclick="saveEdit()">💾 Save Changes</button>
     <button class="em-cancel" onclick="closeEdit()">Cancel</button>
   </div>
 </div>
@@ -1314,6 +1314,22 @@ let S = (()=>{ try{ const s=localStorage.getItem('ft-v3'); return s?JSON.parse(s
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function persist(){localStorage.setItem('ft-v3',JSON.stringify(S));}
 
+function normaliseYouTubeUrl(value){
+  const cleaned=(value||'').trim().replace(/^[`'\"]+|[`'\"]+$/g,'');
+  try{
+    const url=new URL(cleaned);
+    const host=url.hostname.replace(/^www\./,'');
+    let videoId='';
+    if(host==='youtu.be') videoId=url.pathname.split('/').filter(Boolean)[0]||'';
+    if(host==='youtube.com'||host==='m.youtube.com'){
+      if(url.pathname==='/watch') videoId=url.searchParams.get('v')||'';
+      else if(/^\/(embed|live)\//.test(url.pathname)) videoId=url.pathname.split('/')[2]||'';
+    }
+    if(videoId) return `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=0&rel=0&modestbranding=1`;
+  }catch{}
+  return cleaned;
+}
+
 // ════════════════════════════════════════════════
 //  THEME
 // ════════════════════════════════════════════════
@@ -1477,7 +1493,7 @@ function renderIndep(day){
 }
 
 function renderTuesday(){
-  const yt=esc(S.ytUrl||DEFAULTS.ytUrl);
+  const yt=esc(normaliseYouTubeUrl(S.ytUrl||DEFAULTS.ytUrl));
   return `
     <div class="day-header">
       <div class="day-name">Tuesday</div>
@@ -1727,7 +1743,10 @@ function closeEdit(){
   document.getElementById('edit-overlay').classList.remove('open');
 }
 
-function saveEdit(){
+async function saveEdit(){
+  const saveBtn=document.getElementById('edit-save');
+  saveBtn.disabled=true;
+  saveBtn.textContent='Saving…';
   S.week=document.getElementById('ed-week').value.trim();
   S.wisdomDay=document.getElementById('ed-wisdomday').value;
   S.keyDates=document.getElementById('ed-dates').value.split('\n').map(l=>l.trim()).filter(Boolean);
@@ -1751,7 +1770,7 @@ function saveEdit(){
   };
   S.tasks=document.getElementById('ed-tasks').value.split('\n').map(l=>l.trim()).filter(Boolean);
   S.indepNote=document.getElementById('ed-indepnote').value.trim();
-  S.ytUrl=document.getElementById('ed-yturl').value.trim()||DEFAULTS.ytUrl;
+  S.ytUrl=normaliseYouTubeUrl(document.getElementById('ed-yturl').value)||DEFAULTS.ytUrl;
   S.friday={
     title:document.getElementById('ed-fri-title').value.trim(),
     content:document.getElementById('ed-fri-content').value
@@ -1766,8 +1785,19 @@ function saveEdit(){
   const token=document.getElementById('ed-token').value.trim();
   if(token) setSyncToken(token);
   persist();
-  pushToGist();
-  closeEdit(); renderAll();
+  renderAll();
+  try{
+    await pushToGist();
+    closeEdit();
+  }catch(e){
+    console.error('Gist push failed:',e);
+    document.getElementById('sync-status').textContent='❌ Cloud save failed — '+e.message;
+    alert('Saved on this device, but GitHub sync failed.\n\n'+e.message+
+      '\n\nCheck that the token belongs to the owner of this Gist and has the "gist" scope, then try again.');
+  }finally{
+    saveBtn.disabled=false;
+    saveBtn.textContent='💾 Save Changes';
+  }
 }
 
 // Panel order UI
@@ -1878,18 +1908,25 @@ async function createSharedGist(){
 async function pushToGist(){
   const gistId=S.syncGistId;
   const token=getSyncToken();
-  if(!gistId||!token) return;
-  try{
-    await fetch(`https://api.github.com/gists/${gistId}`,{
-      method:'PATCH',
-      headers:{
-        'Authorization':'Bearer '+token,
-        'Accept':'application/vnd.github+json',
-        'Content-Type':'application/json'
-      },
-      body:JSON.stringify({ files:{ [GIST_FILE]:{ content:JSON.stringify(S,null,2) } } })
-    });
-  }catch(e){ console.warn('Gist push failed:',e); }
+  if(!gistId) throw new Error('No shared Gist ID is configured.');
+  if(!token) throw new Error('No GitHub token is saved on this device.');
+  const res=await fetch(`https://api.github.com/gists/${gistId}`,{
+    method:'PATCH',
+    headers:{
+      'Authorization':'Bearer '+token,
+      'Accept':'application/vnd.github+json',
+      'X-GitHub-Api-Version':'2022-11-28',
+      'Content-Type':'application/json'
+    },
+    body:JSON.stringify({ files:{ [GIST_FILE]:{ content:JSON.stringify(S,null,2) } } })
+  });
+  if(!res.ok){
+    let detail='';
+    try{ detail=(await res.json()).message||''; }catch{}
+    throw new Error(`GitHub returned HTTP ${res.status}${detail?' — '+detail:''}`);
+  }
+  document.getElementById('sync-status').textContent='✅ Saved to GitHub';
+  return true;
 }
 
 async function pullFromGist(){
