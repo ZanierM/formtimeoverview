@@ -635,6 +635,62 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
   body,header,#ticker-wrap,#sidebar,.hdr-btn,.ord-btn,#timer-pill,.tog-sl,.tog-sl::before { transition:none!important; }
   #timer-pill.done,.ticker-scroll { animation:none!important; transform:none!important; }
 }
+/* BROADCAST STUDIO */
+@property --studio-sweep { syntax:'<angle>'; inherits:false; initial-value:100deg; }
+body { position:relative; isolation:isolate; }
+body::before {
+  content:""; position:fixed; inset:-30% -15%; z-index:-1; pointer-events:none;
+  background:conic-gradient(from var(--studio-sweep) at 52% 8%,transparent 0 27%,rgba(213,160,206,.11) 32%,transparent 38% 74%,rgba(160,96,152,.08) 80%,transparent 86%);
+  animation:studioSweep 18s linear infinite;
+}
+@keyframes studioSweep { to { --studio-sweep:460deg; } }
+header { padding-block:12px; background:linear-gradient(110deg,#241524 0%,#4b2947 56%,#2a1928 100%); box-shadow:0 8px 28px rgba(0,0,0,.28); }
+header .form-title { color:#fff; }
+header .purpose-line,header #date-display { color:#e7d9e4; }
+header .year-label,header #week-display { color:#d5a0ce; }
+.school-badge { border-radius:999px; box-shadow:0 0 0 4px rgba(213,160,206,.11); }
+.form-title { font-size:2.25rem; text-shadow:0 3px 18px rgba(0,0,0,.22); }
+#ticker-wrap { height:38px; border-bottom:1px solid rgba(255,255,255,.18); box-shadow:0 6px 22px rgba(0,0,0,.2); }
+.ticker-label { background:#140d14; }
+#day-panel { padding-top:26px; }
+.day-name { text-transform:uppercase; font-size:clamp(3.2rem,5.4vw,5.4rem); color:#f8f3f7; }
+.day-header { position:relative; }
+.day-header::after { content:""; position:absolute; right:0; bottom:-2px; width:38%; height:3px; background:linear-gradient(90deg,transparent,#fff); opacity:.72; }
+.task-item,.quote-card,.news-card,.action-bar,.note-box { background:linear-gradient(105deg,rgba(74,48,71,.9),rgba(50,31,49,.86)); border:1px solid rgba(213,160,206,.18); box-shadow:0 8px 24px rgba(0,0,0,.15); }
+.task-item { transform:translateZ(0); transition:transform .28s cubic-bezier(.2,.8,.2,1),border-color .28s; }
+.task-item:hover { transform:translateX(4px); border-color:var(--accent); }
+[data-theme="light"] body::before { opacity:.32; }
+[data-theme="light"] .day-name { color:#50304c; }
+[data-theme="light"] .task-item,
+[data-theme="light"] .quote-card,
+[data-theme="light"] .news-card,
+[data-theme="light"] .action-bar,
+[data-theme="light"] .note-box {
+  background:linear-gradient(105deg,rgba(255,255,255,.97),rgba(245,237,244,.94));
+  border-color:rgba(135,80,128,.22); box-shadow:0 8px 24px rgba(80,48,76,.1);
+}
+#otd-bar { min-height:52px; max-height:52px; }
+.otd-bar-hdr { min-width:230px; padding:5px 14px; flex-direction:row; align-items:center; gap:9px; }
+.otd-bar-label { white-space:nowrap; }
+.otd-bar-refresh { margin:0; min-width:36px; min-height:36px; }
+#otd-content { min-width:0; }
+.otd-card { min-width:0; min-height:0; padding:6px 16px; border-right:0; }
+.otd-card:nth-child(n+2) { display:none; }
+.otd-meta { min-width:0; display:flex; align-items:baseline; gap:8px; }
+.otd-type { margin:0; }
+.otd-year { font-size:1.05rem; }
+.otd-text { -webkit-line-clamp:1; }
+@media (prefers-reduced-motion:reduce) { body::before { animation:none!important; } }
+@media (max-width:640px) {
+  .form-title{font-size:1.85rem}.day-name{font-size:clamp(2.7rem,14vw,4.1rem)}
+  #otd-bar { display:flex; min-height:50px; max-height:50px; overflow:hidden; }
+  .otd-bar-hdr { width:auto; min-width:0; flex:0 0 auto; border-right:1px solid var(--border); border-bottom:0; padding:5px 10px; }
+  .otd-bar-date { display:none; }
+  #otd-content { display:flex; min-width:0; }
+  .otd-card { display:flex; padding:5px 10px; border-bottom:0; }
+  .otd-meta { display:none; }
+  .otd-text { font-size:.82rem; }
+}
 </style>
 </head>
 <body>
@@ -1607,6 +1663,7 @@ function renderDay(day){
   else if(day===wisdomDay) p.innerHTML=renderWisdom(day);
   else p.innerHTML=renderIndep(day);
   if(day!=='friday') p.insertAdjacentHTML('beforeend', renderActionBar(day));
+  p.scrollTop=0;
 }
 
 function renderNoFormTime(){
