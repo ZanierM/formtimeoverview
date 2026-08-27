@@ -742,7 +742,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
       </button>
       <button class="timer-reset" type="button" onclick="resetTimer(event)" aria-label="Reset starter timer">↺</button>
     </div>
-    <button class="hdr-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Use light theme">Dark</button>
+    <button class="hdr-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Use light theme">🌙</button>
     <span id="sync-indicator" role="status" aria-live="polite" aria-label="Cloud sync status" style="display:none;font-size:.78rem;font-weight:800;">SYNC</span>
     <button class="hdr-btn" onclick="openEdit()">Edit</button>
   </div>
@@ -845,7 +845,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
     <hr class="em-div">
 
     <div class="em-s">
-      <span class="em-lbl">Tutor note for each day</span>
+      <span class="em-lbl">Daily guidance</span>
       <span style="font-size:.82rem;color:var(--text2);margin-bottom:8px;display:block">A short delivery reminder shown below the activity. Leave blank to hide.</span>
       <span class="em-lbl" style="display:block">Monday</span>
       <input class="em-in" id="ed-act-monday">
@@ -1579,7 +1579,7 @@ function migrateState(input){
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme',t);
   const btn=document.getElementById('theme-btn');
-  btn.textContent=t==='dark'?'Light':'Dark';
+  btn.textContent=t==='dark'?'☀️':'🌙';
   btn.setAttribute('aria-label',t==='dark'?'Use light theme':'Use dark theme');
 }
 function toggleTheme(){
@@ -1729,7 +1729,7 @@ function renderActionBar(day){
   if(!act && !rota) return '';
   return `
     <div class="action-bar">
-      ${act?`<div class="action-do"><strong>Tutor note</strong>${esc(act)}</div>`:'<div class="action-do"></div>'}
+      ${act?`<div class="action-do">${esc(act)}</div>`:'<div class="action-do"></div>'}
       ${rota?`<div class="action-rota">This week: <b>${esc(rota)}</b></div>`:''}
     </div>`;
 }
