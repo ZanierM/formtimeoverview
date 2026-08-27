@@ -897,7 +897,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 // ════════════════════════════════════════════════
 //  DEFAULTS  (pre-filled from your PowerPoint)
 // ════════════════════════════════════════════════
-const CURRENT_DATA_VERSION = 3;
+const CURRENT_DATA_VERSION = 4;
 const DEFAULTS = {
   dataVersion:CURRENT_DATA_VERSION,
   week:"",
@@ -1458,6 +1458,11 @@ function migrateState(input){
     delete state.values;
     delete state.friday;
     if(state.actions) delete state.actions.friday;
+    const legacyGistIds=[
+      'b0f84c0d1abc42090b0be988623ff407',
+      'c852c6994161c20c169504e68c074914'
+    ];
+    if(legacyGistIds.includes(state.syncGistId)) state.syncGistId=DEFAULTS.syncGistId;
   }
 
   state.ytUrl=normaliseYouTubeUrl(state.ytUrl||DEFAULTS.ytUrl);
