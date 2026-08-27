@@ -992,7 +992,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
 // ════════════════════════════════════════════════
 //  DEFAULTS  (pre-filled from your PowerPoint)
 // ════════════════════════════════════════════════
-const CURRENT_DATA_VERSION = 6;
+const CURRENT_DATA_VERSION = 7;
 const DEFAULTS = {
   dataVersion:CURRENT_DATA_VERSION,
   week:"",
@@ -1005,8 +1005,8 @@ const DEFAULTS = {
     followUp:"What might get in the way — and what help would make a difference?"
   },
   newsPrompt:{
-    question:"What do we know as fact, and what is still interpretation or opinion?",
-    followUp:"Whose perspective is missing from this story?"
+    question:"What happened, and why is it news today?",
+    followUp:"What would you want to know next?"
   },
   challenge:{
     title:"Deadline Triage",
@@ -1566,6 +1566,9 @@ function migrateState(input){
     ];
     if(legacyGistIds.includes(state.syncGistId)) state.syncGistId=DEFAULTS.syncGistId;
     state.actions=clone(DEFAULTS.actions);
+    if(!raw.newsPrompt || raw.newsPrompt.question==="What do we know as fact, and what is still interpretation or opinion?"){
+      state.newsPrompt=clone(DEFAULTS.newsPrompt);
+    }
     delete state.tasks;
     delete state.indepNote;
   }
