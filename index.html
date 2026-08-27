@@ -241,7 +241,7 @@ header {
   line-height:1.6;
 }
 
-/* Wednesday Wisdom */
+/* Big Question */
 .wisdom-layout { display:flex; gap:18px; align-items:flex-start; }
 .wisdom-main   { flex:1; display:flex; flex-direction:column; gap:14px; min-width:0; }
 .book-cover-wrap {
@@ -635,6 +635,26 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
   body,header,#ticker-wrap,#sidebar,.hdr-btn,.ord-btn,#timer-pill,.tog-sl,.tog-sl::before { transition:none!important; }
   #timer-pill.done,.ticker-scroll { animation:none!important; transform:none!important; }
 }
+/* SHORT FORM-TIME ROUTINES */
+.activity-purpose { max-width:72ch; color:var(--text2); font-size:1rem; line-height:1.5; margin-top:-6px; }
+.micro-routine { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:0 8px 24px var(--shadow); }
+.routine-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-bottom:1px solid var(--border); }
+.routine-step { padding:9px 12px; border-right:1px solid var(--border); text-align:center; }
+.routine-step:last-child { border-right:0; }
+.step-name { display:block; color:var(--accent); font-size:.76rem; font-weight:900; letter-spacing:.1em; text-transform:uppercase; }
+.step-time { display:block; color:var(--text2); font-size:.76rem; margin-top:2px; }
+.prompt-card { padding:clamp(18px,2.4vw,28px); }
+.prompt-kicker { color:var(--accent); font-size:.76rem; font-weight:900; letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px; }
+.prompt-question { color:var(--text); font-size:clamp(1.35rem,2vw,2rem); font-weight:850; line-height:1.22; text-wrap:balance; }
+.prompt-followup { color:var(--text2); font-size:.95rem; line-height:1.45; margin-top:13px; padding-top:13px; border-top:1px solid var(--border); }
+.scenario { color:var(--text); font-size:1.08rem; line-height:1.55; margin-bottom:15px; }
+.tuesday-grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:start; }
+.tuesday-grid .yt-wrap { padding-top:0; aspect-ratio:16/9; }
+.tuesday-grid .micro-routine { align-self:stretch; }
+.big-question-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(300px,.85fr); gap:18px; align-items:start; }
+.big-question-grid .wisdom-layout { min-width:0; }
+@media(max-width:900px){.tuesday-grid,.big-question-grid{grid-template-columns:1fr}.tuesday-grid .micro-routine{order:-1}}
+@media(max-width:640px){.routine-step{padding:8px 5px}.step-name{font-size:.68rem}.prompt-card{padding:17px}.prompt-question{font-size:1.35rem}}
 /* BROADCAST STUDIO */
 @property --studio-sweep { syntax:'<angle>'; inherits:false; initial-value:100deg; }
 body { position:relative; isolation:isolate; }
@@ -722,15 +742,15 @@ header .year-label,header #week-display { color:#d5a0ce; }
       </button>
       <button class="timer-reset" type="button" onclick="resetTimer(event)" aria-label="Reset starter timer">↺</button>
     </div>
-    <button class="hdr-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Use light theme">🌙</button>
-    <span id="sync-indicator" role="status" aria-live="polite" aria-label="Cloud sync status" style="display:none;font-size:1rem;">🌐</span>
-    <button class="hdr-btn" onclick="openEdit()">⚙ Edit</button>
+    <button class="hdr-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Use light theme">Dark</button>
+    <span id="sync-indicator" role="status" aria-live="polite" aria-label="Cloud sync status" style="display:none;font-size:.78rem;font-weight:800;">SYNC</span>
+    <button class="hdr-btn" onclick="openEdit()">Edit</button>
   </div>
 </header>
 
 <!-- ══ TICKER ══ -->
 <div id="ticker-wrap">
-  <div class="ticker-label">📰 NEWS</div>
+  <div class="ticker-label">NEWS</div>
   <div class="ticker-track">
     <div class="ticker-scroll" id="ticker-scroll">
       <span class="ticker-item">Loading latest headlines…</span>
@@ -745,13 +765,13 @@ header .year-label,header #week-display { color:#d5a0ce; }
 
   <aside id="sidebar">
     <div id="panel-dates" class="s-panel">
-      <h2 class="s-panel-hdr">📅 Key Dates</h2>
+      <h2 class="s-panel-hdr">Key Dates</h2>
       <div id="asm-next"></div>
       <ul class="date-list" id="dates-list"></ul>
     </div>
 
     <div id="panel-expect" class="s-panel">
-      <h2 class="s-panel-hdr">✅ Our Standards</h2>
+      <h2 class="s-panel-hdr">Our Standards</h2>
       <div id="expect-list"></div>
     </div>
   </aside>
@@ -760,7 +780,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
 <!-- ══ ON THIS DAY — BOTTOM BAR ══ -->
 <div id="otd-bar">
   <div class="otd-bar-hdr">
-    <span class="otd-bar-label">📖 On This Day</span>
+    <span class="otd-bar-label">On This Day</span>
     <span class="otd-bar-date" id="otd-date-lbl"></span>
     <button class="otd-bar-refresh" onclick="fetchOTD(currentDay())" aria-label="Show different On This Day events">↻</button>
   </div>
@@ -785,7 +805,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
       <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Leave empty and the page works out this week's dates itself. Only fill in for holidays/exceptions.</span>
     </div>
     <div class="em-s">
-      <span class="em-lbl">This Week's Wisdom Day</span>
+      <span class="em-lbl">This Week's Big Question Day</span>
       <select class="em-in" id="ed-wisdomday">
         <option value="wednesday">Wednesday (default)</option>
         <option value="thursday">Thursday — Assembly on Wednesday this week</option>
@@ -825,8 +845,8 @@ header .year-label,header #week-display { color:#d5a0ce; }
     <hr class="em-div">
 
     <div class="em-s">
-      <span class="em-lbl">▶ Do This — the required action for each day</span>
-      <span style="font-size:.82rem;color:var(--text2);margin-bottom:8px;display:block">Shown under the day panel so the screen gets used, not just displayed. Leave blank to hide.</span>
+      <span class="em-lbl">Tutor note for each day</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-bottom:8px;display:block">A short delivery reminder shown below the activity. Leave blank to hide.</span>
       <span class="em-lbl" style="display:block">Monday</span>
       <input class="em-in" id="ed-act-monday">
       <span class="em-lbl" style="margin-top:8px;display:block">Tuesday</span>
@@ -840,20 +860,20 @@ header .year-label,header #week-display { color:#d5a0ce; }
     </details>
 
     <details class="editor-section">
-      <summary>Wisdom and quote library</summary>
+      <summary>Big Question and quote library</summary>
       <div class="editor-section-body">
     <div class="em-s">
-      <span class="em-lbl">📚 Quote Library — Classic Literature</span>
+      <span class="em-lbl">Quote Library — Classic Literature</span>
       <div class="em-row" style="margin-top:0;">
         <select class="em-in" id="ed-lib-select" style="flex:1;"></select>
-        <button type="button" class="ord-btn" style="white-space:nowrap;padding:9px 16px;font-size:0.85rem;" onclick="loadFromLibrary()">📥 Load</button>
+        <button type="button" class="ord-btn" style="white-space:nowrap;padding:9px 16px;font-size:0.85rem;" onclick="loadFromLibrary()">Load</button>
         <button type="button" class="ord-btn" style="white-space:nowrap;padding:9px 12px;font-size:0.85rem;" onclick="toggleQuoteUsed()" aria-label="Mark selected quote as used or unused">✓ ↺</button>
       </div>
       <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Loading a quote marks it "used" automatically and moves it to the bottom of the list. Click ✓ ↺ to undo, or to manually mark/unmark any quote.</span>
     </div>
 
     <div class="em-s">
-      <span class="em-lbl">Wisdom — Quote</span>
+      <span class="em-lbl">Big Question — stimulus quote</span>
       <textarea class="em-ta" id="ed-quote" rows="3" placeholder="Quote text…"></textarea>
       <div class="em-row">
         <input class="em-in" id="ed-attr" placeholder="Author – Book">
@@ -863,7 +883,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
       <input class="em-in" id="ed-isbn" placeholder="e.g. 9780140447927">
       <span class="em-lbl" style="margin-top:8px;display:block">— or direct cover image URL</span>
       <input class="em-in" id="ed-coverurl" placeholder="https://…">
-      <span class="em-lbl" style="margin-top:10px;display:block">Discussion Questions (one per line)</span>
+      <span class="em-lbl" style="margin-top:10px;display:block">Questions (main question first, optional follow-up second)</span>
       <textarea class="em-ta" id="ed-questions" rows="4"></textarea>
     </div>
       </div>
@@ -873,10 +893,10 @@ header .year-label,header #week-display { color:#d5a0ce; }
       <summary>Daily content</summary>
       <div class="editor-section-body">
     <div class="em-s">
-      <span class="em-lbl">Mon / Thu Tasks (one per line)</span>
-      <textarea class="em-ta" id="ed-tasks" rows="5"></textarea>
-      <span class="em-lbl" style="margin-top:8px;display:block">Reminder Note</span>
-      <input class="em-in" id="ed-indepnote">
+      <span class="em-lbl">Monday — Weekly Pulse question</span>
+      <input class="em-in" id="ed-pulse-question">
+      <span class="em-lbl" style="margin-top:8px;display:block">Optional follow-up</span>
+      <input class="em-in" id="ed-pulse-followup">
     </div>
 
     <hr class="em-div">
@@ -885,6 +905,23 @@ header .year-label,header #week-display { color:#d5a0ce; }
       <span class="em-lbl">Tuesday — Sky News / YouTube Embed URL</span>
       <input class="em-in" id="ed-yturl" placeholder="https://www.youtube.com/embed/…">
       <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Default: Sky News UK live stream. Update if the link stops working.</span>
+      <span class="em-lbl" style="margin-top:10px;display:block">One Story question</span>
+      <input class="em-in" id="ed-news-question">
+      <span class="em-lbl" style="margin-top:8px;display:block">Optional follow-up</span>
+      <input class="em-in" id="ed-news-followup">
+    </div>
+
+    <hr class="em-div">
+
+    <div class="em-s">
+      <span class="em-lbl">Thursday — Quick Challenge title</span>
+      <input class="em-in" id="ed-challenge-title">
+      <span class="em-lbl" style="margin-top:8px;display:block">Scenario</span>
+      <textarea class="em-ta" id="ed-challenge-scenario" rows="3"></textarea>
+      <span class="em-lbl" style="margin-top:8px;display:block">Main question</span>
+      <input class="em-in" id="ed-challenge-question">
+      <span class="em-lbl" style="margin-top:8px;display:block">Optional follow-up</span>
+      <input class="em-in" id="ed-challenge-followup">
     </div>
 
       </div>
@@ -920,14 +957,14 @@ header .year-label,header #week-display { color:#d5a0ce; }
       <summary>Cloud sync</summary>
       <div class="editor-section-body">
     <div class="em-s">
-      <span class="em-lbl">🌐 Cloud Sync — make tutors see your edits live</span>
+      <span class="em-lbl">Cloud Sync — make tutors see your edits live</span>
       <div id="sync-status" style="font-size:0.8rem;color:var(--text2);margin-bottom:10px;">Not yet set up — see steps below.</div>
 
       <span class="em-lbl">1. GitHub Personal Access Token (this device only — never shared)</span>
       <input class="em-in" id="ed-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
 
       <div class="em-row">
-        <button type="button" class="ord-btn" style="flex:1;padding:9px;font-size:0.85rem;" onclick="createSharedGist()">🆕 Create Shared Gist</button>
+        <button type="button" class="ord-btn" style="flex:1;padding:9px;font-size:0.85rem;" onclick="createSharedGist()">Create Shared Gist</button>
       </div>
 
       <span class="em-lbl" style="margin-top:10px;display:block;">2. Shared Gist ID (auto-fills above, or paste an existing one)</span>
@@ -953,7 +990,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
 // ════════════════════════════════════════════════
 //  DEFAULTS  (pre-filled from your PowerPoint)
 // ════════════════════════════════════════════════
-const CURRENT_DATA_VERSION = 4;
+const CURRENT_DATA_VERSION = 5;
 const DEFAULTS = {
   dataVersion:CURRENT_DATA_VERSION,
   week:"",
@@ -961,13 +998,20 @@ const DEFAULTS = {
   syncGistId:"0f39629c7813d766c54e81946dc6590c",
   usedQuotes:[],
   keyDates:[],
-  tasks:[
-    "Read ahead or review your subject material",
-    "Complete outstanding homework or prep work",
-    "Read independently around your A-level subjects",
-    "Organise your notes, folders, or weekly planner"
-  ],
-  indepNote:"Please use this time productively. Phones should be away. No talking. This is your opportunity to take ownership of your learning.",
+  pulse:{
+    question:"What would make this a successful week for you?",
+    followUp:"What might get in the way — and what help would make a difference?"
+  },
+  newsPrompt:{
+    question:"What do we know as fact, and what is still interpretation or opinion?",
+    followUp:"Whose perspective is missing from this story?"
+  },
+  challenge:{
+    title:"Deadline Triage",
+    scenario:"You have three deadlines in the next seven days, one subject you are falling behind in, and limited time tonight.",
+    question:"What should you do first, and why?",
+    followUp:"What is the most useful thing you could say to one of your teachers?"
+  },
   wisdom:{
     quote:"There are two kinds of idiots… those who don't know they are idiots, and those who know it and use it.",
     attr:"Fyodor Dostoevsky – The Idiot",
@@ -982,10 +1026,10 @@ const DEFAULTS = {
   ytUrl:"https://www.youtube.com/embed/YDvsBbKfLPA?autoplay=0&rel=0&modestbranding=1",
   purpose:"Your tutor writes your reference — form time is how they get to know you.",
   actions:{
-    monday:"Everyone names one thing they are working towards this week.",
-    tuesday:"Two questions → one minute in pairs → three students feed back.",
-    wednesday:"Give a reason, not just an opinion. Two students respond aloud.",
-    thursday:"Check one futures / UCAS milestone each. Note who is behind."
+    monday:"Invite three brief responses; note anyone who may need a private check-in.",
+    tuesday:"Choose one story. Stop the video once there is enough context to discuss.",
+    wednesday:"Ask for reasons, then invite one respectful disagreement.",
+    thursday:"Keep it verbal: agree one practical strategy the group could use this week."
   },
   rota:"",
   // Assembly rota — one entry per week-commencing Monday (YYYY-MM-DD).
@@ -1519,6 +1563,9 @@ function migrateState(input){
       'c852c6994161c20c169504e68c074914'
     ];
     if(legacyGistIds.includes(state.syncGistId)) state.syncGistId=DEFAULTS.syncGistId;
+    state.actions=clone(DEFAULTS.actions);
+    delete state.tasks;
+    delete state.indepNote;
   }
 
   state.ytUrl=normaliseYouTubeUrl(state.ytUrl||DEFAULTS.ytUrl);
@@ -1532,7 +1579,7 @@ function migrateState(input){
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme',t);
   const btn=document.getElementById('theme-btn');
-  btn.textContent=t==='dark'?'☀️':'🌙';
+  btn.textContent=t==='dark'?'Light':'Dark';
   btn.setAttribute('aria-label',t==='dark'?'Use light theme':'Use dark theme');
 }
 function toggleTheme(){
@@ -1642,7 +1689,7 @@ function renderNextAssembly(){
   const none=/^no assembly/i.test(hit.txt);
   box.innerHTML=`
     <div class="asm-box">
-      <span class="asm-lbl">📢 Next Week's Assembly</span>
+      <span class="asm-lbl">Next Week's Assembly</span>
       <div class="asm-txt${none?' none':''}">${esc(hit.txt)}</div>
       <div class="asm-wc">${prettyWC(nw)}</div>
     </div>`;
@@ -1651,17 +1698,16 @@ function renderNextAssembly(){
 // ════════════════════════════════════════════════
 //  DAY PANEL RENDER
 // ════════════════════════════════════════════════
-const ICONS=['📖','✏️','🔬','🗂️'];
-
 function renderDay(day){
   const p=document.getElementById('day-panel');
   const wisdomDay=S.wisdomDay||'wednesday';
-  const indepDay2=wisdomDay==='wednesday'?'thursday':'wednesday'; // the other indep-study day
+  const challengeDay=wisdomDay==='wednesday'?'thursday':'wednesday';
   if(day==='friday') p.innerHTML=renderNoFormTime();
-  else if(day==='monday'||day===indepDay2) p.innerHTML=renderIndep(day);
+  else if(day==='monday') p.innerHTML=renderPulse();
   else if(day==='tuesday') p.innerHTML=renderTuesday();
-  else if(day===wisdomDay) p.innerHTML=renderWisdom(day);
-  else p.innerHTML=renderIndep(day);
+  else if(day===wisdomDay) p.innerHTML=renderBigQuestion(day);
+  else if(day===challengeDay) p.innerHTML=renderChallenge(day);
+  else p.innerHTML=renderChallenge(day);
   if(day!=='friday') p.insertAdjacentHTML('beforeend', renderActionBar(day));
   p.scrollTop=0;
 }
@@ -1683,37 +1729,54 @@ function renderActionBar(day){
   if(!act && !rota) return '';
   return `
     <div class="action-bar">
-      ${act?`<div class="action-do"><strong>Do this</strong>${esc(act)}</div>`:'<div class="action-do"></div>'}
-      ${rota?`<div class="action-rota">🎙 This week: <b>${esc(rota)}</b></div>`:''}
+      ${act?`<div class="action-do"><strong>Tutor note</strong>${esc(act)}</div>`:'<div class="action-do"></div>'}
+      ${rota?`<div class="action-rota">This week: <b>${esc(rota)}</b></div>`:''}
     </div>`;
 }
 
-function renderIndep(day){
-  const tasks=(S.tasks||[]).map((t,i)=>`
-    <li class="task-item"><span class="ti-icon">${ICONS[i]||'●'}</span><span>${esc(t)}</span></li>`).join('');
+function renderRoutine(question,followUp,kicker='Your question'){
+  return `
+    <div class="micro-routine">
+      <div class="routine-steps" aria-label="Think, pair, share routine">
+        <div class="routine-step"><span class="step-name">Think</span><span class="step-time">30 seconds</span></div>
+        <div class="routine-step"><span class="step-name">Pair</span><span class="step-time">2 minutes</span></div>
+        <div class="routine-step"><span class="step-name">Share</span><span class="step-time">4 minutes</span></div>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-kicker">${esc(kicker)}</div>
+        <div class="prompt-question">${esc(question)}</div>
+        ${followUp?`<div class="prompt-followup"><strong>Go further:</strong> ${esc(followUp)}</div>`:''}
+      </div>
+    </div>`;
+}
+
+function renderPulse(){
+  const pulse=S.pulse||DEFAULTS.pulse;
   return `
     <div class="day-header">
-      <h1 class="day-name">${cap(day)}</h1>
-      <div class="day-sub">📚 Independent Study Time</div>
+      <h1 class="day-name">Monday</h1>
+      <div class="day-sub">Weekly Pulse</div>
     </div>
-    <div>
-      <div class="task-head">Use this time to:</div>
-      <ul class="task-list">${tasks}</ul>
-    </div>
-    ${S.indepNote?`<div class="note-box">⚠️  ${esc(S.indepNote)}</div>`:''}`;
+    <p class="activity-purpose">A quick check-in to start the week with intention and help your tutor understand what you need.</p>
+    ${renderRoutine(pulse.question,pulse.followUp,'Check in')}`;
 }
 
 function renderTuesday(){
   const yt=esc(normaliseYouTubeUrl(S.ytUrl||DEFAULTS.ytUrl));
+  const news=S.newsPrompt||DEFAULTS.newsPrompt;
   return `
     <div class="day-header">
       <h1 class="day-name">Tuesday</h1>
-      <div class="day-sub">📺 What's in the News?</div>
+      <div class="day-sub">One Story</div>
     </div>
-    <div class="yt-wrap">
-      <iframe src="${yt}"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-        allowfullscreen title="Sky News Live"></iframe>
+    <p class="activity-purpose">Use one current story to separate fact from interpretation and notice which perspectives are missing.</p>
+    <div class="tuesday-grid">
+      <div class="yt-wrap">
+        <iframe src="${yt}"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          allowfullscreen title="Sky News Live"></iframe>
+      </div>
+      ${renderRoutine(news.question,news.followUp,'One story')}
     </div>
     <div>
       <div class="task-head" style="margin-bottom:8px;">Today's Headlines</div>
@@ -1721,44 +1784,55 @@ function renderTuesday(){
         <div class="loading-txt">Loading BBC headlines…</div>
       </div>
     </div>
-    <div class="note-box">💬 <strong>Discuss:</strong> Which story caught your attention and why?</div>`;
+    `;
 }
 
-function renderWisdom(day){
+function renderBigQuestion(day){
   const w=S.wisdom||DEFAULTS.wisdom;
 
-  // Resolve book cover
-  let coverHtml='';
-  const coverSrc = w.coverUrl
-    ? esc(w.coverUrl)
-    : w.isbn
-      ? `https://covers.openlibrary.org/b/isbn/${esc(w.isbn)}-L.jpg`
-      : '';
-
-  if(coverSrc){
-    coverHtml=`
-      <div class="book-cover-wrap">
-        <img class="book-cover" src="${coverSrc}" alt="Book cover" width="120" height="180" loading="lazy" decoding="async"
-          onerror="this.parentElement.innerHTML='<div class=\\'book-cover-placeholder\\'>📚</div>'">
-      </div>`;
-  }
-
-  const qs=(w.questions||[]).map(q=>`<li class="wq-item">${esc(q)}</li>`).join('');
+  const questions=w.questions||DEFAULTS.wisdom.questions;
+  const mainQuestion=questions[0]||'What do you think — and why?';
+  const followUp=questions[1]||'Who might reasonably disagree with you?';
   return `
     <div class="day-header">
       <h1 class="day-name">${cap(day)}</h1>
-      <div class="day-sub">💬 ${cap(day)} Wisdom</div>
+      <div class="day-sub">Big Question</div>
     </div>
-    <div class="wisdom-layout">
-      <div class="wisdom-main">
-        <div class="quote-card">
-          <div class="quote-text">"${esc(w.quote)}"</div>
-          <div class="quote-attr">— ${esc(w.attr||'')}</div>
-          ${w.bookNote?`<div class="quote-note">${esc(w.bookNote)}</div>`:''}
+    <p class="activity-purpose">Use one worthwhile question to practise listening, reasoning and respectful disagreement.</p>
+    <div class="big-question-grid">
+      <div class="wisdom-layout">
+        <div class="wisdom-main">
+          <div class="quote-card">
+            <div class="quote-text">"${esc(w.quote)}"</div>
+            <div class="quote-attr">— ${esc(w.attr||'')}</div>
+            ${w.bookNote?`<div class="quote-note">${esc(w.bookNote)}</div>`:''}
+          </div>
         </div>
-        ${qs?`<div class="wq-box"><div class="wq-title">🤔 Think about:</div><ul class="wq-list">${qs}</ul></div>`:''}
       </div>
-      ${coverHtml}
+      ${renderRoutine(mainQuestion,followUp,'Big question')}
+    </div>`;
+}
+
+function renderChallenge(day){
+  const challenge=S.challenge||DEFAULTS.challenge;
+  return `
+    <div class="day-header">
+      <h1 class="day-name">${cap(day)}</h1>
+      <div class="day-sub">Quick Challenge</div>
+    </div>
+    <p class="activity-purpose">Practise one useful sixth-form skill through a short scenario — no worksheets or devices needed.</p>
+    <div class="micro-routine">
+      <div class="routine-steps" aria-label="Think, pair, share routine">
+        <div class="routine-step"><span class="step-name">Think</span><span class="step-time">30 seconds</span></div>
+        <div class="routine-step"><span class="step-name">Pair</span><span class="step-time">2 minutes</span></div>
+        <div class="routine-step"><span class="step-name">Share</span><span class="step-time">4 minutes</span></div>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-kicker">${esc(challenge.title)}</div>
+        <div class="scenario">${esc(challenge.scenario)}</div>
+        <div class="prompt-question">${esc(challenge.question)}</div>
+        ${challenge.followUp?`<div class="prompt-followup"><strong>Go further:</strong> ${esc(challenge.followUp)}</div>`:''}
+      </div>
     </div>`;
 }
 
@@ -1842,9 +1916,9 @@ async function fetchOTD(dayName){
     const br=pickBest(brD.births||[]);
     const de=pickBest(deD.deaths||[]);
     const cards=[
-      ev?{type:'🗓️ Event', year:ev.year, text:ev.text}:null,
-      br?{type:'🎂 Born',  year:br.year, text:br.text}:null,
-      de?{type:'✝️ Died',  year:de.year, text:de.text}:null
+      ev?{type:'Event', year:ev.year, text:ev.text}:null,
+      br?{type:'Born',  year:br.year, text:br.text}:null,
+      de?{type:'Died',  year:de.year, text:de.text}:null
     ].filter(Boolean);
     if(!cards.length) throw new Error();
     el.innerHTML=cards.map(c=>`
@@ -1894,7 +1968,7 @@ async function fetchNews(){
     // Tuesday news cards
     const panel=document.getElementById('news-articles');
     if(panel){
-      panel.innerHTML=items.slice(0,5).map(i=>`
+      panel.innerHTML=items.slice(0,3).map(i=>`
         <a class="news-card" href="${esc(i.link)}" target="_blank" rel="noopener">
           <div class="nc-title">${esc(i.title)}</div>
           <div class="nc-src">BBC News UK</div>
@@ -1916,13 +1990,15 @@ let editReturnFocus=null;
 
 function enhanceEditorA11y(){
   const names={
-    'ed-week':'Week label','ed-wisdomday':'Wisdom day','ed-dates':'Key dates','ed-purpose':'Purpose line',
+    'ed-week':'Week label','ed-wisdomday':'Big Question day','ed-dates':'Key dates','ed-purpose':'Purpose line',
     'ed-expect':'Our standards','ed-rota':'Student rota','ed-asm':'Assembly rota','ed-timer':'Starter timer minutes',
     'ed-act-monday':'Monday required action','ed-act-tuesday':'Tuesday required action','ed-act-wednesday':'Wednesday required action',
     'ed-act-thursday':'Thursday required action','ed-lib-select':'Quote library',
-    'ed-quote':'Wisdom quote','ed-attr':'Quote author and book','ed-booknote':'Book note','ed-isbn':'Book ISBN',
-    'ed-coverurl':'Book cover image URL','ed-questions':'Discussion questions','ed-tasks':'Monday and Thursday tasks',
-    'ed-indepnote':'Independent study reminder','ed-yturl':'Sky News or YouTube URL',
+    'ed-quote':'Big Question quote','ed-attr':'Quote author and book','ed-booknote':'Book note','ed-isbn':'Book ISBN',
+    'ed-coverurl':'Book cover image URL','ed-questions':'Discussion questions','ed-pulse-question':'Monday Weekly Pulse question',
+    'ed-pulse-followup':'Monday follow-up question','ed-yturl':'Sky News or YouTube URL','ed-news-question':'Tuesday One Story question',
+    'ed-news-followup':'Tuesday follow-up question','ed-challenge-title':'Quick Challenge title','ed-challenge-scenario':'Quick Challenge scenario',
+    'ed-challenge-question':'Quick Challenge question','ed-challenge-followup':'Quick Challenge follow-up',
     'ed-token':'GitHub personal access token','ed-gistid':'Shared Gist ID'
   };
   Object.entries(names).forEach(([id,name])=>document.getElementById(id)?.setAttribute('aria-label',name));
@@ -1952,9 +2028,18 @@ function openEdit(){
   document.getElementById('ed-isbn').value=w.isbn||'';
   document.getElementById('ed-coverurl').value=w.coverUrl||'';
   document.getElementById('ed-questions').value=(w.questions||[]).join('\n');
-  document.getElementById('ed-tasks').value=(S.tasks||[]).join('\n');
-  document.getElementById('ed-indepnote').value=S.indepNote||'';
+  const pulse=S.pulse||DEFAULTS.pulse;
+  document.getElementById('ed-pulse-question').value=pulse.question||'';
+  document.getElementById('ed-pulse-followup').value=pulse.followUp||'';
   document.getElementById('ed-yturl').value=S.ytUrl||DEFAULTS.ytUrl;
+  const news=S.newsPrompt||DEFAULTS.newsPrompt;
+  document.getElementById('ed-news-question').value=news.question||'';
+  document.getElementById('ed-news-followup').value=news.followUp||'';
+  const challenge=S.challenge||DEFAULTS.challenge;
+  document.getElementById('ed-challenge-title').value=challenge.title||'';
+  document.getElementById('ed-challenge-scenario').value=challenge.scenario||'';
+  document.getElementById('ed-challenge-question').value=challenge.question||'';
+  document.getElementById('ed-challenge-followup').value=challenge.followUp||'';
   const p=S.panels||DEFAULTS.panels;
   document.getElementById('tog-ticker').checked=p.ticker!==false;
   document.getElementById('tog-dates').checked=p.dates!==false;
@@ -1963,7 +2048,7 @@ function openEdit(){
   document.getElementById('ed-token').value=getSyncToken();
   document.getElementById('ed-gistid').value=S.syncGistId||DEFAULTS.syncGistId||'';
   document.getElementById('sync-status').textContent=(S.syncGistId||DEFAULTS.syncGistId)
-    ?'✅ Sync active — Gist: '+(S.syncGistId||DEFAULTS.syncGistId)
+    ?'Sync active — Gist: '+(S.syncGistId||DEFAULTS.syncGistId)
     :'Not yet set up — see steps below.';
   const overlay=document.getElementById('edit-overlay');
   overlay.classList.add('open');
@@ -2005,9 +2090,21 @@ async function saveEdit(){
     coverUrl:document.getElementById('ed-coverurl').value.trim(),
     questions:document.getElementById('ed-questions').value.split('\n').map(l=>l.trim()).filter(Boolean)
   };
-  S.tasks=document.getElementById('ed-tasks').value.split('\n').map(l=>l.trim()).filter(Boolean);
-  S.indepNote=document.getElementById('ed-indepnote').value.trim();
+  S.pulse={
+    question:document.getElementById('ed-pulse-question').value.trim(),
+    followUp:document.getElementById('ed-pulse-followup').value.trim()
+  };
   S.ytUrl=normaliseYouTubeUrl(document.getElementById('ed-yturl').value)||DEFAULTS.ytUrl;
+  S.newsPrompt={
+    question:document.getElementById('ed-news-question').value.trim(),
+    followUp:document.getElementById('ed-news-followup').value.trim()
+  };
+  S.challenge={
+    title:document.getElementById('ed-challenge-title').value.trim(),
+    scenario:document.getElementById('ed-challenge-scenario').value.trim(),
+    question:document.getElementById('ed-challenge-question').value.trim(),
+    followUp:document.getElementById('ed-challenge-followup').value.trim()
+  };
   S.panels={
     ticker:document.getElementById('tog-ticker').checked,
     dates:document.getElementById('tog-dates').checked,
@@ -2026,12 +2123,12 @@ async function saveEdit(){
     syncState='error';
     updateSyncIndicator();
     console.error('Gist push failed:',e);
-    document.getElementById('sync-status').textContent='❌ Cloud save failed — '+e.message;
+    document.getElementById('sync-status').textContent='Cloud save failed — '+e.message;
     alert('Saved on this device, but GitHub sync failed.\n\n'+e.message+
       '\n\nCheck that the token belongs to the owner of this Gist and has the "gist" scope, then try again.');
   }finally{
     saveBtn.disabled=false;
-    saveBtn.textContent='💾 Save Changes';
+    saveBtn.textContent='Save Changes';
   }
 }
 
@@ -2132,7 +2229,7 @@ async function createSharedGist(){
     document.getElementById('ed-gistid').value=data.id;
     persist();
     await pushToGist();
-    document.getElementById('sync-status').textContent='✅ Shared Gist created and saved';
+    document.getElementById('sync-status').textContent='Shared Gist created and saved';
     alert('Shared Gist created and saved.\n\nGist ID:\n'+data.id+
       '\n\nThis device will sync automatically. To use this Gist on every device, publish its ID in the site configuration.');
   }catch(e){
@@ -2161,7 +2258,7 @@ async function pushToGist(){
     throw new Error(`GitHub returned HTTP ${res.status}${detail?' — '+detail:''}`);
   }
   syncState='ok';
-  document.getElementById('sync-status').textContent='✅ Saved to GitHub';
+  document.getElementById('sync-status').textContent='Saved to GitHub';
   updateSyncIndicator();
   return true;
 }
@@ -2193,7 +2290,7 @@ function updateSyncIndicator(){
   if(!el) return;
   const configured=!!(S.syncGistId||DEFAULTS.syncGistId);
   el.style.display=configured?'inline':'none';
-  el.textContent=syncState==='ok'?'🌐':syncState==='error'?'⚠️':'↻';
+  el.textContent=syncState==='ok'?'SYNC':syncState==='error'?'ERROR':'SYNCING';
   el.title=syncState==='ok'?'Cloud sync connected':syncState==='error'?'Cloud sync unavailable — showing saved/default data':'Checking cloud sync…';
   el.setAttribute('aria-label',el.title);
 }
