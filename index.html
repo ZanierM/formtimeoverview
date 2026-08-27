@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>Form Time — Year 12</title>
 <style>
 /* ══════════════════════════════════════════
@@ -33,6 +33,11 @@
   --news-bg:   #1a2a45;
   --news-bd:   #2a509a;
   --shadow:    rgba(0,0,0,.4);
+  --focus:     #7cc4ff;
+  --control-h: 44px;
+  --type-meta: clamp(.78rem,.25vw + .72rem,.88rem);
+  --type-body: clamp(1rem,.3vw + .94rem,1.16rem);
+  --type-display: clamp(2.7rem,4vw,4.4rem);
 }
 [data-theme="light"] {
   --bg:        #eef2fb;
@@ -59,6 +64,7 @@
   --news-bg:   #e8eef8;
   --news-bd:   #3060c0;
   --shadow:    rgba(20,40,100,.15);
+  --focus:     #145da0;
 }
 
 /* ══════════════════════════════════════════
@@ -67,13 +73,18 @@
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
 html,body { height:100%; overflow:hidden; }
 body {
-  font-family:'Segoe UI',Arial,sans-serif;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
   font-size:17px;
   background:var(--bg);
   color:var(--text);
   display:flex;
   flex-direction:column;
   transition:background .3s,color .3s;
+}
+::selection { background:var(--accent); color:var(--ticker-fg); }
+button,select,input,textarea { accent-color:var(--accent); }
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus-visible {
+  outline:3px solid var(--focus); outline-offset:3px;
 }
 
 /* ══════════════════════════════════════════
@@ -95,25 +106,25 @@ header {
   background:var(--accent);
   color:var(--ticker-fg);
   font-weight:900;
-  font-size:0.68rem;
+  font-size:.75rem;
   letter-spacing:0.1em;
   text-transform:uppercase;
   padding:4px 10px;
   border-radius:6px;
   white-space:nowrap;
 }
-.form-title  { font-size:1.6rem; font-weight:900; color:var(--text); letter-spacing:-0.02em; line-height:1.1; }
-.year-label  { font-size:0.72rem; color:var(--accent); font-weight:700; letter-spacing:0.08em; }
+.form-title  { font-size:1.7rem; font-weight:900; color:var(--text); letter-spacing:-0.02em; line-height:1.1; }
+.year-label  { font-size:var(--type-meta); color:var(--accent); font-weight:800; letter-spacing:0.08em; }
 .hdr-right   { display:flex; align-items:center; gap:10px; flex-shrink:0; }
 .date-block  { text-align:right; }
-#date-display { font-size:0.8rem; color:var(--text2); line-height:1.3; }
-#week-display { font-size:0.76rem; color:var(--accent); font-weight:700; }
+#date-display { font-size:var(--type-meta); color:var(--text2); line-height:1.35; }
+#week-display { font-size:var(--type-meta); color:var(--accent); font-weight:800; font-variant-numeric:tabular-nums; }
 #day-select {
   background:var(--surface);
   color:var(--text);
   border:1.5px solid var(--accent);
   border-radius:8px;
-  padding:9px 14px;
+  min-height:var(--control-h); padding:9px 14px;
   font-size:1rem;
   font-weight:800;
   cursor:pointer;
@@ -124,7 +135,7 @@ header {
   border:1px solid var(--border);
   color:var(--text2);
   border-radius:7px;
-  padding:8px 12px;
+  min-height:var(--control-h); padding:8px 12px;
   cursor:pointer;
   font-size:0.82rem;
   font-family:inherit;
@@ -150,7 +161,7 @@ header {
   background:var(--bg);
   color:var(--accent);
   font-weight:900;
-  font-size:0.7rem;
+  font-size:.78rem;
   letter-spacing:0.14em;
   text-transform:uppercase;
   padding:0 14px;
@@ -162,11 +173,15 @@ header {
 }
 .ticker-track  { overflow:hidden; flex:1; }
 .ticker-scroll {
-  display:inline-flex;
+  display:block;
   white-space:nowrap;
-  animation:tickermove 80s linear infinite;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
-@keyframes tickermove { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.ticker-toggle {
+  min-width:44px; min-height:34px; align-self:stretch; border:0; border-inline-start:1px solid rgba(255,255,255,.24);
+  background:var(--ticker-bg); color:var(--ticker-fg); cursor:pointer; font:inherit; font-weight:900;
+}
 .ticker-item {
   padding:0 32px;
   font-size:0.96rem;
@@ -194,16 +209,16 @@ header {
   min-width:0;
 }
 .day-header { border-bottom:2.5px solid var(--accent); padding-bottom:12px; }
-.day-name   { font-size:3.6rem; font-weight:900; color:var(--text); line-height:1; }
-.day-sub    { font-size:1.25rem; color:var(--accent); font-weight:700; margin-top:4px; }
-.task-head  { font-size:1.1rem; font-weight:800; color:var(--accent); margin-bottom:10px; letter-spacing:0.04em; text-transform:uppercase; }
+.day-name   { font-size:var(--type-display); font-weight:900; color:var(--text); line-height:.96; letter-spacing:-.035em; text-wrap:balance; }
+.day-sub    { font-size:clamp(1.2rem,.7vw + 1rem,1.55rem); color:var(--accent); font-weight:800; margin-top:6px; }
+.task-head  { font-size:clamp(1rem,.35vw + .95rem,1.2rem); font-weight:900; color:var(--accent); margin-bottom:12px; letter-spacing:0.045em; text-transform:uppercase; }
 .task-list  { list-style:none; display:flex; flex-direction:column; gap:10px; }
 .task-item  {
   background:var(--surface);
-  border-left:5px solid var(--task-bd);
+  border-inline-start:1px solid var(--task-bd);
   padding:14px 20px;
   border-radius:0 10px 10px 0;
-  font-size:1.15rem;
+  font-size:var(--type-body);
   display:flex;
   align-items:center;
   gap:14px;
@@ -250,12 +265,12 @@ header {
 }
 .quote-card {
   background:var(--quote-bg);
-  border-left:5px solid var(--accent);
+  border-inline-start:1px solid var(--accent);
   border-radius:10px;
   padding:20px 22px 16px;
   box-shadow:0 2px 10px var(--shadow);
 }
-.quote-text   { font-size:1.35rem; font-style:italic; line-height:1.7; color:var(--text); margin-bottom:10px; }
+.quote-text   { font-size:1.35rem; font-style:italic; line-height:1.65; color:var(--text); margin-bottom:10px; max-width:68ch; }
 .quote-attr   { font-size:1rem; color:var(--accent); font-weight:700; }
 .quote-note   { font-size:0.88rem; color:var(--text2); font-style:italic; margin-top:5px; }
 .wq-box       { background:var(--surface); border-radius:10px; padding:18px 20px; box-shadow:0 2px 8px var(--shadow); }
@@ -281,7 +296,7 @@ header {
   background:var(--news-bg);
   border-radius:9px;
   padding:11px 16px;
-  border-left:4px solid var(--news-bd);
+  border-inline-start:1px solid var(--news-bd);
   cursor:pointer;
   text-decoration:none;
   display:block;
@@ -289,7 +304,7 @@ header {
 }
 .news-card:hover { filter:brightness(1.1); }
 .nc-title { font-size:0.95rem; font-weight:600; color:var(--text); line-height:1.4; }
-.nc-src   { font-size:0.72rem; color:var(--text2); margin-top:2px; }
+.nc-src   { font-size:.8rem; color:var(--text2); margin-top:2px; }
 
 /* Friday */
 .fri-body { display:flex; flex-direction:column; gap:9px; }
@@ -312,7 +327,7 @@ header {
 .s-panel { border-bottom:1px solid var(--border); padding:15px 17px; }
 .s-panel.hidden { display:none; }
 .s-panel-hdr {
-  font-size:0.7rem;
+  font-size:.8rem;
   font-weight:900;
   text-transform:uppercase;
   letter-spacing:0.14em;
@@ -324,7 +339,7 @@ header {
 }
 .refresh-btn {
   background:none; border:none; color:var(--text2); cursor:pointer;
-  font-size:0.9rem; padding:0 2px; transition:color .2s; line-height:1;
+  font-size:1rem; min-width:44px; min-height:44px; padding:0; transition:color .2s; line-height:1;
 }
 .refresh-btn:hover { color:var(--accent); }
 
@@ -333,7 +348,8 @@ header {
 .date-item { font-size:1rem; line-height:1.5; color:var(--text2); display:flex; gap:7px; align-items:flex-start; }
 .date-bull { color:var(--accent); flex-shrink:0; margin-top:1px; font-weight:700; }
 
-.loading-txt { color:var(--text2); font-style:italic; font-size:0.88rem; }
+.loading-txt { color:var(--text2); font-style:italic; font-size:.92rem; line-height:1.5; }
+.inline-retry { margin-inline-start:6px; min-height:40px; padding:7px 12px; border:1px solid var(--accent); border-radius:7px; background:transparent; color:var(--accent); font:inherit; font-style:normal; font-weight:800; cursor:pointer; }
 
 /* ── ON THIS DAY BOTTOM BAR ── */
 #otd-bar {
@@ -357,20 +373,20 @@ header {
   min-width:120px;
 }
 .otd-bar-label {
-  font-size:0.66rem;
+  font-size:.76rem;
   font-weight:900;
   text-transform:uppercase;
   letter-spacing:0.14em;
   color:var(--accent);
 }
 .otd-bar-date {
-  font-size:0.72rem;
+  font-size:.8rem;
   color:var(--text2);
   font-weight:600;
 }
 .otd-bar-refresh {
   background:none;border:none;color:var(--text2);
-  cursor:pointer;font-size:1rem;padding:0;
+  cursor:pointer;font-size:1rem;min-width:44px;min-height:44px;padding:0;
   transition:color .2s;line-height:1;margin-top:2px;
 }
 .otd-bar-refresh:hover { color:var(--accent); }
@@ -394,7 +410,7 @@ header {
   min-width:56px;
 }
 .otd-type {
-  font-size:0.65rem;
+  font-size:.75rem;
   font-weight:800;
   text-transform:uppercase;
   letter-spacing:0.09em;
@@ -410,7 +426,7 @@ header {
   line-height:1;
 }
 .otd-text {
-  font-size:0.88rem;
+  font-size:.95rem;
   line-height:1.5;
   color:var(--text2);
   overflow:hidden;
@@ -432,7 +448,7 @@ header {
   background:var(--modal-bg);
   border:1.5px solid var(--accent);
   border-radius:14px;
-  padding:24px 26px;
+  padding:0;
   width:92%;
   max-width:700px;
   max-height:88vh;
@@ -441,13 +457,22 @@ header {
   flex-direction:column;
   gap:0;
 }
-.em-title { font-size:1.15rem; font-weight:900; color:var(--accent); margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+.em-head { position:sticky; top:0; z-index:3; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 24px 14px; background:var(--modal-bg); border-bottom:1px solid var(--border); }
+.em-title { font-size:1.25rem; font-weight:900; color:var(--accent); margin:0; }
+.em-close { min-width:44px; min-height:44px; border:1px solid var(--border); border-radius:8px; background:transparent; color:var(--text); cursor:pointer; font-size:1.2rem; }
+.em-content { padding:18px 24px 6px; }
+.editor-section { border:1px solid var(--border); border-radius:10px; margin-bottom:12px; background:var(--surface2); overflow:hidden; }
+.editor-section>summary { cursor:pointer; list-style:none; padding:14px 16px; color:var(--text); font-size:1rem; font-weight:900; display:flex; align-items:center; justify-content:space-between; }
+.editor-section>summary::-webkit-details-marker { display:none; }
+.editor-section>summary::after { content:'＋'; color:var(--accent); font-size:1.1rem; }
+.editor-section[open]>summary::after { content:'−'; }
+.editor-section-body { padding:4px 16px 2px; border-top:1px solid var(--border); }
 .em-s     { margin-bottom:16px; }
-.em-lbl   { font-size:0.68rem; font-weight:900; text-transform:uppercase; letter-spacing:0.12em; color:var(--accent); margin-bottom:7px; display:block; }
+.em-lbl   { font-size:.76rem; font-weight:900; text-transform:uppercase; letter-spacing:.09em; color:var(--accent); margin-bottom:7px; display:block; }
 .em-in,.em-ta {
   width:100%; background:var(--input-bg); border:1px solid var(--input-bd);
   color:var(--text); border-radius:7px; padding:9px 12px;
-  font-size:0.9rem; font-family:inherit;
+  font-size:1rem; font-family:inherit;
 }
 .em-ta   { resize:vertical; min-height:65px; line-height:1.5; }
 .em-row  { display:flex; gap:8px; margin-top:8px; }
@@ -455,25 +480,28 @@ header {
 hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .tog-row { display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border); }
 .tog-lbl { font-size:0.92rem; color:var(--text); }
-.tog     { position:relative; width:40px; height:22px; flex-shrink:0; }
-.tog input { opacity:0; width:0; height:0; }
+.tog     { position:relative; width:48px; height:28px; flex-shrink:0; }
+.tog input { position:absolute; inset:0; opacity:0; width:100%; height:100%; }
 .tog-sl  { position:absolute; inset:0; background:var(--border); border-radius:22px; cursor:pointer; transition:background .2s; }
-.tog-sl::before { content:""; position:absolute; width:16px; height:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .2s; }
+.tog-sl::before { content:""; position:absolute; width:20px; height:20px; left:4px; top:4px; background:#fff; border-radius:50%; transition:transform .2s; }
 .tog input:checked+.tog-sl { background:var(--accent); }
-.tog input:checked+.tog-sl::before { transform:translateX(18px); }
+.tog input:checked+.tog-sl::before { transform:translateX(20px); }
 .ord-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); }
 .ord-lbl { font-size:0.92rem; color:var(--text); }
 .ord-btns { display:flex; gap:4px; }
-.ord-btn { background:var(--surface); border:1px solid var(--border); color:var(--text2); border-radius:5px; padding:3px 9px; cursor:pointer; font-size:0.82rem; transition:all .15s; }
+.ord-btns .ord-btn { min-width:44px; }
+.ord-btn { background:var(--surface); border:1px solid var(--border); color:var(--text2); border-radius:7px; min-height:44px; padding:8px 12px; cursor:pointer; font-size:0.88rem; transition:border-color .15s,color .15s,background .15s; }
 .ord-btn:hover { border-color:var(--accent); color:var(--accent); }
 .ord-btn:disabled { opacity:.3; cursor:default; }
-.em-save   { background:var(--accent); color:var(--ticker-fg); border:none; border-radius:8px; padding:12px; font-size:0.95rem; font-weight:900; cursor:pointer; width:100%; margin-top:6px; font-family:inherit; }
-.em-cancel { background:transparent; color:var(--text2); border:1px solid var(--border); border-radius:8px; padding:10px; font-size:0.88rem; cursor:pointer; width:100%; margin-top:7px; font-family:inherit; }
+.em-actions { position:sticky; bottom:0; z-index:3; display:flex; gap:10px; padding:14px 24px max(14px,env(safe-area-inset-bottom)); background:var(--modal-bg); border-top:1px solid var(--border); }
+.em-save   { background:var(--accent); color:var(--ticker-fg); border:none; border-radius:8px; min-height:46px; padding:12px; font-size:0.95rem; font-weight:900; cursor:pointer; flex:1; font-family:inherit; }
+.em-cancel { background:transparent; color:var(--text2); border:1px solid var(--border); border-radius:8px; min-height:46px; padding:10px 18px; font-size:0.9rem; cursor:pointer; font-family:inherit; }
 
 /* ══════════════════════════════════════════
    UTILITY
 ══════════════════════════════════════════ */
 .hidden { display:none !important; }
+.modal-open { overflow:hidden!important; }
 ::-webkit-scrollbar { width:4px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
@@ -483,13 +511,14 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
    expectations panel, rota, start timer
 ══════════════════════════════════════════ */
 .purpose-line {
-  font-size:0.72rem; color:var(--text2); font-weight:600;
-  margin-top:3px; max-width:46ch; line-height:1.3;
+  font-size:.84rem; color:var(--text2); font-weight:600;
+  margin-top:3px; max-width:52ch; line-height:1.4;
 }
+.timer-group { display:flex; align-items:center; gap:2px; }
 #timer-pill {
   display:flex; align-items:center; gap:6px;
   background:var(--tag-bg); border:1.5px solid var(--border);
-  border-radius:20px; padding:4px 10px; cursor:pointer;
+  border-radius:20px; min-height:44px; padding:4px 12px; cursor:pointer; color:var(--text); font:inherit;
   font-variant-numeric:tabular-nums; user-select:none;
   transition:background .2s,border-color .2s;
 }
@@ -500,7 +529,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 #timer-val { font-size:0.9rem; font-weight:900; color:var(--text); letter-spacing:0.02em; }
 .timer-reset {
   background:none; border:none; color:var(--text2); cursor:pointer;
-  font-size:0.85rem; padding:0 2px; line-height:1;
+  font-size:1rem; min-width:44px; min-height:44px; padding:0; line-height:1;
 }
 .timer-reset:hover { color:var(--accent); }
 
@@ -508,12 +537,12 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
   display:flex; flex-wrap:wrap; gap:10px; align-items:center;
   margin-top:16px; padding:11px 15px;
   background:var(--note-bg); border:1.5px solid var(--note-bd);
-  border-left:4px solid var(--accent); border-radius:7px;
+  border-inline-start:1px solid var(--accent); border-radius:7px;
 }
 .action-do { flex:1 1 280px; font-size:0.92rem; color:var(--text); line-height:1.45; }
 .action-do strong {
   color:var(--accent); text-transform:uppercase; letter-spacing:0.08em;
-  font-size:0.7rem; font-weight:900; margin-right:6px;
+  font-size:.76rem; font-weight:900; margin-right:6px;
 }
 .action-rota {
   font-size:0.8rem; color:var(--text2); font-weight:700;
@@ -523,18 +552,77 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .action-rota b { color:var(--text); }
 .asm-box {
   background:var(--note-bg); border:1.5px solid var(--note-bd);
-  border-left:4px solid var(--accent); border-radius:7px;
+  border-inline-start:1px solid var(--accent); border-radius:7px;
   padding:9px 12px; margin-bottom:12px;
 }
 .asm-lbl {
-  font-size:0.62rem; font-weight:900; text-transform:uppercase;
+  font-size:.75rem; font-weight:900; text-transform:uppercase;
   letter-spacing:0.12em; color:var(--accent); display:block; margin-bottom:4px;
 }
 .asm-txt { font-size:0.9rem; line-height:1.4; color:var(--text); font-weight:700; }
 .asm-txt.none { color:var(--text2); font-weight:600; font-style:italic; }
-.asm-wc { font-size:0.7rem; color:var(--text2); font-weight:600; margin-top:3px; }
-.exp-item { display:flex; gap:8px; align-items:flex-start; padding:6px 0; font-size:0.82rem; line-height:1.35; }
+.asm-wc { font-size:.8rem; color:var(--text2); font-weight:600; margin-top:3px; }
+.exp-item { display:flex; gap:8px; align-items:flex-start; padding:7px 0; font-size:.9rem; line-height:1.4; }
 .exp-tick { color:var(--accent); font-weight:900; flex-shrink:0; }
+.empty-state { color:var(--text2); font-size:.9rem; line-height:1.45; padding:4px 0 8px; }
+
+@media (max-width:1023px) {
+  html,body { height:auto; min-height:100%; overflow:auto; }
+  body { min-height:100vh; min-height:100dvh; }
+  header { align-items:flex-start; flex-wrap:wrap; padding:12px 16px; }
+  .hdr-left { flex:1 1 320px; }
+  .hdr-right { flex:1 1 100%; justify-content:flex-end; flex-wrap:wrap; }
+  #main { overflow:visible; flex-direction:column; }
+  #day-panel { overflow:visible; min-height:52vh; padding:22px 20px; }
+  #sidebar { width:100%; min-width:0; border-left:0; border-top:1px solid var(--border); overflow:visible; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .s-panel { border-bottom:0; border-right:1px solid var(--border); }
+  #otd-bar { overflow-x:auto; }
+  #otd-content { min-width:760px; }
+}
+
+@media (max-width:640px) {
+  header { gap:10px; padding:12px max(14px,env(safe-area-inset-right)) 12px max(14px,env(safe-area-inset-left)); }
+  .hdr-left { align-items:flex-start; gap:10px; }
+  .school-badge { font-size:.62rem; padding:5px 8px; margin-top:3px; }
+  .form-title { font-size:1.45rem; }
+  .year-label,.purpose-line { font-size:.78rem; }
+  .hdr-right { justify-content:flex-start; gap:8px; }
+  .date-block { flex:1 1 100%; text-align:left; display:flex; gap:8px; align-items:baseline; flex-wrap:wrap; }
+  #day-select { flex:1; min-width:130px; }
+  #sync-indicator { min-width:44px; min-height:44px; display:inline-flex!important; align-items:center; justify-content:center; }
+  #ticker-wrap { height:42px; }
+  .ticker-label { padding:0 10px; }
+  .ticker-item { font-size:.9rem; padding:0 20px; }
+  #day-panel { padding:24px 16px 28px; min-height:0; }
+  .day-name { font-size:clamp(2.65rem,16vw,4rem); }
+  .day-sub { font-size:1.18rem; }
+  .task-item { padding:14px; gap:10px; }
+  .note-box,.action-bar { padding:12px; }
+  .wisdom-layout { flex-direction:column; }
+  .book-cover-wrap { align-self:center; }
+  #sidebar { display:block; }
+  .s-panel { border-right:0; border-bottom:1px solid var(--border); padding:18px 16px; }
+  #otd-bar { display:block; overflow:visible; }
+  .otd-bar-hdr { min-width:0; width:100%; flex-direction:row; align-items:center; justify-content:space-between; border-right:0; border-bottom:1px solid var(--border); }
+  #otd-content { min-width:0; display:block; }
+  .otd-card { border-right:0; border-bottom:1px solid var(--border); min-height:84px; }
+  #edit-overlay { align-items:stretch; }
+  #edit-modal { width:100%; max-width:none; max-height:100dvh; min-height:100dvh; border:0; border-radius:0; }
+  .em-head,.em-actions { padding-inline:16px; }
+  .em-content { padding-inline:12px; }
+  .em-row { flex-direction:column; }
+  .em-in,.em-ta { font-size:1rem; }
+}
+
+@media (pointer:coarse) {
+  button,select,.hdr-btn,.ord-btn { min-height:44px; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+  body,header,#ticker-wrap,#sidebar,.hdr-btn,.ord-btn,#timer-pill,.tog-sl,.tog-sl::before { transition:none!important; }
+  #timer-pill.done { animation:none!important; }
+}
 </style>
 </head>
 <body>
@@ -554,19 +642,21 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
       <div id="date-display"></div>
       <div id="week-display"></div>
     </div>
-    <select id="day-select">
+    <select id="day-select" aria-label="Choose form-time day">
       <option value="monday">Monday</option>
       <option value="tuesday">Tuesday</option>
       <option value="wednesday">Wednesday</option>
       <option value="thursday">Thursday</option>
       <option value="friday">Friday</option>
     </select>
-    <div id="timer-pill" onclick="toggleTimer(event)" title="Click to start / pause the starter timer">
-      <span>⏱</span><span id="timer-val">5:00</span>
-      <button class="timer-reset" onclick="resetTimer(event)" title="Reset">↺</button>
+    <div class="timer-group" role="group" aria-label="Starter timer">
+      <button id="timer-pill" type="button" onclick="toggleTimer(event)" aria-pressed="false" aria-label="Start or pause the starter timer">
+        <span aria-hidden="true">⏱</span><span id="timer-val">5:00</span>
+      </button>
+      <button class="timer-reset" type="button" onclick="resetTimer(event)" aria-label="Reset starter timer">↺</button>
     </div>
-    <button class="hdr-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
-    <span id="sync-indicator" title="Cloud sync active — tutors see your latest edits" style="display:none;font-size:1rem;">🌐</span>
+    <button class="hdr-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Use light theme">🌙</button>
+    <span id="sync-indicator" role="status" aria-live="polite" aria-label="Cloud sync status" style="display:none;font-size:1rem;">🌐</span>
     <button class="hdr-btn" onclick="openEdit()">⚙ Edit</button>
   </div>
 </header>
@@ -579,45 +669,53 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
       <span class="ticker-item">Loading latest headlines…</span>
     </div>
   </div>
+  <button class="ticker-toggle" id="ticker-toggle" type="button" onclick="nextHeadline()" aria-label="Show next headline">›</button>
 </div>
 
 <!-- ══ MAIN ══ -->
-<div id="main">
+<main id="main">
   <div id="day-panel"></div>
 
   <aside id="sidebar">
     <div id="panel-dates" class="s-panel">
-      <div class="s-panel-hdr">📅 Key Dates</div>
+      <h2 class="s-panel-hdr">📅 Key Dates</h2>
       <div id="asm-next"></div>
       <ul class="date-list" id="dates-list"></ul>
     </div>
 
     <div id="panel-expect" class="s-panel">
-      <div class="s-panel-hdr">✅ Our Standards</div>
+      <h2 class="s-panel-hdr">✅ Our Standards</h2>
       <div id="expect-list"></div>
     </div>
   </aside>
-</div>
+</main>
 
 <!-- ══ ON THIS DAY — BOTTOM BAR ══ -->
 <div id="otd-bar">
   <div class="otd-bar-hdr">
     <span class="otd-bar-label">📖 On This Day</span>
     <span class="otd-bar-date" id="otd-date-lbl"></span>
-    <button class="otd-bar-refresh" onclick="fetchOTD(document.getElementById('day-select').value)" title="Shuffle events">↻</button>
+    <button class="otd-bar-refresh" onclick="fetchOTD(document.getElementById('day-select').value)" aria-label="Show different On This Day events">↻</button>
   </div>
   <div id="otd-content"><div style="padding:10px 18px;color:var(--text2);font-style:italic;font-size:0.88rem;">Loading…</div></div>
 </div>
 
 <!-- ══ EDIT MODAL ══ -->
-<div id="edit-overlay">
-  <div id="edit-modal">
-    <div class="em-title">⚙ Edit Form Time</div>
+<div id="edit-overlay" aria-hidden="true">
+  <div id="edit-modal" role="dialog" aria-modal="true" aria-labelledby="edit-title" tabindex="-1">
+    <div class="em-head">
+      <h2 class="em-title" id="edit-title">Edit Form Time</h2>
+      <button class="em-close" type="button" onclick="closeEdit()" aria-label="Close editor">×</button>
+    </div>
+    <div class="em-content">
+    <details class="editor-section" open>
+      <summary>This week</summary>
+      <div class="editor-section-body">
 
     <div class="em-s">
       <span class="em-lbl">Week Label (leave blank to auto-calculate)</span>
       <input class="em-in" id="ed-week" type="text" placeholder="Auto: current Mon–Fri week">
-      <span style="font-size:0.72rem;color:var(--text2);margin-top:4px;display:block">Leave empty and the page works out this week's dates itself. Only fill in for holidays/exceptions.</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Leave empty and the page works out this week's dates itself. Only fill in for holidays/exceptions.</span>
     </div>
     <div class="em-s">
       <span class="em-lbl">This Week's Wisdom Day</span>
@@ -636,13 +734,13 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
     <div class="em-s">
       <span class="em-lbl">Purpose Line (shown in the header every day)</span>
       <input class="em-in" id="ed-purpose" placeholder="Why form time exists — in one sentence">
-      <span style="font-size:0.72rem;color:var(--text2);margin-top:4px;display:block">Keep it short. This is the answer to &ldquo;what is form time for?&rdquo;</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Keep it short. This is the answer to &ldquo;what is form time for?&rdquo;</span>
     </div>
 
     <div class="em-s">
       <span class="em-lbl">Assembly Rota (one per line: YYYY-MM-DD | description)</span>
       <textarea class="em-ta" id="ed-asm" rows="8"></textarea>
-      <span style="font-size:0.72rem;color:var(--text2);margin-top:4px;display:block">Use the week-commencing <strong>Monday</strong> for each week. Key Dates automatically shows next week's entry — no need to update it weekly.</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Use the week-commencing <strong>Monday</strong> for each week. Key Dates automatically shows next week's entry — no need to update it weekly.</span>
     </div>
 
     <div class="em-s">
@@ -661,7 +759,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 
     <div class="em-s">
       <span class="em-lbl">▶ Do This — the required action for each day</span>
-      <span style="font-size:0.72rem;color:var(--text2);margin-bottom:8px;display:block">Shown under the day panel so the screen gets used, not just displayed. Leave blank to hide.</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-bottom:8px;display:block">Shown under the day panel so the screen gets used, not just displayed. Leave blank to hide.</span>
       <span class="em-lbl" style="display:block">Monday</span>
       <input class="em-in" id="ed-act-monday">
       <span class="em-lbl" style="margin-top:8px;display:block">Tuesday</span>
@@ -673,17 +771,20 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
       <span class="em-lbl" style="margin-top:8px;display:block">Friday</span>
       <input class="em-in" id="ed-act-friday">
     </div>
+      </div>
+    </details>
 
-    <hr class="em-div">
-
+    <details class="editor-section">
+      <summary>Wisdom and quote library</summary>
+      <div class="editor-section-body">
     <div class="em-s">
       <span class="em-lbl">📚 Quote Library — Classic Literature</span>
       <div class="em-row" style="margin-top:0;">
         <select class="em-in" id="ed-lib-select" style="flex:1;"></select>
         <button type="button" class="ord-btn" style="white-space:nowrap;padding:9px 16px;font-size:0.85rem;" onclick="loadFromLibrary()">📥 Load</button>
-        <button type="button" class="ord-btn" style="white-space:nowrap;padding:9px 12px;font-size:0.85rem;" onclick="toggleQuoteUsed()" title="Mark selected as used / unused">✓ ↺</button>
+        <button type="button" class="ord-btn" style="white-space:nowrap;padding:9px 12px;font-size:0.85rem;" onclick="toggleQuoteUsed()" aria-label="Mark selected quote as used or unused">✓ ↺</button>
       </div>
-      <span style="font-size:0.72rem;color:var(--text2);margin-top:4px;display:block">Loading a quote marks it "used" automatically and moves it to the bottom of the list. Click ✓ ↺ to undo, or to manually mark/unmark any quote.</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Loading a quote marks it "used" automatically and moves it to the bottom of the list. Click ✓ ↺ to undo, or to manually mark/unmark any quote.</span>
     </div>
 
     <div class="em-s">
@@ -700,9 +801,12 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
       <span class="em-lbl" style="margin-top:10px;display:block">Discussion Questions (one per line)</span>
       <textarea class="em-ta" id="ed-questions" rows="4"></textarea>
     </div>
+      </div>
+    </details>
 
-    <hr class="em-div">
-
+    <details class="editor-section">
+      <summary>Daily content</summary>
+      <div class="editor-section-body">
     <div class="em-s">
       <span class="em-lbl">Mon / Thu Tasks (one per line)</span>
       <textarea class="em-ta" id="ed-tasks" rows="5"></textarea>
@@ -715,7 +819,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
     <div class="em-s">
       <span class="em-lbl">Tuesday — Sky News / YouTube Embed URL</span>
       <input class="em-in" id="ed-yturl" placeholder="https://www.youtube.com/embed/…">
-      <span style="font-size:0.72rem;color:var(--text2);margin-top:4px;display:block">Default: Sky News UK live stream. Update if the link stops working.</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Default: Sky News UK live stream. Update if the link stops working.</span>
     </div>
 
     <hr class="em-div">
@@ -725,9 +829,12 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
       <input class="em-in" id="ed-fri-title" placeholder="e.g. Week Reflection">
       <textarea class="em-ta" id="ed-fri-content" rows="5" style="margin-top:8px"></textarea>
     </div>
+      </div>
+    </details>
 
-    <hr class="em-div">
-
+    <details class="editor-section">
+      <summary>Display</summary>
+      <div class="editor-section-body">
     <div class="em-s">
       <span class="em-lbl">Show / Hide Panels</span>
       <div class="tog-row">
@@ -748,31 +855,39 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
       <span class="em-lbl">Sidebar Panel Order</span>
       <div id="order-list"></div>
     </div>
+      </div>
+    </details>
 
-    <hr class="em-div">
-
+    <details class="editor-section">
+      <summary>Cloud sync</summary>
+      <div class="editor-section-body">
     <div class="em-s">
       <span class="em-lbl">🌐 Cloud Sync — make tutors see your edits live</span>
       <div id="sync-status" style="font-size:0.8rem;color:var(--text2);margin-bottom:10px;">Not yet set up — see steps below.</div>
 
-      <span class="em-lbl" style="font-size:0.64rem;">1. GitHub Personal Access Token (this device only — never shared)</span>
+      <span class="em-lbl">1. GitHub Personal Access Token (this device only — never shared)</span>
       <input class="em-in" id="ed-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
 
       <div class="em-row">
         <button type="button" class="ord-btn" style="flex:1;padding:9px;font-size:0.85rem;" onclick="createSharedGist()">🆕 Create Shared Gist</button>
       </div>
 
-      <span class="em-lbl" style="font-size:0.64rem;margin-top:10px;display:block;">2. Shared Gist ID (auto-fills above, or paste an existing one)</span>
+      <span class="em-lbl" style="margin-top:10px;display:block;">2. Shared Gist ID (auto-fills above, or paste an existing one)</span>
       <input class="em-in" id="ed-gistid" type="text" placeholder="e.g. 8f3a1c9b2e7d4f6a...">
 
-      <span style="font-size:0.72rem;color:var(--text2);margin-top:8px;display:block;line-height:1.5">
+      <span style="font-size:.82rem;color:var(--text2);margin-top:8px;display:block;line-height:1.5">
         Once a Gist ID is set and you click Save, your edits push to the cloud automatically.
         Tutors' pages check this Gist on load and every few minutes — no token or setup needed on their end.
       </span>
     </div>
+      </div>
+    </details>
 
-    <button class="em-save" id="edit-save" onclick="saveEdit()">💾 Save Changes</button>
-    <button class="em-cancel" onclick="closeEdit()">Cancel</button>
+    </div>
+    <div class="em-actions">
+      <button class="em-cancel" onclick="closeEdit()">Cancel</button>
+      <button class="em-save" id="edit-save" onclick="saveEdit()">Save changes</button>
+    </div>
   </div>
 </div>
 
@@ -1353,7 +1468,9 @@ function migrateState(input){
 // ════════════════════════════════════════════════
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme',t);
-  document.getElementById('theme-btn').textContent = t==='dark'?'☀️':'🌙';
+  const btn=document.getElementById('theme-btn');
+  btn.textContent=t==='dark'?'☀️':'🌙';
+  btn.setAttribute('aria-label',t==='dark'?'Use light theme':'Use dark theme');
 }
 function toggleTheme(){
   S.theme = S.theme==='dark'?'light':'dark';
@@ -1475,7 +1592,7 @@ function renderDay(day){
   const wisdomDay=S.wisdomDay||'wednesday';
   const indepDay2=wisdomDay==='wednesday'?'thursday':'wednesday'; // the other indep-study day
   if(day==='monday'||day===indepDay2) p.innerHTML=renderIndep(day);
-  else if(day==='tuesday'){ p.innerHTML=renderTuesday(); fetchNews(); }
+  else if(day==='tuesday') p.innerHTML=renderTuesday();
   else if(day===wisdomDay) p.innerHTML=renderWisdom(day);
   else p.innerHTML=renderFriday();
   p.insertAdjacentHTML('beforeend', renderActionBar(day));
@@ -1500,7 +1617,7 @@ function renderIndep(day){
     <li class="task-item"><span class="ti-icon">${ICONS[i]||'●'}</span><span>${esc(t)}</span></li>`).join('');
   return `
     <div class="day-header">
-      <div class="day-name">${cap(day)}</div>
+      <h1 class="day-name">${cap(day)}</h1>
       <div class="day-sub">📚 Independent Study Time</div>
     </div>
     <div>
@@ -1514,7 +1631,7 @@ function renderTuesday(){
   const yt=esc(normaliseYouTubeUrl(S.ytUrl||DEFAULTS.ytUrl));
   return `
     <div class="day-header">
-      <div class="day-name">Tuesday</div>
+      <h1 class="day-name">Tuesday</h1>
       <div class="day-sub">📺 What's in the News?</div>
     </div>
     <div class="yt-wrap">
@@ -1545,7 +1662,7 @@ function renderWisdom(day){
   if(coverSrc){
     coverHtml=`
       <div class="book-cover-wrap">
-        <img class="book-cover" src="${coverSrc}" alt="Book cover"
+        <img class="book-cover" src="${coverSrc}" alt="Book cover" width="120" height="180" loading="lazy" decoding="async"
           onerror="this.parentElement.innerHTML='<div class=\\'book-cover-placeholder\\'>📚</div>'">
       </div>`;
   }
@@ -1553,7 +1670,7 @@ function renderWisdom(day){
   const qs=(w.questions||[]).map(q=>`<li class="wq-item">${esc(q)}</li>`).join('');
   return `
     <div class="day-header">
-      <div class="day-name">${cap(day)}</div>
+      <h1 class="day-name">${cap(day)}</h1>
       <div class="day-sub">💬 ${cap(day)} Wisdom</div>
     </div>
     <div class="wisdom-layout">
@@ -1580,7 +1697,7 @@ function renderFriday(){
   }).join('');
   return `
     <div class="day-header">
-      <div class="day-name">Friday</div>
+      <h1 class="day-name">Friday</h1>
       <div class="day-sub">🌟 ${esc(f.title||'End of Week')}</div>
     </div>
     <div class="fri-body">${body}</div>`;
@@ -1590,8 +1707,10 @@ function renderFriday(){
 //  SIDEBAR
 // ════════════════════════════════════════════════
 function renderSidebar(){
-  document.getElementById('dates-list').innerHTML=
-    (S.keyDates||[]).map(d=>`<li class="date-item"><span class="date-bull">▸</span><span>${esc(d)}</span></li>`).join('');
+  const dates=S.keyDates||[];
+  document.getElementById('dates-list').innerHTML=dates.length
+    ?dates.map(d=>`<li class="date-item"><span class="date-bull" aria-hidden="true">▸</span><span>${esc(d)}</span></li>`).join('')
+    :'<li class="empty-state">No key dates have been added for this term.</li>';
 
   renderNextAssembly();
 
@@ -1678,13 +1797,27 @@ async function fetchOTD(dayName){
         <div class="otd-text">${esc(c.text)}</div>
       </div>`).join('');
   }catch{
-    el.innerHTML='<div class="loading-txt">Could not load — check connection.</div>';
+    el.innerHTML='<div class="loading-txt">On This Day could not load. <button class="inline-retry" onclick="fetchOTD()">Try again</button></div>';
   }
 }
 
 // ════════════════════════════════════════════════
 //  NEWS — BBC RSS via rss2json
 // ════════════════════════════════════════════════
+let headlineItems=[],headlineIndex=0;
+
+function renderCurrentHeadline(){
+  const ts=document.getElementById('ticker-scroll');
+  if(!ts||!headlineItems.length) return;
+  ts.innerHTML=`<span class="ticker-item">${esc(headlineItems[headlineIndex].title)}</span>`;
+}
+
+function nextHeadline(){
+  if(!headlineItems.length) return;
+  headlineIndex=(headlineIndex+1)%headlineItems.length;
+  renderCurrentHeadline();
+}
+
 async function fetchNews(){
   const RSS='https://feeds.bbci.co.uk/news/uk/rss.xml';
   const API=`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS)}&count=10`;
@@ -1696,12 +1829,9 @@ async function fetchNews(){
 
     const items=data.items;
 
-    // Ticker — duplicate for seamless infinite scroll
-    const ts=document.getElementById('ticker-scroll');
-    ts.innerHTML=(items.concat(items)).map(i=>
-      `<span class="ticker-item">${esc(i.title)}</span><span class="ticker-sep"> ◆ </span>`
-    ).join('');
-    ts.style.animationDuration=(items.length*6)+'s';
+    headlineItems=items;
+    headlineIndex=0;
+    renderCurrentHeadline();
 
     // Tuesday news cards
     const panel=document.getElementById('news-articles');
@@ -1717,14 +1847,33 @@ async function fetchNews(){
     const ts=document.getElementById('ticker-scroll');
     if(ts) ts.innerHTML='<span class="ticker-item">BBC headlines are temporarily unavailable</span>';
     const panel=document.getElementById('news-articles');
-    if(panel) panel.innerHTML='<div class="loading-txt">Headlines could not be loaded — please try again shortly.</div>';
+    if(panel) panel.innerHTML='<div class="loading-txt">Headlines could not be loaded. <button class="inline-retry" onclick="fetchNews()">Try again</button></div>';
   }
 }
 
 // ════════════════════════════════════════════════
 //  EDIT MODAL
 // ════════════════════════════════════════════════
+let editReturnFocus=null;
+
+function enhanceEditorA11y(){
+  const names={
+    'ed-week':'Week label','ed-wisdomday':'Wisdom day','ed-dates':'Key dates','ed-purpose':'Purpose line',
+    'ed-expect':'Our standards','ed-rota':'Student rota','ed-asm':'Assembly rota','ed-timer':'Starter timer minutes',
+    'ed-act-monday':'Monday required action','ed-act-tuesday':'Tuesday required action','ed-act-wednesday':'Wednesday required action',
+    'ed-act-thursday':'Thursday required action','ed-act-friday':'Friday required action','ed-lib-select':'Quote library',
+    'ed-quote':'Wisdom quote','ed-attr':'Quote author and book','ed-booknote':'Book note','ed-isbn':'Book ISBN',
+    'ed-coverurl':'Book cover image URL','ed-questions':'Discussion questions','ed-tasks':'Monday and Thursday tasks',
+    'ed-indepnote':'Independent study reminder','ed-yturl':'Sky News or YouTube URL','ed-fri-title':'Friday title',
+    'ed-fri-content':'Friday content','ed-token':'GitHub personal access token','ed-gistid':'Shared Gist ID'
+  };
+  Object.entries(names).forEach(([id,name])=>document.getElementById(id)?.setAttribute('aria-label',name));
+  [['tog-ticker','Show news ticker'],['tog-dates','Show key dates'],['tog-expect','Show our standards']]
+    .forEach(([id,name])=>document.getElementById(id)?.setAttribute('aria-label',name));
+}
+
 function openEdit(){
+  editReturnFocus=document.activeElement;
   document.getElementById('ed-week').value=S.week||'';
   document.getElementById('ed-wisdomday').value=S.wisdomDay||'wednesday';
   document.getElementById('ed-dates').value=(S.keyDates||[]).join('\n');
@@ -1760,11 +1909,19 @@ function openEdit(){
   document.getElementById('sync-status').textContent=(S.syncGistId||DEFAULTS.syncGistId)
     ?'✅ Sync active — Gist: '+(S.syncGistId||DEFAULTS.syncGistId)
     :'Not yet set up — see steps below.';
-  document.getElementById('edit-overlay').classList.add('open');
+  const overlay=document.getElementById('edit-overlay');
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden','false');
+  document.body.classList.add('modal-open');
+  document.getElementById('edit-modal').focus();
 }
 
 function closeEdit(){
-  document.getElementById('edit-overlay').classList.remove('open');
+  const overlay=document.getElementById('edit-overlay');
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden','true');
+  document.body.classList.remove('modal-open');
+  if(editReturnFocus?.focus) editReturnFocus.focus();
 }
 
 async function saveEdit(){
@@ -1834,8 +1991,8 @@ function renderOrderList(){
     <div class="ord-row">
       <span class="ord-lbl">${PLABELS[k]}</span>
       <div class="ord-btns">
-        <button class="ord-btn" onclick="mvPanel(${i},-1)" ${i===0?'disabled':''}>▲</button>
-        <button class="ord-btn" onclick="mvPanel(${i}, 1)" ${i===order.length-1?'disabled':''}>▼</button>
+        <button class="ord-btn" onclick="mvPanel(${i},-1)" aria-label="Move ${PLABELS[k]} up" ${i===0?'disabled':''}>▲</button>
+        <button class="ord-btn" onclick="mvPanel(${i}, 1)" aria-label="Move ${PLABELS[k]} down" ${i===order.length-1?'disabled':''}>▼</button>
       </div>
     </div>`).join('');
 }
@@ -1987,11 +2144,24 @@ function updateSyncIndicator(){
   el.style.display=configured?'inline':'none';
   el.textContent=syncState==='ok'?'🌐':syncState==='error'?'⚠️':'↻';
   el.title=syncState==='ok'?'Cloud sync connected':syncState==='error'?'Cloud sync unavailable — showing saved/default data':'Checking cloud sync…';
+  el.setAttribute('aria-label',el.title);
 }
 
 // Close on backdrop
 document.getElementById('edit-overlay').addEventListener('click',e=>{
   if(e.target===document.getElementById('edit-overlay')) closeEdit();
+});
+document.addEventListener('keydown',e=>{
+  const overlay=document.getElementById('edit-overlay');
+  if(!overlay.classList.contains('open')) return;
+  if(e.key==='Escape'){ e.preventDefault(); closeEdit(); return; }
+  if(e.key!=='Tab') return;
+  const focusable=[...document.getElementById('edit-modal').querySelectorAll('button,select,input,textarea,summary,[tabindex]:not([tabindex="-1"])')]
+    .filter(el=>!el.disabled&&el.getClientRects().length);
+  if(!focusable.length) return;
+  const first=focusable[0],last=focusable[focusable.length-1];
+  if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
 });
 
 // ════════════════════════════════════════════════
@@ -1999,6 +2169,7 @@ document.getElementById('edit-overlay').addEventListener('click',e=>{
 // ════════════════════════════════════════════════
 document.getElementById('day-select').addEventListener('change',e=>{
   renderDay(e.target.value);
+  if(e.target.value==='tuesday') fetchNews();
   fetchOTD(e.target.value);
 });
 
@@ -2023,6 +2194,8 @@ function paintTimer(){
   val.textContent=fmtTime(tRemain);
   pill.classList.toggle('running', tTick!==null && tRemain>0);
   pill.classList.toggle('done', tRemain<=0 && tTick===null && val.dataset.ran==='1');
+  pill.setAttribute('aria-pressed',String(tTick!==null));
+  pill.setAttribute('aria-label',(tTick?'Pause':'Start')+' starter timer, '+val.textContent+' remaining');
 }
 function resetTimer(e){
   if(e) e.stopPropagation();
@@ -2061,6 +2234,7 @@ function renderAll(){
 }
 
 async function init(){
+  enhanceEditorA11y();
   initDay();
   await pullFromGist();
   renderAll();
