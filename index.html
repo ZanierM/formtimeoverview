@@ -780,21 +780,14 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 // ════════════════════════════════════════════════
 //  DEFAULTS  (pre-filled from your PowerPoint)
 // ════════════════════════════════════════════════
+const CURRENT_DATA_VERSION = 2;
 const DEFAULTS = {
+  dataVersion:CURRENT_DATA_VERSION,
   week:"",
   wisdomDay:"wednesday",
   syncGistId:"b0f84c0d1abc42090b0be988623ff407",
   usedQuotes:[],
-  keyDates:[
-    "23rd Feb – Start of Term 4",
-    "23rd–27th Feb – Final Preparation Examinations",
-    "17th Mar – Whole School Careers Fair",
-    "19th Mar – School Photographs",
-    "20th Mar – AR3 Published",
-    "30th Mar – Parents Evening 2",
-    "1st–2nd Apr – Culture Days",
-    "2nd Apr – End of Term 4"
-  ],
+  keyDates:[],
   tasks:[
     "Read ahead or review your subject material",
     "Complete outstanding homework or prep work",
@@ -1310,7 +1303,7 @@ const QUOTE_LIBRARY = [
 // ════════════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════════════
-let S = (()=>{ try{ const s=localStorage.getItem('ft-v3'); return s?JSON.parse(s):clone(DEFAULTS); }catch{return clone(DEFAULTS);} })();
+let S = (()=>{ try{ const s=localStorage.getItem('ft-v3'); return migrateState(s?JSON.parse(s):{}); }catch{return clone(DEFAULTS);} })();
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function persist(){localStorage.setItem('ft-v3',JSON.stringify(S));}
 
@@ -1328,6 +1321,31 @@ function normaliseYouTubeUrl(value){
     if(videoId) return `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=0&rel=0&modestbranding=1`;
   }catch{}
   return cleaned;
+}
+
+// Bring data from older builds forward without allowing removed panels or
+// stale Term 4 defaults to override the current site.
+function migrateState(input){
+  const raw=input&&typeof input==='object'?clone(input):{};
+  const state={...clone(DEFAULTS),...raw};
+  state.panels={...clone(DEFAULTS.panels),...(raw.panels||{})};
+  state.assemblies=Array.isArray(raw.assemblies)?raw.assemblies:clone(DEFAULTS.assemblies);
+
+  const allowedPanels=['dates','expect'];
+  const requested=Array.isArray(raw.panelOrder)?raw.panelOrder:DEFAULTS.panelOrder;
+  state.panelOrder=[...new Set(requested.filter(k=>allowedPanels.includes(k)))];
+  allowedPanels.forEach(k=>{ if(!state.panelOrder.includes(k)) state.panelOrder.push(k); });
+
+  if((Number(raw.dataVersion)||0)<CURRENT_DATA_VERSION){
+    if(state.week==='22/6/26 – 26/6/26') state.week='';
+    if((state.keyDates||[]).some(d=>/Start of Term 4|End of Term 4/i.test(d))) state.keyDates=[];
+    delete state.noticeboard;
+    delete state.values;
+  }
+
+  state.ytUrl=normaliseYouTubeUrl(state.ytUrl||DEFAULTS.ytUrl);
+  state.dataVersion=CURRENT_DATA_VERSION;
+  return state;
 }
 
 // ════════════════════════════════════════════════
@@ -1640,6 +1658,7 @@ async function fetchOTD(dayName){
       fetch(`${base}/births/${m}/${d}`),
       fetch(`${base}/deaths/${m}/${d}`)
     ]);
+    if(!evR.ok||!brR.ok||!deR.ok) throw new Error('On This Day service unavailable');
     const [evD,brD,deD]=await Promise.all([evR.json(),brR.json(),deR.json()]);
     const ev=pickBest(evD.events||[]);
     const br=pickBest(brD.births||[]);
@@ -1671,6 +1690,7 @@ async function fetchNews(){
   const API=`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS)}&count=10`;
   try{
     const res=await fetch(API);
+    if(!res.ok) throw new Error('HTTP '+res.status);
     const data=await res.json();
     if(data.status!=='ok'||!data.items?.length) throw new Error();
 
@@ -1694,6 +1714,10 @@ async function fetchNews(){
     }
   }catch(e){
     console.warn('News fetch failed:',e);
+    const ts=document.getElementById('ticker-scroll');
+    if(ts) ts.innerHTML='<span class="ticker-item">BBC headlines are temporarily unavailable</span>';
+    const panel=document.getElementById('news-articles');
+    if(panel) panel.innerHTML='<div class="loading-txt">Headlines could not be loaded — please try again shortly.</div>';
   }
 }
 
@@ -1790,6 +1814,8 @@ async function saveEdit(){
     await pushToGist();
     closeEdit();
   }catch(e){
+    syncState='error';
+    updateSyncIndicator();
     console.error('Gist push failed:',e);
     document.getElementById('sync-status').textContent='❌ Cloud save failed — '+e.message;
     alert('Saved on this device, but GitHub sync failed.\n\n'+e.message+
@@ -1868,6 +1894,7 @@ function toggleQuoteUsed(){
 //  since GitHub gists are readable by ID without auth.
 // ════════════════════════════════════════════════
 const GIST_FILE='formtime-data.json';
+let syncState='pending';
 
 function getSyncToken(){ return localStorage.getItem('ft-sync-token')||''; }
 function setSyncToken(t){ t?localStorage.setItem('ft-sync-token',t):localStorage.removeItem('ft-sync-token'); }
@@ -1925,7 +1952,9 @@ async function pushToGist(){
     try{ detail=(await res.json()).message||''; }catch{}
     throw new Error(`GitHub returned HTTP ${res.status}${detail?' — '+detail:''}`);
   }
+  syncState='ok';
   document.getElementById('sync-status').textContent='✅ Saved to GitHub';
+  updateSyncIndicator();
   return true;
 }
 
@@ -1939,16 +1968,25 @@ async function pullFromGist(){
     const file=data.files[GIST_FILE];
     if(!file) return false;
     const remote=JSON.parse(file.content);
-    S={...clone(DEFAULTS),...remote,syncGistId:gistId};
+    S=migrateState({...remote,syncGistId:gistId});
     persist();
+    syncState='ok';
     return true;
-  }catch(e){ console.warn('Gist pull failed:',e); return false; }
+  }catch(e){
+    syncState='error';
+    updateSyncIndicator();
+    console.warn('Gist pull failed:',e);
+    return false;
+  }
 }
 
 function updateSyncIndicator(){
   const el=document.getElementById('sync-indicator');
   if(!el) return;
-  el.style.display=(S.syncGistId||DEFAULTS.syncGistId)?'inline':'none';
+  const configured=!!(S.syncGistId||DEFAULTS.syncGistId);
+  el.style.display=configured?'inline':'none';
+  el.textContent=syncState==='ok'?'🌐':syncState==='error'?'⚠️':'↻';
+  el.title=syncState==='ok'?'Cloud sync connected':syncState==='error'?'Cloud sync unavailable — showing saved/default data':'Checking cloud sync…';
 }
 
 // Close on backdrop
