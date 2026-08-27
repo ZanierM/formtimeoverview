@@ -902,7 +902,7 @@ const DEFAULTS = {
   dataVersion:CURRENT_DATA_VERSION,
   week:"",
   wisdomDay:"wednesday",
-  syncGistId:"b0f84c0d1abc42090b0be988623ff407",
+  syncGistId:"0f39629c7813d766c54e81946dc6590c",
   usedQuotes:[],
   keyDates:[],
   tasks:[
@@ -2068,12 +2068,11 @@ async function createSharedGist(){
     const data=await res.json();
     S.syncGistId=data.id;
     document.getElementById('ed-gistid').value=data.id;
-    document.getElementById('sync-status').textContent='✅ Created! Gist ID: '+data.id;
     persist();
-    updateSyncIndicator();
-    alert('Shared Gist created.\n\nGist ID:\n'+data.id+
-      '\n\nThis device will sync automatically from now on.\n\n'+
-      'To make this live for tutors too, this Gist ID needs to be baked into the page\'s code once and re-uploaded — copy the ID above and pass it back to Claude, or paste it into DEFAULTS.syncGistId yourself.');
+    await pushToGist();
+    document.getElementById('sync-status').textContent='✅ Shared Gist created and saved';
+    alert('Shared Gist created and saved.\n\nGist ID:\n'+data.id+
+      '\n\nThis device will sync automatically. To use this Gist on every device, publish its ID in the site configuration.');
   }catch(e){
     alert('Could not create the Gist. Check the token has "gist" scope.\n\n'+e.message);
   }
