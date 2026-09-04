@@ -533,8 +533,14 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 ::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
 
 /* FIVE LETTERS — optional whole-class word challenge */
-.word-launch {
+.word-launch-wrap {
   position:absolute; inset-block-start:22px; inset-inline-end:28px; z-index:2;
+  display:flex; align-items:center; justify-content:flex-end; gap:12px;
+}
+.word-launch-note {
+  max-width:220px; color:var(--text2); font-size:.88rem; line-height:1.35; font-weight:650; text-align:right;
+}
+.word-launch {
   min-height:44px; padding:9px 16px; border:1px solid var(--accent); border-radius:9px;
   background:var(--surface); color:var(--text); font:inherit; font-size:.92rem; font-weight:850;
   cursor:pointer; box-shadow:0 5px 16px var(--shadow);
@@ -570,7 +576,8 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .word-reset { display:none; margin:14px auto 0; background:transparent; color:var(--accent); border:1px solid var(--accent); }
 .word-message { min-height:29px; margin-top:14px; color:var(--text2); text-align:center; font-size:1rem; line-height:1.45; font-weight:700; }
 @media(max-width:640px){
-  .word-launch { position:static; align-self:flex-start; order:1; }
+  .word-launch-wrap { position:static; align-self:stretch; order:1; justify-content:space-between; }
+  .word-launch-note { max-width:190px; text-align:left; }
   #word-overlay { padding:0; }
   .word-game { min-height:100dvh; max-height:100dvh; border:0; border-radius:0; }
   .word-entry { flex-direction:column; }
@@ -1852,7 +1859,10 @@ function renderDay(day){
   const wordGame=!(assembly && !assembly.houseSpecific)?wordGameForDay(day):null;
   if(wordGame){
     p.querySelector('.day-header')?.insertAdjacentHTML('afterend',
-      `<button class="word-launch" type="button" onclick="openWordGame('${wordGame.date}')">Five Letters</button>`);
+      `<div class="word-launch-wrap">
+        <span class="word-launch-note">Warm up your thinking with today's word challenge.</span>
+        <button class="word-launch" type="button" onclick="openWordGame('${wordGame.date}')">Five Letters</button>
+      </div>`);
   }
   // Tuesday already has a video, a main question and a follow-up; a fourth
   // instruction adds scrolling without helping the classroom routine.
