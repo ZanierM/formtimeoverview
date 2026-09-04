@@ -319,6 +319,17 @@ header {
 }
 .no-form-time strong { display:block; margin-top:12px; color:var(--accent); font-size:clamp(1.8rem,4vw,3.4rem); line-height:1.05; }
 
+.assembly-today {
+  flex:1; min-height:300px; display:grid; place-content:center; text-align:center;
+  padding:clamp(28px,6vw,76px); border:1px solid var(--border); border-radius:16px;
+  background:var(--surface); box-shadow:0 8px 28px var(--shadow);
+}
+.assembly-day { color:var(--accent); font-size:1rem; font-weight:900; letter-spacing:.1em; text-transform:uppercase; margin-bottom:10px; }
+.assembly-today h1 { color:var(--text); font-size:clamp(3rem,6vw,5.5rem); line-height:.98; letter-spacing:-.035em; text-wrap:balance; }
+.assembly-today p { color:var(--text); font-size:clamp(1.45rem,2.4vw,2.2rem); line-height:1.25; margin-top:22px; }
+.assembly-today p strong { color:var(--accent); }
+.assembly-today span { color:var(--text2); font-size:1.05rem; font-weight:700; margin-top:18px; }
+
 /* ══════════════════════════════════════════
    SIDEBAR
 ══════════════════════════════════════════ */
@@ -639,6 +650,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .activity-purpose { max-width:68ch; color:var(--text2); font-size:1.12rem; line-height:1.55; font-weight:600; margin-top:-4px; }
 .micro-routine { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:0 8px 24px var(--shadow); }
 .routine-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-bottom:1px solid var(--border); }
+.routine-steps.four-step { grid-template-columns:repeat(4,minmax(0,1fr)); }
 .routine-step { padding:12px 14px; border-right:1px solid var(--border); text-align:center; }
 .routine-step:last-child { border-right:0; }
 .step-name { display:block; color:var(--accent); font-size:.9rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
@@ -648,13 +660,17 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .prompt-question { color:var(--text); font-size:clamp(1.65rem,2.35vw,2.35rem); font-weight:850; line-height:1.2; text-wrap:balance; max-width:30ch; }
 .prompt-followup { color:var(--text2); font-size:1.12rem; line-height:1.5; font-weight:600; margin-top:16px; padding-top:16px; border-top:1px solid var(--border); }
 .scenario { color:var(--text); font-size:1.25rem; line-height:1.5; font-weight:600; margin-bottom:18px; max-width:68ch; }
+.debate-routine { width:min(100%,1100px); }
+.debate-prompt { padding-block:clamp(28px,4vw,48px); }
+.debate-prompt .prompt-question { max-width:25ch; font-size:clamp(2rem,3.4vw,3.5rem); }
+.debate-prompt .prompt-followup { max-width:55ch; font-size:clamp(1.15rem,1.5vw,1.4rem); }
 .tuesday-grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:start; }
 .tuesday-grid .yt-wrap { padding-top:0; aspect-ratio:16/9; }
 .tuesday-grid .micro-routine { align-self:stretch; }
 .big-question-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(300px,.85fr); gap:18px; align-items:start; }
 .big-question-grid .wisdom-layout { min-width:0; }
 @media(max-width:900px){.tuesday-grid,.big-question-grid{grid-template-columns:1fr}.tuesday-grid .micro-routine{order:-1}}
-@media(max-width:640px){.routine-step{padding:9px 6px}.step-name,.step-time{font-size:.78rem}.prompt-card{padding:18px}.prompt-question{font-size:1.5rem}.prompt-followup{font-size:1rem}.activity-purpose{font-size:1rem}}
+@media(max-width:640px){.routine-steps.four-step{grid-template-columns:repeat(2,minmax(0,1fr))}.routine-steps.four-step .routine-step:nth-child(2){border-right:0}.routine-steps.four-step .routine-step:nth-child(-n+2){border-bottom:1px solid var(--border)}.routine-step{padding:9px 6px}.step-name,.step-time{font-size:.78rem}.prompt-card{padding:18px}.prompt-question{font-size:1.5rem}.prompt-followup{font-size:1rem}.activity-purpose{font-size:1rem}}
 /* BROADCAST STUDIO */
 @property --studio-sweep { syntax:'<angle>'; inherits:false; initial-value:100deg; }
 body { position:relative; isolation:isolate; }
@@ -862,9 +878,9 @@ header .year-label,header #week-display { color:#d5a0ce; }
     </details>
 
     <details class="editor-section">
-      <summary>Big Question and quote library</summary>
+      <summary>Big Question</summary>
       <div class="editor-section-body">
-    <div class="em-s">
+    <div class="em-s" hidden>
       <span class="em-lbl">Quote Library — Classic Literature</span>
       <div class="em-row" style="margin-top:0;">
         <select class="em-in" id="ed-lib-select" style="flex:1;"></select>
@@ -875,6 +891,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
     </div>
 
     <div class="em-s">
+      <div hidden>
       <span class="em-lbl">Big Question — stimulus quote</span>
       <textarea class="em-ta" id="ed-quote" rows="3" placeholder="Quote text…"></textarea>
       <div class="em-row">
@@ -885,7 +902,8 @@ header .year-label,header #week-display { color:#d5a0ce; }
       <input class="em-in" id="ed-isbn" placeholder="e.g. 9780140447927">
       <span class="em-lbl" style="margin-top:8px;display:block">— or direct cover image URL</span>
       <input class="em-in" id="ed-coverurl" placeholder="https://…">
-      <span class="em-lbl" style="margin-top:10px;display:block">Questions (main question first, optional follow-up second)</span>
+      </div>
+      <span class="em-lbl">Discussion prompts (main question first, optional follow-up second)</span>
       <textarea class="em-ta" id="ed-questions" rows="4"></textarea>
     </div>
       </div>
@@ -992,7 +1010,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
 // ════════════════════════════════════════════════
 //  DEFAULTS  (pre-filled from your PowerPoint)
 // ════════════════════════════════════════════════
-const CURRENT_DATA_VERSION = 7;
+const CURRENT_DATA_VERSION = 8;
 const DEFAULTS = {
   dataVersion:CURRENT_DATA_VERSION,
   week:"",
@@ -1001,25 +1019,25 @@ const DEFAULTS = {
   usedQuotes:[],
   keyDates:[],
   pulse:{
-    question:"What would make this a successful week for you?",
-    followUp:"What might get in the way — and what help would make a difference?"
+    question:"What would make your first full week of sixth form feel successful?",
+    followUp:"What is one small action you can take today to help that happen?"
   },
   newsPrompt:{
     question:"What happened, and why is it news today?",
     followUp:"What would you want to know next?"
   },
   challenge:{
-    title:"Deadline Triage",
-    scenario:"You have three deadlines in the next seven days, one subject you are falling behind in, and limited time tonight.",
-    question:"What should you do first, and why?",
-    followUp:"What is the most useful thing you could say to one of your teachers?"
+    title:"The Sixth-Form Survival Guide",
+    scenario:"A new student joins sixth form next week and asks your group how to settle in and succeed.",
+    question:"What are the three most useful pieces of advice you would give them?",
+    followUp:"Which piece of advice matters most — and why?"
   },
   wisdom:{
     quote:"There are two kinds of idiots… those who don't know they are idiots, and those who know it and use it.",
     attr:"Fyodor Dostoevsky – The Idiot",
     questions:[
-      "Is there power in playing the fool — in refusing to take the serious adult world of status and money as seriously as everyone else does?",
-      "Who is more awake: the student working 18 hours a day for a status they don't enjoy, or the person who is content with less but remains kind?"
+      "Is it more important to be happy now or successful in the future?",
+      "Does real success sometimes require giving up too much?"
     ],
     bookNote:"A Mr. Zanier must-read",
     isbn:"9780140447927",
@@ -1028,10 +1046,10 @@ const DEFAULTS = {
   ytUrl:"https://www.youtube.com/embed/YDvsBbKfLPA?autoplay=0&rel=0&modestbranding=1",
   purpose:"Your tutor writes your reference — form time is how they get to know you.",
   actions:{
-    monday:"Choose one thing you want to achieve this week.",
+    monday:"Choose one small action that will help you have a successful week.",
     tuesday:"Listen for the facts first. Be ready to explain what is interpretation.",
-    wednesday:"Give a reason for your view. Listen for one idea that challenges it.",
-    thursday:"Agree one practical strategy your group could use this week."
+    wednesday:"Take a position, then listen for one argument that challenges it.",
+    thursday:"Agree on the three strongest pieces of advice your group would give."
   },
   rota:"",
   // Assembly rota — one entry per week-commencing Monday (YYYY-MM-DD).
@@ -1569,6 +1587,11 @@ function migrateState(input){
     if(!raw.newsPrompt || raw.newsPrompt.question==="What do we know as fact, and what is still interpretation or opinion?"){
       state.newsPrompt=clone(DEFAULTS.newsPrompt);
     }
+    if((Number(raw.dataVersion)||0)<8){
+      state.pulse=clone(DEFAULTS.pulse);
+      state.challenge=clone(DEFAULTS.challenge);
+      state.wisdom={...state.wisdom,questions:clone(DEFAULTS.wisdom.questions)};
+    }
     delete state.tasks;
     delete state.indepNote;
   }
@@ -1700,6 +1723,22 @@ function renderNextAssembly(){
     </div>`;
 }
 
+function assemblyForDay(day,date=new Date()){
+  const key=isoDate(mondayOf(date));
+  const hit=(S.assemblies||DEFAULTS.assemblies||[]).find(a=>a.wc===key);
+  if(!hit || /^no assembly/i.test(hit.txt||'')) return null;
+  const names={monday:['Monday','Mon'],tuesday:['Tuesday','Tue'],wednesday:['Wednesday','Wed'],thursday:['Thursday','Thu'],friday:['Friday','Fri']};
+  const aliases=names[day]||[];
+  const parts=String(hit.txt).split(/\s*[·;]\s*/);
+  const match=parts.find(part=>aliases.some(name=>new RegExp(`\\b${name}\\b`,'i').test(part)));
+  if(!match) return null;
+  const label=match
+    .replace(/^House assemblies\s*[—:-]\s*/i,'')
+    .replace(new RegExp(`^(${aliases.join('|')})\\s*[—:-]\\s*`,'i'),'')
+    .trim();
+  return label||'See your tutor for the location';
+}
+
 // ════════════════════════════════════════════════
 //  DAY PANEL RENDER
 // ════════════════════════════════════════════════
@@ -1707,14 +1746,26 @@ function renderDay(day){
   const p=document.getElementById('day-panel');
   const wisdomDay=S.wisdomDay||'wednesday';
   const challengeDay=wisdomDay==='wednesday'?'thursday':'wednesday';
-  if(day==='friday') p.innerHTML=renderNoFormTime();
+  const assembly=day==='friday'?null:assemblyForDay(day);
+  if(assembly) p.innerHTML=renderAssemblyToday(day,assembly);
+  else if(day==='friday') p.innerHTML=renderNoFormTime();
   else if(day==='monday') p.innerHTML=renderPulse();
   else if(day==='tuesday') p.innerHTML=renderTuesday();
   else if(day===wisdomDay) p.innerHTML=renderBigQuestion(day);
   else if(day===challengeDay) p.innerHTML=renderChallenge(day);
   else p.innerHTML=renderChallenge(day);
-  if(day!=='friday') p.insertAdjacentHTML('beforeend', renderActionBar(day));
+  if(day!=='friday' && !assembly) p.insertAdjacentHTML('beforeend', renderActionBar(day));
   p.scrollTop=0;
+}
+
+function renderAssemblyToday(day,location){
+  return `
+    <div class="assembly-today">
+      <div class="assembly-day">${cap(day)}</div>
+      <h1>Assembly today</h1>
+      <p>Go directly to <strong>${esc(location)}</strong>.</p>
+      <span>No form-time activity today</span>
+    </div>`;
 }
 
 function renderNoFormTime(){
@@ -1751,6 +1802,22 @@ function renderRoutine(question,followUp,kicker='Your question'){
         <div class="prompt-kicker">${esc(kicker)}</div>
         <div class="prompt-question">${esc(question)}</div>
         ${followUp?`<div class="prompt-followup"><strong>Go further:</strong> ${esc(followUp)}</div>`:''}
+      </div>
+    </div>`;
+}
+
+function renderDebateRoutine(question,followUp){
+  return `
+    <div class="micro-routine debate-routine">
+      <div class="routine-steps four-step" aria-label="Decide, discuss, challenge, share routine">
+        <div class="routine-step"><span class="step-name">Decide</span><span class="step-time">30 seconds</span></div>
+        <div class="routine-step"><span class="step-name">Discuss</span><span class="step-time">2 minutes</span></div>
+        <div class="routine-step"><span class="step-name">Challenge</span><span class="step-time">2 minutes</span></div>
+        <div class="routine-step"><span class="step-name">Share</span><span class="step-time">3 minutes</span></div>
+      </div>
+      <div class="prompt-card debate-prompt">
+        <div class="prompt-question">${esc(question)}</div>
+        ${followUp?`<div class="prompt-followup"><strong>Consider:</strong> ${esc(followUp)}</div>`:''}
       </div>
     </div>`;
 }
@@ -1804,18 +1871,7 @@ function renderBigQuestion(day){
       <div class="day-sub">Big Question</div>
     </div>
     <p class="activity-purpose">Use one worthwhile question to practise listening, reasoning and respectful disagreement.</p>
-    <div class="big-question-grid">
-      <div class="wisdom-layout">
-        <div class="wisdom-main">
-          <div class="quote-card">
-            <div class="quote-text">"${esc(w.quote)}"</div>
-            <div class="quote-attr">— ${esc(w.attr||'')}</div>
-            ${w.bookNote?`<div class="quote-note">${esc(w.bookNote)}</div>`:''}
-          </div>
-        </div>
-      </div>
-      ${renderRoutine(mainQuestion,followUp,'Big question')}
-    </div>`;
+    ${renderDebateRoutine(mainQuestion,followUp)}`;
 }
 
 function renderChallenge(day){
