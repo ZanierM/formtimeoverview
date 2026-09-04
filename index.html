@@ -329,6 +329,11 @@ header {
 .assembly-today p { color:var(--text); font-size:clamp(1.45rem,2.4vw,2.2rem); line-height:1.25; margin-top:22px; }
 .assembly-today p strong { color:var(--accent); }
 .assembly-today span { color:var(--text2); font-size:1.05rem; font-weight:700; margin-top:18px; }
+.house-assembly-notice {
+  background:var(--accent); color:var(--on-accent); border-radius:10px;
+  padding:12px 16px; font-size:1.05rem; line-height:1.4; font-weight:650;
+}
+.house-assembly-notice strong { font-weight:900; }
 
 /* ══════════════════════════════════════════
    SIDEBAR
@@ -891,6 +896,9 @@ header .year-label,header #week-display { color:#d5a0ce; }
     </div>
 
     <div class="em-s">
+      <span class="em-lbl">Weekly questions (YYYY-MM-DD | question | follow-up)</span>
+      <textarea class="em-ta" id="ed-bigquestions" rows="9"></textarea>
+      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Use the week-commencing Monday. The matching question appears automatically that week.</span>
       <div hidden>
       <span class="em-lbl">Big Question — stimulus quote</span>
       <textarea class="em-ta" id="ed-quote" rows="3" placeholder="Quote text…"></textarea>
@@ -903,7 +911,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
       <span class="em-lbl" style="margin-top:8px;display:block">— or direct cover image URL</span>
       <input class="em-in" id="ed-coverurl" placeholder="https://…">
       </div>
-      <span class="em-lbl">Discussion prompts (main question first, optional follow-up second)</span>
+      <span class="em-lbl" style="margin-top:12px">Fallback prompts</span>
       <textarea class="em-ta" id="ed-questions" rows="4"></textarea>
     </div>
       </div>
@@ -1010,13 +1018,22 @@ header .year-label,header #week-display { color:#d5a0ce; }
 // ════════════════════════════════════════════════
 //  DEFAULTS  (pre-filled from your PowerPoint)
 // ════════════════════════════════════════════════
-const CURRENT_DATA_VERSION = 8;
+const CURRENT_DATA_VERSION = 9;
 const DEFAULTS = {
   dataVersion:CURRENT_DATA_VERSION,
   week:"",
   wisdomDay:"wednesday",
   syncGistId:"0f39629c7813d766c54e81946dc6590c",
   usedQuotes:[],
+  bigQuestions:[
+    {wc:"2026-09-07",question:"Is it more important to be happy now or successful in the future?",followUp:"Does real success sometimes require giving up too much?"},
+    {wc:"2026-09-14",question:"Should schools ban smartphones for the entire school day?",followUp:"Should sixth-form students be trusted to regulate their own use?"},
+    {wc:"2026-09-21",question:"Should university places be awarded purely on grades?",followUp:"Is considering someone's background fair, or a different kind of unfairness?"},
+    {wc:"2026-09-28",question:"Should people have to use their real identity on social media?",followUp:"Does anonymity protect people, or remove accountability?"},
+    {wc:"2026-10-05",question:"Should voting be compulsory?",followUp:"Is choosing not to vote a democratic right?"},
+    {wc:"2026-10-12",question:"Should private schools continue to exist?",followUp:"Should parents be free to buy educational advantages for their children?"},
+    {wc:"2026-10-19",question:"Should AI-generated work receive any academic credit?",followUp:"Where is the boundary between assistance and cheating?"}
+  ],
   keyDates:[],
   pulse:{
     question:"What would make your first full week of sixth form feel successful?",
@@ -1565,6 +1582,7 @@ function migrateState(input){
   const state={...clone(DEFAULTS),...raw};
   state.panels={...clone(DEFAULTS.panels),...(raw.panels||{})};
   state.assemblies=Array.isArray(raw.assemblies)?raw.assemblies:clone(DEFAULTS.assemblies);
+  state.bigQuestions=Array.isArray(raw.bigQuestions)?raw.bigQuestions:clone(DEFAULTS.bigQuestions);
 
   const allowedPanels=['dates','expect'];
   const requested=Array.isArray(raw.panelOrder)?raw.panelOrder:DEFAULTS.panelOrder;
@@ -1736,7 +1754,7 @@ function assemblyForDay(day,date=new Date()){
     .replace(/^House assemblies\s*[—:-]\s*/i,'')
     .replace(new RegExp(`^(${aliases.join('|')})\\s*[—:-]\\s*`,'i'),'')
     .trim();
-  return label||'See your tutor for the location';
+  return {location:label||'See your tutor for the location',houseSpecific:/^House assemblies/i.test(hit.txt)};
 }
 
 // ════════════════════════════════════════════════
@@ -1747,14 +1765,15 @@ function renderDay(day){
   const wisdomDay=S.wisdomDay||'wednesday';
   const challengeDay=wisdomDay==='wednesday'?'thursday':'wednesday';
   const assembly=day==='friday'?null:assemblyForDay(day);
-  if(assembly) p.innerHTML=renderAssemblyToday(day,assembly);
+  if(assembly && !assembly.houseSpecific) p.innerHTML=renderAssemblyToday(day,assembly.location);
   else if(day==='friday') p.innerHTML=renderNoFormTime();
   else if(day==='monday') p.innerHTML=renderPulse();
   else if(day==='tuesday') p.innerHTML=renderTuesday();
   else if(day===wisdomDay) p.innerHTML=renderBigQuestion(day);
   else if(day===challengeDay) p.innerHTML=renderChallenge(day);
   else p.innerHTML=renderChallenge(day);
-  if(day!=='friday' && !assembly) p.insertAdjacentHTML('beforeend', renderActionBar(day));
+  if(assembly?.houseSpecific) p.insertAdjacentHTML('afterbegin',renderHouseAssemblyNotice(day,assembly.location));
+  if(day!=='friday' && !(assembly && !assembly.houseSpecific)) p.insertAdjacentHTML('beforeend', renderActionBar(day));
   p.scrollTop=0;
 }
 
@@ -1766,6 +1785,10 @@ function renderAssemblyToday(day,location){
       <p>Go directly to <strong>${esc(location)}</strong>.</p>
       <span>No form-time activity today</span>
     </div>`;
+}
+
+function renderHouseAssemblyNotice(day,houses){
+  return `<div class="house-assembly-notice"><strong>${cap(day)} house assembly:</strong> ${esc(houses)} attend assembly. Other forms continue with today's activity.</div>`;
 }
 
 function renderNoFormTime(){
@@ -1859,12 +1882,17 @@ function renderTuesday(){
     `;
 }
 
+function bigQuestionForDate(date=new Date()){
+  const weekKey=isoDate(mondayOf(date));
+  return (S.bigQuestions||DEFAULTS.bigQuestions||[]).find(q=>q.wc===weekKey)||null;
+}
+
 function renderBigQuestion(day){
   const w=S.wisdom||DEFAULTS.wisdom;
-
+  const scheduled=bigQuestionForDate();
   const questions=w.questions||DEFAULTS.wisdom.questions;
-  const mainQuestion=questions[0]||'What do you think — and why?';
-  const followUp=questions[1]||'Who might reasonably disagree with you?';
+  const mainQuestion=scheduled?.question||questions[0]||'What do you think — and why?';
+  const followUp=scheduled?.followUp||questions[1]||'Who might reasonably disagree with you?';
   return `
     <div class="day-header">
       <h1 class="day-name">${cap(day)}</h1>
@@ -2056,7 +2084,7 @@ function enhanceEditorA11y(){
     'ed-act-monday':'Monday required action','ed-act-tuesday':'Tuesday required action','ed-act-wednesday':'Wednesday required action',
     'ed-act-thursday':'Thursday required action','ed-lib-select':'Quote library',
     'ed-quote':'Big Question quote','ed-attr':'Quote author and book','ed-booknote':'Book note','ed-isbn':'Book ISBN',
-    'ed-coverurl':'Book cover image URL','ed-questions':'Discussion questions','ed-pulse-question':'Monday Weekly Pulse question',
+    'ed-coverurl':'Book cover image URL','ed-questions':'Fallback discussion questions','ed-bigquestions':'Dated weekly Big Questions','ed-pulse-question':'Monday Weekly Pulse question',
     'ed-pulse-followup':'Monday follow-up question','ed-yturl':'Sky News or YouTube URL','ed-news-question':'Tuesday One Story question',
     'ed-news-followup':'Tuesday follow-up question','ed-challenge-title':'Quick Challenge title','ed-challenge-scenario':'Quick Challenge scenario',
     'ed-challenge-question':'Quick Challenge question','ed-challenge-followup':'Quick Challenge follow-up',
@@ -2089,6 +2117,8 @@ function openEdit(){
   document.getElementById('ed-isbn').value=w.isbn||'';
   document.getElementById('ed-coverurl').value=w.coverUrl||'';
   document.getElementById('ed-questions').value=(w.questions||[]).join('\n');
+  document.getElementById('ed-bigquestions').value=(S.bigQuestions||DEFAULTS.bigQuestions||[])
+    .map(q=>`${q.wc} | ${q.question} | ${q.followUp||''}`).join('\n');
   const pulse=S.pulse||DEFAULTS.pulse;
   document.getElementById('ed-pulse-question').value=pulse.question||'';
   document.getElementById('ed-pulse-followup').value=pulse.followUp||'';
@@ -2151,6 +2181,10 @@ async function saveEdit(){
     coverUrl:document.getElementById('ed-coverurl').value.trim(),
     questions:document.getElementById('ed-questions').value.split('\n').map(l=>l.trim()).filter(Boolean)
   };
+  S.bigQuestions=document.getElementById('ed-bigquestions').value.split('\n')
+    .map(l=>l.trim()).filter(Boolean)
+    .map(l=>{ const parts=l.split('|').map(p=>p.trim()); return parts.length<2?null:{wc:parts[0],question:parts[1],followUp:parts.slice(2).join(' | ')}; })
+    .filter(q=>q && /^\d{4}-\d{2}-\d{2}$/.test(q.wc) && q.question);
   S.pulse={
     question:document.getElementById('ed-pulse-question').value.trim(),
     followUp:document.getElementById('ed-pulse-followup').value.trim()
