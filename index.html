@@ -145,14 +145,15 @@ header {
   white-space:nowrap;
 }
 .hdr-btn:hover { border-color:var(--accent); color:var(--accent); }
-#theme-btn { font-size:1.1rem; padding:7px 10px; }
+#theme-btn { width:44px; min-width:44px; min-height:44px; padding:0; display:grid; place-items:center; font-size:1.1rem; }
+.day-select-status { min-height:var(--control-h); padding:9px 14px; border:1px solid var(--border); border-radius:8px; color:var(--text2); font-weight:800; display:inline-flex; align-items:center; }
 
 /* ══════════════════════════════════════════
    NEWS TICKER
 ══════════════════════════════════════════ */
 #ticker-wrap {
   background:var(--ticker-bg);
-  height:34px;
+  height:44px;
   display:flex;
   align-items:center;
   overflow:hidden;
@@ -173,6 +174,7 @@ header {
   flex-shrink:0;
   border-right:2px solid var(--accent);
 }
+.ticker-updated { margin-left:6px; font-size:.64rem; letter-spacing:.03em; font-weight:700; opacity:.8; white-space:nowrap; }
 .ticker-track  { overflow:hidden; flex:1; min-width:0; }
 .ticker-scroll {
   display:inline-flex;
@@ -180,10 +182,11 @@ header {
   white-space:nowrap;
   animation:ticker-move 80s linear infinite;
 }
+.ticker-sequence { display:inline-flex; }
 .ticker-scroll.paused,.ticker-track:hover .ticker-scroll,.ticker-track:focus-within .ticker-scroll { animation-play-state:paused; }
 @keyframes ticker-move { from { transform:translateX(0); } to { transform:translateX(-50%); } }
 .ticker-toggle {
-  min-width:44px; min-height:34px; align-self:stretch; border:0; border-inline-start:1px solid rgba(255,255,255,.24);
+  min-width:44px; min-height:44px; align-self:stretch; border:0; border-inline-start:1px solid rgba(255,255,255,.24);
   background:var(--ticker-bg); color:var(--ticker-fg); cursor:pointer; font:inherit; font-weight:900;
 }
 .ticker-item {
@@ -670,7 +673,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
   #day-select { flex:1 1 170px; min-width:130px; }
   .timer-group { flex:0 0 auto; }
   #sync-indicator { min-width:44px; min-height:44px; display:inline-flex!important; align-items:center; justify-content:center; }
-  #ticker-wrap { height:42px; }
+  #ticker-wrap { height:44px; }
   .ticker-label { padding:0 10px; }
   .ticker-item { font-size:.9rem; padding:0 20px; }
   #day-panel { padding:24px 16px 28px; min-height:0; }
@@ -743,7 +746,7 @@ header .purpose-line,header #date-display { color:#e7d9e4; }
 header .year-label,header #week-display { color:#d5a0ce; }
 .school-badge { border-radius:999px; box-shadow:0 0 0 4px rgba(213,160,206,.11); }
 .form-title { font-size:2.25rem; text-shadow:0 3px 18px rgba(0,0,0,.22); }
-#ticker-wrap { height:38px; border-bottom:1px solid rgba(255,255,255,.18); box-shadow:0 6px 22px rgba(0,0,0,.2); }
+#ticker-wrap { height:44px; border-bottom:1px solid rgba(255,255,255,.18); box-shadow:0 6px 22px rgba(0,0,0,.2); }
 .ticker-label { background:#140d14; }
 #day-panel { padding:18px 28px; gap:14px; }
 .day-name { text-transform:uppercase; font-size:clamp(3.1rem,4.5vw,4.5rem); color:#f8f3f7; }
@@ -767,7 +770,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
 #otd-bar { min-height:52px; max-height:52px; }
 .otd-bar-hdr { min-width:230px; padding:5px 14px; flex-direction:row; align-items:center; gap:9px; }
 .otd-bar-label { white-space:nowrap; }
-.otd-bar-refresh { margin:0; min-width:36px; min-height:36px; }
+.otd-bar-refresh { margin:0; min-width:44px; min-height:44px; }
 #otd-content { min-width:0; }
 .otd-card { min-width:0; min-height:0; padding:6px 16px; border-right:0; }
 .otd-card:nth-child(n+2) { display:none; }
@@ -811,6 +814,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
       <option value="wednesday">Wednesday</option>
       <option value="thursday">Thursday</option>
     </select>
+    <span id="friday-status" class="day-select-status" hidden>Friday — lessons</span>
     <div class="timer-group" role="group" aria-label="Starter timer">
       <button id="timer-pill" type="button" onclick="toggleTimer(event)" aria-pressed="false" aria-label="Start or pause the starter timer">
         <span aria-hidden="true">⏱</span><span id="timer-val">5:00</span>
@@ -825,7 +829,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
 
 <!-- ══ TICKER ══ -->
 <div id="ticker-wrap">
-  <div class="ticker-label">NEWS</div>
+  <div class="ticker-label">NEWS <span id="ticker-updated" class="ticker-updated"></span></div>
   <div class="ticker-track">
     <div class="ticker-scroll" id="ticker-scroll">
       <span class="ticker-item">Loading latest headlines…</span>
@@ -857,6 +861,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
   <div class="otd-bar-hdr">
     <span class="otd-bar-label">On This Day</span>
     <span class="otd-bar-date" id="otd-date-lbl"></span>
+    <span class="otd-bar-date" id="otd-updated"></span>
     <button class="otd-bar-refresh" onclick="fetchOTD(currentDay())" aria-label="Show different On This Day events">↻</button>
   </div>
   <div id="otd-content"><div style="padding:10px 18px;color:var(--text2);font-style:italic;font-size:0.88rem;">Loading…</div></div>
@@ -900,9 +905,9 @@ header .year-label,header #week-display { color:#d5a0ce; }
     </div>
 
     <div class="em-s">
-      <span class="em-lbl">Assembly Rota (one per line: YYYY-MM-DD | description)</span>
+      <span class="em-lbl">Assembly Rota (one per line: week | type | day | details)</span>
       <textarea class="em-ta" id="ed-asm" rows="8"></textarea>
-      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Use the week-commencing <strong>Monday</strong> for each week. Key Dates automatically shows next week's entry — no need to update it weekly.</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Use <strong>all</strong> for an assembly location, <strong>houses</strong> for named houses, or <strong>none</strong>. Example: <em>2026-09-07 | all | Tuesday | Dance Studio</em>. Use the week-commencing Monday.</span>
     </div>
 
     <div class="em-s">
@@ -937,34 +942,10 @@ header .year-label,header #week-display { color:#d5a0ce; }
     <details class="editor-section">
       <summary>Big Question</summary>
       <div class="editor-section-body">
-    <div class="em-s" hidden>
-      <span class="em-lbl">Quote Library — Classic Literature</span>
-      <div class="em-row" style="margin-top:0;">
-        <select class="em-in" id="ed-lib-select" style="flex:1;"></select>
-        <button type="button" class="ord-btn" style="white-space:nowrap;padding:9px 16px;font-size:0.85rem;" onclick="loadFromLibrary()">Load</button>
-        <button type="button" class="ord-btn" style="white-space:nowrap;padding:9px 12px;font-size:0.85rem;" onclick="toggleQuoteUsed()" aria-label="Mark selected quote as used or unused">✓ ↺</button>
-      </div>
-      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Loading a quote marks it "used" automatically and moves it to the bottom of the list. Click ✓ ↺ to undo, or to manually mark/unmark any quote.</span>
-    </div>
-
     <div class="em-s">
       <span class="em-lbl">Weekly questions (YYYY-MM-DD | question | follow-up)</span>
       <textarea class="em-ta" id="ed-bigquestions" rows="9"></textarea>
       <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Use the week-commencing Monday. The matching question appears automatically that week.</span>
-      <div hidden>
-      <span class="em-lbl">Big Question — stimulus quote</span>
-      <textarea class="em-ta" id="ed-quote" rows="3" placeholder="Quote text…"></textarea>
-      <div class="em-row">
-        <input class="em-in" id="ed-attr" placeholder="Author – Book">
-        <input class="em-in" id="ed-booknote" placeholder="e.g. A Mr. Zanier must-read">
-      </div>
-      <span class="em-lbl" style="margin-top:10px;display:block">Book Cover — ISBN (optional, for auto cover)</span>
-      <input class="em-in" id="ed-isbn" placeholder="e.g. 9780140447927">
-      <span class="em-lbl" style="margin-top:8px;display:block">— or direct cover image URL</span>
-      <input class="em-in" id="ed-coverurl" placeholder="https://…">
-      </div>
-      <span class="em-lbl" style="margin-top:12px">Fallback prompts</span>
-      <textarea class="em-ta" id="ed-questions" rows="4"></textarea>
     </div>
       </div>
     </details>
@@ -1092,13 +1073,12 @@ header .year-label,header #week-display { color:#d5a0ce; }
 // ════════════════════════════════════════════════
 //  DEFAULTS  (pre-filled from your PowerPoint)
 // ════════════════════════════════════════════════
-const CURRENT_DATA_VERSION = 9;
+const CURRENT_DATA_VERSION = 10;
 const DEFAULTS = {
   dataVersion:CURRENT_DATA_VERSION,
   week:"",
   wisdomDay:"wednesday",
   syncGistId:"0f39629c7813d766c54e81946dc6590c",
-  usedQuotes:[],
   bigQuestions:[
     {wc:"2026-09-07",question:"Is it more important to be happy now or successful in the future?",followUp:"Does real success sometimes require giving up too much?"},
     {wc:"2026-09-14",question:"Should schools ban smartphones for the entire school day?",followUp:"Should sixth-form students be trusted to regulate their own use?"},
@@ -1123,17 +1103,6 @@ const DEFAULTS = {
     question:"What are the three most useful pieces of advice you would give them?",
     followUp:"Which piece of advice matters most — and why?"
   },
-  wisdom:{
-    quote:"There are two kinds of idiots… those who don't know they are idiots, and those who know it and use it.",
-    attr:"Fyodor Dostoevsky – The Idiot",
-    questions:[
-      "Is it more important to be happy now or successful in the future?",
-      "Does real success sometimes require giving up too much?"
-    ],
-    bookNote:"A Mr. Zanier must-read",
-    isbn:"9780140447927",
-    coverUrl:""
-  },
   ytUrl:"https://www.youtube.com/embed/YDvsBbKfLPA?autoplay=0&rel=0&modestbranding=1",
   purpose:"Your tutor writes your reference — form time is how they get to know you.",
   actions:{
@@ -1146,13 +1115,16 @@ const DEFAULTS = {
   // Assembly rota — one entry per week-commencing Monday (YYYY-MM-DD).
   // The Key Dates panel automatically shows NEXT week's entry.
   assemblies:[
-    { wc:"2026-09-07", txt:"Tuesday — Dance Studio" },
-    { wc:"2026-09-14", txt:"House assemblies — Mon: Atholl & Penfold · Tue: Chadwick & Reekie · Wed: Darnley & Westbrook · Thu: Lynton" },
-    { wc:"2026-09-21", txt:"Tuesday — Hall" },
-    { wc:"2026-09-28", txt:"Tuesday — Dance Studio" },
-    { wc:"2026-10-05", txt:"Tuesday — Mrs Absolon" },
-    { wc:"2026-10-12", txt:"No assembly this week" },
-    { wc:"2026-10-19", txt:"Tuesday — Hall" }
+    {wc:"2026-09-07",type:"all",day:"tuesday",location:"Dance Studio"},
+    {wc:"2026-09-14",type:"houses",day:"monday",houses:["Atholl","Penfold"]},
+    {wc:"2026-09-14",type:"houses",day:"tuesday",houses:["Chadwick","Reekie"]},
+    {wc:"2026-09-14",type:"houses",day:"wednesday",houses:["Darnley","Westbrook"]},
+    {wc:"2026-09-14",type:"houses",day:"thursday",houses:["Lynton"]},
+    {wc:"2026-09-21",type:"all",day:"tuesday",location:"Hall"},
+    {wc:"2026-09-28",type:"all",day:"tuesday",location:"Dance Studio"},
+    {wc:"2026-10-05",type:"all",day:"tuesday",location:"Mrs Absolon"},
+    {wc:"2026-10-12",type:"none"},
+    {wc:"2026-10-19",type:"all",day:"tuesday",location:"Hall"}
   ],
   expectations:[
     "Seated by the bell, bag down",
@@ -1163,473 +1135,13 @@ const DEFAULTS = {
   ],
   timerMins:5,
   panels:{ ticker:true, dates:true, expect:true },
-  panelOrder:["dates","expect"],
-  theme:"dark"
+  panelOrder:["dates","expect"]
 };
 
 const FIVE_LETTER_GAMES=[
   {date:"2026-09-07",word:"START",clue:"To begin something new.",reveal:"START — to begin. Every strong week starts with one useful action."},
   {date:"2026-09-09",word:"VOICE",clue:"The ability to express what you think.",reveal:"VOICE — the power to express an opinion. A strong voice also makes room to hear others."},
   {date:"2026-09-10",word:"ADAPT",clue:"To change so that you can succeed in new conditions.",reveal:"ADAPT — to adjust successfully when circumstances change."}
-];
-
-// ════════════════════════════════════════════════
-//  QUOTE LIBRARY — classic literature, Year 12-level
-//  Pick from the Edit panel; loads quote + questions
-//  + book cover automatically.
-// ════════════════════════════════════════════════
-const QUOTE_LIBRARY = [
-  {
-    id:"dostoevsky-idiot",
-    quote:"There are two kinds of idiots… those who don't know they are idiots, and those who know it and use it.",
-    attr:"Fyodor Dostoevsky – The Idiot",
-    bookNote:"A Mr. Zanier must-read",
-    isbn:"9780140447927",
-    questions:[
-      "Is there power in playing the fool — in refusing to take the serious adult world of status and money as seriously as everyone else does?",
-      "Who is more awake: the student working 18 hours a day for a status they don't enjoy, or the person who is content with less but remains kind?"
-    ]
-  },
-  {
-    id:"dostoevsky-crime",
-    quote:"Power is given only to those who dare to lower themselves and pick it up.",
-    attr:"Fyodor Dostoevsky – Crime and Punishment",
-    bookNote:"A study of guilt, pride and redemption",
-    isbn:"9780140449136",
-    questions:[
-      "Can a person ever justify a wrong action by appealing to a greater good?",
-      "What does the novel suggest about the relationship between guilt and conscience?"
-    ]
-  },
-  {
-    id:"dickens-tale-two-cities",
-    quote:"It was the best of times, it was the worst of times.",
-    attr:"Charles Dickens – A Tale of Two Cities",
-    bookNote:"Set against the backdrop of the French Revolution",
-    isbn:"9780141439600",
-    questions:[
-      "Can a single era really be both the best and worst of times? What makes that true of any period in history?",
-      "What does the novel suggest about the true cost of revolution and justice?"
-    ]
-  },
-  {
-    id:"dumas-monte-cristo",
-    quote:"All human wisdom is contained in these two words – wait and hope.",
-    attr:"Alexandre Dumas – The Count of Monte Cristo",
-    bookNote:"A masterclass in patience, betrayal and revenge",
-    isbn:"9780140449266",
-    questions:[
-      "Is revenge ever truly satisfying, or does it cost the avenger something they can't get back?",
-      "What's the difference between waiting with hope and simply waiting?"
-    ]
-  },
-  {
-    id:"shakespeare-hamlet",
-    quote:"To be, or not to be, that is the question.",
-    attr:"William Shakespeare – Hamlet",
-    bookNote:"The most quoted line in English literature",
-    isbn:"9780743477123",
-    questions:[
-      "Is Hamlet's hesitation a flaw, or is overthinking sometimes the wiser choice?",
-      "What does the soliloquy reveal about how Hamlet sees life versus death?"
-    ]
-  },
-  {
-    id:"shakespeare-macbeth",
-    quote:"Tomorrow, and tomorrow, and tomorrow, creeps in this petty pace from day to day.",
-    attr:"William Shakespeare – Macbeth",
-    bookNote:"Macbeth's despairing reflection on time and meaning",
-    isbn:"9780743477109",
-    questions:[
-      "Does ambition inevitably lead to this kind of emptiness, or only when pursued the wrong way?",
-      "What gives life meaning, if not power or achievement?"
-    ]
-  },
-  {
-    id:"steinbeck-mice-men",
-    quote:"A guy needs somebody – to be near him.",
-    attr:"John Steinbeck – Of Mice and Men",
-    bookNote:"A short, devastating study of loneliness and friendship",
-    isbn:"9780141023571",
-    questions:[
-      "Why does loneliness affect almost every character in this novel, regardless of their strength or intelligence?",
-      "What does George's final decision say about the limits and cost of loyalty?"
-    ]
-  },
-  {
-    id:"orwell-1984",
-    quote:"Who controls the past controls the future. Who controls the present controls the past.",
-    attr:"George Orwell – Nineteen Eighty-Four",
-    bookNote:"A warning about truth, power and propaganda",
-    isbn:"9780141036144",
-    questions:[
-      "How much of what we believe about the past depends on who is telling the story?",
-      "Are there examples today of facts or history being rewritten for political convenience?"
-    ]
-  },
-  {
-    id:"lee-mockingbird",
-    quote:"Climb into his skin and walk around in it.",
-    attr:"Harper Lee – To Kill a Mockingbird",
-    bookNote:"Atticus Finch's advice on understanding other people",
-    isbn:"9780099549482",
-    questions:[
-      "How easy is it, in practice, to truly see a situation from someone else's perspective?",
-      "Who in your own life would you understand better if you tried this?"
-    ]
-  },
-  {
-    id:"golding-flies",
-    quote:"Maybe there is a beast… maybe it's only us.",
-    attr:"William Golding – Lord of the Flies",
-    bookNote:"A chilling study of civilisation and human nature",
-    isbn:"9780571191475",
-    questions:[
-      "Does the novel suggest evil is something within all of us, or something created by circumstance?",
-      "What does it take for a group of ordinary people to turn on one another?"
-    ]
-  },
-  {
-    id:"tolstoy-anna-karenina",
-    quote:"All happy families are alike; every unhappy family is unhappy in its own way.",
-    attr:"Leo Tolstoy – Anna Karenina",
-    bookNote:"One of literature's most famous opening lines",
-    isbn:"9780143035008",
-    questions:[
-      "Do you agree that happiness looks the same across families, while unhappiness is always unique?",
-      "What expectations of society shape the characters' choices in the novel?"
-    ]
-  },
-  {
-    id:"bronte-jane-eyre",
-    quote:"I am no bird; and no net ensnares me.",
-    attr:"Charlotte Brontë – Jane Eyre",
-    bookNote:"Jane's declaration of independence and self-respect",
-    isbn:"9780141441146",
-    questions:[
-      "What does this line suggest about Jane's sense of identity in a society that expects women to be dependent?",
-      "Where do you draw the line between compromise and losing yourself?"
-    ]
-  },
-  {
-    id:"camus-stranger",
-    quote:"Maman died today. Or yesterday maybe, I don't know.",
-    attr:"Albert Camus – The Stranger",
-    bookNote:"The novel's famous, unsettling opening line",
-    isbn:"9780679720201",
-    questions:[
-      "What does the narrator's flat, detached tone suggest about how he experiences the world?",
-      "Is indifference a kind of honesty, or is it a failure to feel what we should?"
-    ]
-  },
-  {
-    id:"shelley-frankenstein",
-    quote:"Beware; for I am fearless, and therefore powerful.",
-    attr:"Mary Shelley – Frankenstein",
-    bookNote:"The creature's warning to his creator",
-    isbn:"9780141439471",
-    questions:[
-      "Who is more monstrous in this novel — the creature, or the man who abandoned him?",
-      "Does having nothing left to lose make a person dangerous, free, or both?"
-    ]
-  },
-  {
-    id:"austen-pride-prejudice",
-    quote:"Vanity and pride are different things, though the words are often used synonymously.",
-    attr:"Jane Austen – Pride and Prejudice",
-    bookNote:"A sharp study of manners, judgement and self-knowledge",
-    isbn:"9780141439518",
-    questions:[
-      "What's the real difference between vanity and pride, and which one drives Mr Darcy's early behaviour?",
-      "How much do first impressions shape our judgement of other people — fairly or not?"
-    ]
-  },
-  {
-    id:"bronte-e-wuthering-heights",
-    quote:"Whatever our souls are made of, his and mine are the same.",
-    attr:"Emily Brontë – Wuthering Heights",
-    bookNote:"Catherine's declaration about Heathcliff",
-    isbn:"9780141439556",
-    questions:[
-      "Is the love in this novel romantic, destructive, or both at once?",
-      "Can two people be too alike for their relationship to be healthy?"
-    ]
-  },
-  {
-    id:"dickens-great-expectations",
-    quote:"Take nothing on its looks; take everything on evidence. There's no better rule.",
-    attr:"Charles Dickens – Great Expectations",
-    bookNote:"Mr Jaggers' lawyerly advice to Pip",
-    isbn:"9780141439563",
-    questions:[
-      "How often do we judge people or situations on looks rather than evidence?",
-      "Does Pip follow this advice himself, or does ambition cloud his judgement?"
-    ]
-  },
-  {
-    id:"dickens-oliver-twist",
-    quote:"Please, sir, I want some more.",
-    attr:"Charles Dickens – Oliver Twist",
-    bookNote:"One of literature's most famous moments of quiet defiance",
-    isbn:"9780141439747",
-    questions:[
-      "What does it take for someone with so little power to ask for more?",
-      "How does the novel use a child's hunger to criticise the adult systems around him?"
-    ]
-  },
-  {
-    id:"dickens-christmas-carol",
-    quote:"God bless us, every one!",
-    attr:"Charles Dickens – A Christmas Carol",
-    bookNote:"Tiny Tim's blessing — a fitting line for the run-up to the holidays",
-    isbn:"9780141324524",
-    questions:[
-      "What does Scrooge's transformation suggest about whether people can really change?",
-      "Is generosity something we choose, or something we have to be taught?"
-    ]
-  },
-  {
-    id:"melville-moby-dick",
-    quote:"Call me Ishmael.",
-    attr:"Herman Melville – Moby-Dick",
-    bookNote:"The most famous opening line in American literature",
-    isbn:"9780142437247",
-    questions:[
-      "Why might an author choose to open a novel with such a simple, plain line?",
-      "What does obsession cost Captain Ahab, and was the whale ever really the point?"
-    ]
-  },
-  {
-    id:"fitzgerald-gatsby",
-    quote:"So we beat on, boats against the current, borne back ceaselessly into the past.",
-    attr:"F. Scott Fitzgerald – The Great Gatsby",
-    bookNote:"The novel's famous closing line",
-    isbn:"9780743273565",
-    questions:[
-      "Can people ever truly escape their past, or do we always end up pulled back to it?",
-      "What does Gatsby's pursuit of Daisy say about the danger of chasing an idea rather than a person?"
-    ]
-  },
-  {
-    id:"hemingway-old-man-sea",
-    quote:"Every day is a new day. It is better to be lucky.",
-    attr:"Ernest Hemingway – The Old Man and the Sea",
-    bookNote:"Santiago's quiet philosophy on luck and perseverance",
-    isbn:"9780099908401",
-    questions:[
-      "Is Santiago's struggle a victory or a defeat, given how the novel ends?",
-      "What's the difference between giving up and accepting you can't control everything?"
-    ]
-  },
-  {
-    id:"twain-huckleberry-finn",
-    quote:"All right, then, I'll go to hell.",
-    attr:"Mark Twain – Adventures of Huckleberry Finn",
-    bookNote:"Huck's decision to follow his conscience over society's rules",
-    isbn:"9780141439648",
-    questions:[
-      "What does it cost Huck to make this decision, and why is that the point?",
-      "When should personal conscience override what society or law tells you is right?"
-    ]
-  },
-  {
-    id:"wilde-dorian-gray",
-    quote:"I can resist everything except temptation.",
-    attr:"Oscar Wilde – The Picture of Dorian Gray",
-    bookNote:"Lord Henry's witty, telling line",
-    isbn:"9780141442464",
-    questions:[
-      "Is this line a joke, a confession, or both? What does it reveal about the character?",
-      "Does the novel ultimately punish Dorian for his vanity, or for something deeper?"
-    ]
-  },
-  {
-    id:"stevenson-jekyll-hyde",
-    quote:"Man is not truly one, but truly two.",
-    attr:"Robert Louis Stevenson – Dr Jekyll and Mr Hyde",
-    bookNote:"Jekyll's reflection on the duality of human nature",
-    isbn:"9780141439730",
-    questions:[
-      "Do you think everyone has a 'Hyde' side, or is that just a useful story device?",
-      "What does the novel suggest happens when we try to separate our good and bad impulses completely?"
-    ]
-  },
-  {
-    id:"stoker-dracula",
-    quote:"Listen to them – the children of the night! What music they make!",
-    attr:"Bram Stoker – Dracula",
-    bookNote:"One of the novel's most chilling, theatrical lines",
-    isbn:"9780141439846",
-    questions:[
-      "What makes the unknown more frightening than something we can clearly see and name?",
-      "How does the novel use fear of outsiders to reflect anxieties of its time?"
-    ]
-  },
-  {
-    id:"frank-diary",
-    quote:"Despite everything, I believe that people are really good at heart.",
-    attr:"Anne Frank – The Diary of a Young Girl",
-    bookNote:"Written while hiding from the Nazis during WWII — a powerful testament to hope",
-    isbn:"9780141315188",
-    questions:[
-      "How is it possible to hold onto hope and belief in people during the worst circumstances imaginable?",
-      "What responsibility do we have to remember stories like Anne Frank's?"
-    ]
-  },
-  {
-    id:"conrad-heart-darkness",
-    quote:"The horror! The horror!",
-    attr:"Joseph Conrad – Heart of Darkness",
-    bookNote:"Kurtz's famous dying words",
-    isbn:"9780141441672",
-    questions:[
-      "What do you think Kurtz means by these final words — what horror is he referring to?",
-      "Does the novel suggest civilisation is a thin veneer over something darker in human nature?"
-    ]
-  },
-  {
-    id:"vonnegut-slaughterhouse-five",
-    quote:"So it goes.",
-    attr:"Kurt Vonnegut – Slaughterhouse-Five",
-    bookNote:"The novel's recurring refrain, repeated after every death",
-    isbn:"9780099801409",
-    questions:[
-      "What's the effect of repeating the same flat phrase after every tragedy in the novel?",
-      "Is this acceptance, resignation, or a kind of dark coping mechanism — or all three?"
-    ]
-  },
-  {
-    id:"bradbury-fahrenheit-451",
-    quote:"It was a pleasure to burn.",
-    attr:"Ray Bradbury – Fahrenheit 451",
-    bookNote:"The novel's unsettling opening line",
-    isbn:"9781451673319",
-    questions:[
-      "Why might a society choose to burn books rather than simply ignore them?",
-      "What's the difference between being informed and being comfortable — and which does this society choose?"
-    ]
-  },
-  {
-    id:"salinger-catcher-rye",
-    quote:"I'm the most terrific liar you ever saw in your life.",
-    attr:"J.D. Salinger – The Catcher in the Rye",
-    bookNote:"Holden Caulfield's blunt self-assessment",
-    isbn:"9780241950425",
-    questions:[
-      "Why might someone who lies constantly be so obsessed with other people's phoniness?",
-      "Is Holden a reliable narrator of his own story? Does it matter if he isn't?"
-    ]
-  },
-  {
-    id:"camus-plague",
-    quote:"What's true of all the evils in the world is true of plague as well.",
-    attr:"Albert Camus – The Plague",
-    bookNote:"Dr Rieux's reflection on suffering and collective struggle",
-    isbn:"9780141185132",
-    questions:[
-      "What does the novel suggest is the right way to respond to a crisis beyond your control?",
-      "Is finding meaning in collective struggle different from finding meaning alone?"
-    ]
-  },
-  {
-    id:"wiesel-night",
-    quote:"To forget the dead would be akin to killing them a second time.",
-    attr:"Elie Wiesel – Night",
-    bookNote:"A Holocaust memoir on memory, faith and survival",
-    isbn:"9780141034979",
-    questions:[
-      "Why does remembering matter so much to survivors of atrocity?",
-      "What is lost when a society chooses to forget difficult parts of its history?"
-    ]
-  },
-  {
-    id:"carroll-alice-wonderland",
-    quote:"We're all mad here.",
-    attr:"Lewis Carroll – Alice's Adventures in Wonderland",
-    bookNote:"The Cheshire Cat's casual, unsettling observation",
-    isbn:"9780141439761",
-    questions:[
-      "What does 'madness' even mean if everyone around you shares it?",
-      "Is Wonderland actually more honest about human nature than the 'sensible' world Alice left behind?"
-    ]
-  },
-  {
-    id:"orwell-animal-farm",
-    quote:"All animals are equal, but some animals are more equal than others.",
-    attr:"George Orwell – Animal Farm",
-    bookNote:"The novel's most famous, most damning line",
-    isbn:"9780141036133",
-    questions:[
-      "How does language get twisted in this novel to hide an obvious contradiction?",
-      "Can you think of any modern examples where 'equality' is claimed but not actually practised?"
-    ]
-  },
-  {
-    id:"shakespeare-julius-caesar",
-    quote:"Cowards die many times before their deaths; the valiant never taste of death but once.",
-    attr:"William Shakespeare – Julius Caesar",
-    bookNote:"Caesar's reflection on fear and fate",
-    isbn:"9780743482742",
-    questions:[
-      "Is courage about not feeling fear, or about acting despite it?",
-      "Does worrying about death repeatedly make life worse than death itself, as Caesar suggests?"
-    ]
-  },
-  {
-    id:"shakespeare-romeo-juliet",
-    quote:"These violent delights have violent ends.",
-    attr:"William Shakespeare – Romeo and Juliet",
-    bookNote:"Friar Laurence's warning about Romeo's haste",
-    isbn:"9780743477116",
-    questions:[
-      "Why does intense passion so often lead to disaster in this play?",
-      "Is the tragedy caused by fate, by the families' feud, or by the characters' own choices?"
-    ]
-  },
-  {
-    id:"dumas-three-musketeers",
-    quote:"All for one, and one for all!",
-    attr:"Alexandre Dumas – The Three Musketeers",
-    bookNote:"The musketeers' famous motto of loyalty",
-    isbn:"9780140449263",
-    questions:[
-      "What does true loyalty to friends look like in practice, not just in words?",
-      "Is this motto realistic, or is it an ideal that's easier to say than live by?"
-    ]
-  },
-  {
-    id:"tolstoy-war-peace",
-    quote:"The strongest of all warriors are these two — Time and Patience.",
-    attr:"Leo Tolstoy – War and Peace",
-    bookNote:"A reflection on endurance over force",
-    isbn:"9780199232765",
-    questions:[
-      "Can you think of a situation where patience achieved more than immediate action would have?",
-      "Why might patience be harder to practise than courage or strength?"
-    ]
-  },
-  {
-    id:"dumaurier-rebecca",
-    quote:"Last night I dreamt I went to Manderley again.",
-    attr:"Daphne du Maurier – Rebecca",
-    bookNote:"The novel's haunting, famous opening line",
-    isbn:"9780349010819",
-    questions:[
-      "What does it mean for a place — or a memory — to haunt someone the way Manderley does?",
-      "How does the novel use the absent character of Rebecca to drive the whole story?"
-    ]
-  },
-  {
-    id:"voltaire-candide",
-    quote:"We must cultivate our garden.",
-    attr:"Voltaire – Candide",
-    bookNote:"The novel's famous closing line, after all its chaos and misfortune",
-    isbn:"9780140440041",
-    questions:[
-      "What does 'cultivating your garden' mean as a philosophy for getting through life?",
-      "Is this an act of giving up on big ideas, or a wiser, more grounded alternative to them?"
-    ]
-  }
 ];
 
 // ════════════════════════════════════════════════
@@ -1658,13 +1170,51 @@ function normaliseYouTubeUrl(value){
   return '';
 }
 
+const ASSEMBLY_DAYS={mon:'monday',monday:'monday',tue:'tuesday',tuesday:'tuesday',wed:'wednesday',wednesday:'wednesday',thu:'thursday',thursday:'thursday',fri:'friday',friday:'friday'};
+function normaliseAssemblyDay(day){ return ASSEMBLY_DAYS[String(day||'').trim().toLowerCase()]||''; }
+function normaliseAssemblies(entries){
+  const result=[];
+  (Array.isArray(entries)?entries:[]).forEach(entry=>{
+    if(!entry||!/^\d{4}-\d{2}-\d{2}$/.test(entry.wc||'')) return;
+    if(entry.type==='none'){ result.push({wc:entry.wc,type:'none'}); return; }
+    if(entry.type==='all'&&normaliseAssemblyDay(entry.day)&&String(entry.location||'').trim()){
+      result.push({wc:entry.wc,type:'all',day:normaliseAssemblyDay(entry.day),location:String(entry.location).trim()}); return;
+    }
+    if(entry.type==='houses'&&normaliseAssemblyDay(entry.day)&&Array.isArray(entry.houses)&&entry.houses.length){
+      result.push({wc:entry.wc,type:'houses',day:normaliseAssemblyDay(entry.day),houses:entry.houses.map(h=>String(h).trim()).filter(Boolean)}); return;
+    }
+    const text=String(entry.txt||'').trim();
+    if(/^no assembly/i.test(text)){ result.push({wc:entry.wc,type:'none'}); return; }
+    const house=/^House assemblies\s*[—:-]\s*/i.test(text);
+    const before=result.length;
+    text.split(/\s*[·;]\s*/).forEach(part=>{
+      const match=part.replace(/^House assemblies\s*[—:-]\s*/i,'').match(/^(Mon(?:day)?|Tue(?:sday)?|Wed(?:nesday)?|Thu(?:rsday)?|Fri(?:day)?)\s*[—:-]\s*(.+)$/i);
+      if(!match) return;
+      const day=normaliseAssemblyDay(match[1]); const details=match[2].trim();
+      if(house) result.push({wc:entry.wc,type:'houses',day,houses:details.split(/\s*&\s*|\s*,\s*/).filter(Boolean)});
+      else result.push({wc:entry.wc,type:'all',day,location:details});
+    });
+    if(result.length===before && text) result.push({wc:entry.wc,type:'note',label:text});
+  });
+  return result;
+}
+function assemblySummary(entries){
+  if(entries.some(a=>a.type==='none')) return 'No assembly this week';
+  const houses=entries.filter(a=>a.type==='houses');
+  if(houses.length) return 'House assemblies — '+houses.map(a=>`${cap(a.day.slice(0,3))}: ${a.houses.join(' & ')}`).join(' · ');
+  const all=entries.filter(a=>a.type==='all').map(a=>`${cap(a.day)} — ${a.location}`);
+  const notes=entries.filter(a=>a.type==='note').map(a=>a.label);
+  return all.concat(notes).join(' · ');
+}
+
 // Bring data from older builds forward without allowing removed panels or
 // stale Term 4 defaults to override the current site.
 function migrateState(input){
   const raw=input&&typeof input==='object'?clone(input):{};
   const state={...clone(DEFAULTS),...raw};
   state.panels={...clone(DEFAULTS.panels),...(raw.panels||{})};
-  state.assemblies=Array.isArray(raw.assemblies)?raw.assemblies:clone(DEFAULTS.assemblies);
+  state.assemblies=normaliseAssemblies(Array.isArray(raw.assemblies)?raw.assemblies:DEFAULTS.assemblies);
+  if(!state.assemblies.length) state.assemblies=clone(DEFAULTS.assemblies);
   state.bigQuestions=Array.isArray(raw.bigQuestions)?raw.bigQuestions:clone(DEFAULTS.bigQuestions);
 
   const allowedPanels=['dates','expect'];
@@ -1673,31 +1223,23 @@ function migrateState(input){
   allowedPanels.forEach(k=>{ if(!state.panelOrder.includes(k)) state.panelOrder.push(k); });
 
   if((Number(raw.dataVersion)||0)<CURRENT_DATA_VERSION){
-    if(state.week==='22/6/26 – 26/6/26') state.week='';
-    if((state.keyDates||[]).some(d=>/Start of Term 4|End of Term 4/i.test(d))) state.keyDates=[];
-    delete state.noticeboard;
-    delete state.values;
-    delete state.friday;
-    if(state.actions) delete state.actions.friday;
     const legacyGistIds=[
       'b0f84c0d1abc42090b0be988623ff407',
       'c852c6994161c20c169504e68c074914'
     ];
     if(legacyGistIds.includes(state.syncGistId)) state.syncGistId=DEFAULTS.syncGistId;
-    state.actions=clone(DEFAULTS.actions);
+    state.actions={...clone(DEFAULTS.actions),...(raw.actions||{})};
     if(!raw.newsPrompt || raw.newsPrompt.question==="What do we know as fact, and what is still interpretation or opinion?"){
       state.newsPrompt=clone(DEFAULTS.newsPrompt);
     }
-    if((Number(raw.dataVersion)||0)<8){
-      state.pulse=clone(DEFAULTS.pulse);
-      state.challenge=clone(DEFAULTS.challenge);
-      state.wisdom={...state.wisdom,questions:clone(DEFAULTS.wisdom.questions)};
-    }
-    delete state.tasks;
-    delete state.indepNote;
+    state.pulse={...clone(DEFAULTS.pulse),...(raw.pulse||{})};
+    state.challenge={...clone(DEFAULTS.challenge),...(raw.challenge||{})};
   }
 
   state.ytUrl=normaliseYouTubeUrl(state.ytUrl||DEFAULTS.ytUrl);
+  delete state.theme;
+  delete state.usedQuotes;
+  delete state.wisdom;
   state.dataVersion=CURRENT_DATA_VERSION;
   return state;
 }
@@ -1711,11 +1253,14 @@ function applyTheme(t){
   btn.textContent=t==='dark'?'☀️':'🌙';
   btn.setAttribute('aria-label',t==='dark'?'Use light theme':'Use dark theme');
 }
+const THEME_KEY='ft-theme';
+function getTheme(){ return localStorage.getItem(THEME_KEY)==='light'?'light':'dark'; }
 function toggleTheme(){
-  S.theme = S.theme==='dark'?'light':'dark';
-  applyTheme(S.theme); persist();
+  const theme=getTheme()==='dark'?'light':'dark';
+  localStorage.setItem(THEME_KEY,theme);
+  applyTheme(theme);
 }
-applyTheme(S.theme||'dark');
+applyTheme(getTheme());
 
 // ════════════════════════════════════════════════
 //  DATE / DAY
@@ -1725,7 +1270,12 @@ let showingFridayNoForm=false;
 function initDay(){
   const d=WDAYS[new Date().getDay()];
   showingFridayNoForm=d==='friday';
-  document.getElementById('day-select').value=(showingFridayNoForm||d==='saturday'||d==='sunday')?'monday':d;
+  const select=document.getElementById('day-select');
+  const fridayStatus=document.getElementById('friday-status');
+  select.value=(showingFridayNoForm||d==='saturday'||d==='sunday')?'monday':d;
+  select.hidden=showingFridayNoForm;
+  fridayStatus.hidden=!showingFridayNoForm;
+  select.setAttribute('aria-label',showingFridayNoForm?'Friday has no form time':'Choose form-time day');
 }
 function currentDay(){ return showingFridayNoForm?'friday':document.getElementById('day-select').value; }
 function updateHeader(){
@@ -1813,31 +1363,26 @@ function renderNextAssembly(){
   const nw=nextWeekCommencing();
   const key=isoDate(nw);
   const list=S.assemblies||DEFAULTS.assemblies||[];
-  const hit=list.find(a=>a.wc===key);
-  if(!hit){ box.innerHTML=''; return; }
-  const none=/^no assembly/i.test(hit.txt);
+  const hit=list.filter(a=>a.wc===key);
+  if(!hit.length){ box.innerHTML=''; return; }
+  const none=hit.some(a=>a.type==='none');
   box.innerHTML=`
     <div class="asm-box">
       <span class="asm-lbl">Next Week's Assembly</span>
-      <div class="asm-txt${none?' none':''}">${esc(hit.txt)}</div>
+      <div class="asm-txt${none?' none':''}">${esc(assemblySummary(hit))}</div>
       <div class="asm-wc">${prettyWC(nw)}</div>
     </div>`;
 }
 
 function assemblyForDay(day,date=new Date()){
   const key=isoDate(mondayOf(date));
-  const hit=(S.assemblies||DEFAULTS.assemblies||[]).find(a=>a.wc===key);
-  if(!hit || /^no assembly/i.test(hit.txt||'')) return null;
-  const names={monday:['Monday','Mon'],tuesday:['Tuesday','Tue'],wednesday:['Wednesday','Wed'],thursday:['Thursday','Thu'],friday:['Friday','Fri']};
-  const aliases=names[day]||[];
-  const parts=String(hit.txt).split(/\s*[·;]\s*/);
-  const match=parts.find(part=>aliases.some(name=>new RegExp(`\\b${name}\\b`,'i').test(part)));
-  if(!match) return null;
-  const label=match
-    .replace(/^House assemblies\s*[—:-]\s*/i,'')
-    .replace(new RegExp(`^(${aliases.join('|')})\\s*[—:-]\\s*`,'i'),'')
-    .trim();
-  return {location:label||'See your tutor for the location',houseSpecific:/^House assemblies/i.test(hit.txt)};
+  const entries=(S.assemblies||DEFAULTS.assemblies||[]).filter(a=>a.wc===key);
+  if(!entries.length||entries.some(a=>a.type==='none')) return null;
+  const hit=entries.find(a=>a.day===day);
+  if(!hit) return null;
+  return hit.type==='houses'
+    ?{location:hit.houses.join(' & '),houseSpecific:true}
+    :{location:hit.location||'See your tutor for the location',houseSpecific:false};
 }
 
 // ════════════════════════════════════════════════
@@ -2084,11 +1629,9 @@ function bigQuestionForDate(date=new Date()){
 }
 
 function renderBigQuestion(day){
-  const w=S.wisdom||DEFAULTS.wisdom;
   const scheduled=bigQuestionForDate();
-  const questions=w.questions||DEFAULTS.wisdom.questions;
-  const mainQuestion=scheduled?.question||questions[0]||'What do you think — and why?';
-  const followUp=scheduled?.followUp||questions[1]||'Who might reasonably disagree with you?';
+  const mainQuestion=scheduled?.question||'What do you think — and why?';
+  const followUp=scheduled?.followUp||'Who might reasonably disagree with you?';
   return `
     <div class="day-header">
       <h1 class="day-name">${cap(day)}</h1>
@@ -2187,6 +1730,12 @@ async function fetchOTD(dayName){
   // Update panel header to show the date being looked up
   const hdr=document.getElementById('otd-date-lbl');
   if(hdr) hdr.textContent=date.toLocaleDateString('en-GB',{day:'numeric',month:'long'});
+  const updateLabel=document.getElementById('otd-updated');
+  const cacheKey=`ft-otd-${isoDate(date)}`;
+  const showCards=(cards,updatedAt,cached=false)=>{
+    el.innerHTML=cards.map(c=>`<div class="otd-card"><div class="otd-meta"><span class="otd-type">${c.type}</span><span class="otd-year">${c.year}</span></div><div class="otd-text">${esc(c.text)}</div></div>`).join('');
+    if(updateLabel) updateLabel.textContent=`${cached?'Cached':'Updated'} ${new Date(updatedAt).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
+  };
 
   const base=`https://en.wikipedia.org/api/rest_v1/feed/onthisday`;
   try{
@@ -2206,15 +1755,15 @@ async function fetchOTD(dayName){
       de?{type:'Died',  year:de.year, text:de.text}:null
     ].filter(Boolean);
     if(!cards.length) throw new Error();
-    el.innerHTML=cards.map(c=>`
-      <div class="otd-card">
-        <div class="otd-meta">
-          <span class="otd-type">${c.type}</span>
-          <span class="otd-year">${c.year}</span>
-        </div>
-        <div class="otd-text">${esc(c.text)}</div>
-      </div>`).join('');
+    const saved={cards,updatedAt:Date.now()};
+    localStorage.setItem(cacheKey,JSON.stringify(saved));
+    showCards(cards,saved.updatedAt);
   }catch{
+    try{
+      const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
+      if(cached?.cards?.length){ showCards(cached.cards,cached.updatedAt,true); return; }
+    }catch{}
+    if(updateLabel) updateLabel.textContent='Unavailable';
     el.innerHTML='<div class="loading-txt">On This Day could not load. <button class="inline-retry" onclick="fetchOTD()">Try again</button></div>';
   }
 }
@@ -2241,31 +1790,30 @@ async function fetchNews(){
     const data=await res.json();
     if(data.status!=='ok'||!data.items?.length) throw new Error();
 
-    const items=data.items;
-
-    const ts=document.getElementById('ticker-scroll');
-    if(ts){
-      const headlines=items.map(i=>`<span class="ticker-item">${esc(i.title)}</span><span class="ticker-sep" aria-hidden="true">◆</span>`).join('');
-      ts.innerHTML=headlines+headlines;
-      ts.style.animationDuration=Math.max(55,items.length*7)+'s';
-    }
-
-    // Tuesday news cards
-    const panel=document.getElementById('news-articles');
-    if(panel){
-      panel.innerHTML=items.slice(0,3).map(i=>`
-        <a class="news-card" href="${esc(i.link)}" target="_blank" rel="noopener">
-          <div class="nc-title">${esc(i.title)}</div>
-          <div class="nc-src">BBC News UK</div>
-        </a>`).join('');
-    }
+    const saved={items:data.items.map(i=>({title:i.title,link:i.link})),updatedAt:Date.now()};
+    localStorage.setItem('ft-news-cache',JSON.stringify(saved));
+    renderTicker(saved.items,saved.updatedAt);
   }catch(e){
     console.warn('News fetch failed:',e);
+    try{
+      const cached=JSON.parse(localStorage.getItem('ft-news-cache')||'null');
+      if(cached?.items?.length){ renderTicker(cached.items,cached.updatedAt,true); return; }
+    }catch{}
     const ts=document.getElementById('ticker-scroll');
     if(ts) ts.innerHTML='<span class="ticker-item">BBC headlines are temporarily unavailable</span>';
-    const panel=document.getElementById('news-articles');
-    if(panel) panel.innerHTML='<div class="loading-txt">Headlines could not be loaded. <button class="inline-retry" onclick="fetchNews()">Try again</button></div>';
+    const label=document.getElementById('ticker-updated'); if(label) label.textContent='Unavailable';
   }
+}
+
+function renderTicker(items,updatedAt,cached=false){
+  const ts=document.getElementById('ticker-scroll');
+  if(ts){
+    const headlines=items.map(i=>`<span class="ticker-item">${esc(i.title)}</span><span class="ticker-sep" aria-hidden="true">◆</span>`).join('');
+    ts.innerHTML=`<span class="ticker-sequence">${headlines}</span><span class="ticker-sequence" aria-hidden="true">${headlines}</span>`;
+    ts.style.animationDuration=Math.max(55,items.length*7)+'s';
+  }
+  const label=document.getElementById('ticker-updated');
+  if(label) label.textContent=`${cached?'Cached':'Updated'} ${new Date(updatedAt).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
 }
 
 // ════════════════════════════════════════════════
@@ -2278,9 +1826,7 @@ function enhanceEditorA11y(){
     'ed-week':'Week label','ed-wisdomday':'Big Question day','ed-dates':'Key dates','ed-purpose':'Purpose line',
     'ed-expect':'Our standards','ed-rota':'Student rota','ed-asm':'Assembly rota','ed-timer':'Starter timer minutes',
     'ed-act-monday':'Monday required action','ed-act-tuesday':'Tuesday required action','ed-act-wednesday':'Wednesday required action',
-    'ed-act-thursday':'Thursday required action','ed-lib-select':'Quote library',
-    'ed-quote':'Big Question quote','ed-attr':'Quote author and book','ed-booknote':'Book note','ed-isbn':'Book ISBN',
-    'ed-coverurl':'Book cover image URL','ed-questions':'Fallback discussion questions','ed-bigquestions':'Dated weekly Big Questions','ed-pulse-question':'Monday Weekly Pulse question',
+    'ed-act-thursday':'Thursday required action','ed-bigquestions':'Dated weekly Big Questions','ed-pulse-question':'Monday Weekly Pulse question',
     'ed-pulse-followup':'Monday follow-up question','ed-yturl':'Sky News or YouTube URL','ed-news-question':'Tuesday One Story question',
     'ed-news-followup':'Tuesday follow-up question','ed-challenge-title':'Quick Challenge title','ed-challenge-scenario':'Quick Challenge scenario',
     'ed-challenge-question':'Quick Challenge question','ed-challenge-followup':'Quick Challenge follow-up',
@@ -2300,19 +1846,11 @@ function openEdit(){
   document.getElementById('ed-expect').value=(S.expectations||DEFAULTS.expectations).join('\n');
   document.getElementById('ed-rota').value=S.rota||'';
   document.getElementById('ed-asm').value=(S.assemblies||DEFAULTS.assemblies||[])
-    .map(a=>`${a.wc} | ${a.txt}`).join('\n');
+    .map(a=>a.type==='none'?`${a.wc} | none`:a.type==='houses'?`${a.wc} | houses | ${cap(a.day)} | ${a.houses.join(', ')}`:a.type==='note'?`${a.wc} | note | ${a.label}`:`${a.wc} | all | ${cap(a.day)} | ${a.location}`).join('\n');
   document.getElementById('ed-timer').value=S.timerMins||DEFAULTS.timerMins;
   DAYS.forEach(d=>{
     document.getElementById('ed-act-'+d).value=(S.actions||DEFAULTS.actions)[d]||'';
   });
-  populateLibrarySelect();
-  const w=S.wisdom||DEFAULTS.wisdom;
-  document.getElementById('ed-quote').value=w.quote||'';
-  document.getElementById('ed-attr').value=w.attr||'';
-  document.getElementById('ed-booknote').value=w.bookNote||'';
-  document.getElementById('ed-isbn').value=w.isbn||'';
-  document.getElementById('ed-coverurl').value=w.coverUrl||'';
-  document.getElementById('ed-questions').value=(w.questions||[]).join('\n');
   document.getElementById('ed-bigquestions').value=(S.bigQuestions||DEFAULTS.bigQuestions||[])
     .map(q=>`${q.wc} | ${q.question} | ${q.followUp||''}`).join('\n');
   const pulse=S.pulse||DEFAULTS.pulse;
@@ -2376,19 +1914,17 @@ async function saveEdit(){
   S.rota=document.getElementById('ed-rota').value.trim();
   S.assemblies=document.getElementById('ed-asm').value.split('\n')
     .map(l=>l.trim()).filter(Boolean)
-    .map(l=>{ const i=l.indexOf('|'); return i<0?null:{wc:l.slice(0,i).trim(),txt:l.slice(i+1).trim()}; })
-    .filter(a=>a && /^\d{4}-\d{2}-\d{2}$/.test(a.wc) && a.txt);
+    .flatMap(l=>{ const p=l.split('|').map(v=>v.trim()); const wc=p[0],type=(p[1]||'').toLowerCase(),day=normaliseAssemblyDay(p[2]);
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(wc)) return [];
+      if(type==='none') return [{wc,type:'none'}];
+      if(type==='note'&&p.slice(2).join(' | ')) return [{wc,type:'note',label:p.slice(2).join(' | ')}];
+      if(type==='all'&&day&&p.slice(3).join(' | ')) return [{wc,type:'all',day,location:p.slice(3).join(' | ')}];
+      if(type==='houses'&&day&&p.slice(3).join(' | ')) return [{wc,type:'houses',day,houses:p.slice(3).join(' | ').split(',').map(h=>h.trim()).filter(Boolean)}];
+      return [];
+    });
   S.timerMins=Math.min(30,Math.max(1,parseInt(document.getElementById('ed-timer').value,10)||DEFAULTS.timerMins));
   S.actions={};
   DAYS.forEach(d=>{ S.actions[d]=document.getElementById('ed-act-'+d).value.trim(); });
-  S.wisdom={
-    quote:document.getElementById('ed-quote').value.trim(),
-    attr:document.getElementById('ed-attr').value.trim(),
-    bookNote:document.getElementById('ed-booknote').value.trim(),
-    isbn:document.getElementById('ed-isbn').value.trim(),
-    coverUrl:document.getElementById('ed-coverurl').value.trim(),
-    questions:document.getElementById('ed-questions').value.split('\n').map(l=>l.trim()).filter(Boolean)
-  };
   S.bigQuestions=document.getElementById('ed-bigquestions').value.split('\n')
     .map(l=>l.trim()).filter(Boolean)
     .map(l=>{ const parts=l.split('|').map(p=>p.trim()); return parts.length<2?null:{wc:parts[0],question:parts[1],followUp:parts.slice(2).join(' | ')}; })
@@ -2454,48 +1990,6 @@ function mvPanel(i,dir){
   const o=[...(S.panelOrder||DEFAULTS.panelOrder)];
   const n=i+dir; if(n<0||n>=o.length) return;
   [o[i],o[n]]=[o[n],o[i]]; S.panelOrder=o; renderOrderList();
-}
-
-// Quote library
-// Quote library — unused entries first, used ones pushed to the
-// bottom and labelled, so Zanman can see at a glance what's free.
-function populateLibrarySelect(){
-  const sel=document.getElementById('ed-lib-select');
-  if(!sel) return;
-  const used=new Set(S.usedQuotes||[]);
-  const unused=QUOTE_LIBRARY.filter(q=>!used.has(q.id));
-  const usedList=QUOTE_LIBRARY.filter(q=>used.has(q.id));
-  const opt=q=>`<option value="${q.id}">${esc(q.attr)}${used.has(q.id)?'  — used':''}</option>`;
-  sel.innerHTML=unused.map(opt).join('')+usedList.map(opt).join('');
-}
-
-function loadFromLibrary(){
-  const id=document.getElementById('ed-lib-select').value;
-  const q=QUOTE_LIBRARY.find(x=>x.id===id);
-  if(!q) return;
-  document.getElementById('ed-quote').value=q.quote;
-  document.getElementById('ed-attr').value=q.attr;
-  document.getElementById('ed-booknote').value=q.bookNote;
-  document.getElementById('ed-isbn').value=q.isbn;
-  document.getElementById('ed-coverurl').value='';
-  document.getElementById('ed-questions').value=q.questions.join('\n');
-  markQuoteUsed(id,true);
-}
-
-function markQuoteUsed(id,usedState){
-  const used=new Set(S.usedQuotes||[]);
-  usedState?used.add(id):used.delete(id);
-  S.usedQuotes=[...used];
-  persist();
-  populateLibrarySelect();
-  document.getElementById('ed-lib-select').value=id;
-}
-
-function toggleQuoteUsed(){
-  const id=document.getElementById('ed-lib-select').value;
-  if(!id) return;
-  const used=new Set(S.usedQuotes||[]);
-  markQuoteUsed(id,!used.has(id));
 }
 
 // ════════════════════════════════════════════════
