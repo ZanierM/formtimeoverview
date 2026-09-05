@@ -688,6 +688,13 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .tuesday-grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:start; }
 .tuesday-grid .yt-wrap { padding-top:0; aspect-ratio:16/9; }
 .tuesday-grid .micro-routine { align-self:stretch; }
+.tuesday-media { display:grid; gap:12px; min-width:0; }
+.news-links { padding:16px; border:1px solid var(--border); border-radius:12px; background:var(--surface2); }
+.news-links h2 { margin:0 0 10px; color:var(--accent); font-size:1rem; letter-spacing:.08em; text-transform:uppercase; }
+.news-links-list { display:grid; gap:8px; }
+.news-link { display:block; padding:10px 12px; border-radius:8px; color:var(--text); background:var(--surface); border:1px solid var(--border); text-decoration:none; font-weight:700; line-height:1.3; }
+.news-link:hover,.news-link:focus-visible { border-color:var(--accent); background:var(--surface2); }
+.news-link small { display:block; margin-top:3px; color:var(--text2); font-size:.8rem; font-weight:600; }
 @media(max-width:900px){.tuesday-grid{grid-template-columns:1fr}.tuesday-grid .micro-routine{order:-1}}
 @media(max-width:640px){.routine-steps.four-step{grid-template-columns:repeat(2,minmax(0,1fr))}.routine-steps.four-step .routine-step:nth-child(2){border-right:0}.routine-steps.four-step .routine-step:nth-child(-n+2){border-bottom:1px solid var(--border)}.routine-step{padding:9px 6px}.step-name,.step-time{font-size:.78rem}.prompt-card{padding:18px}.prompt-question{font-size:1.5rem}.prompt-followup{font-size:1rem}.activity-purpose{font-size:1rem}}
 /* BROADCAST STUDIO */
@@ -1565,12 +1572,18 @@ function renderTuesday(){
     </div>
     <p class="activity-purpose">Use one current story to understand what happened, why it matters and what you want to know next.</p>
     <div class="tuesday-grid">
-      <div class="yt-wrap">
-        <iframe src="${yt}"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          sandbox="allow-scripts allow-same-origin allow-presentation"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen title="Sky News Live"></iframe>
+      <div class="tuesday-media">
+        <div class="yt-wrap">
+          <iframe src="${yt}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+            sandbox="allow-scripts allow-same-origin allow-presentation"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen title="Sky News Live"></iframe>
+        </div>
+        <section class="news-links" aria-labelledby="news-links-title">
+          <h2 id="news-links-title">Today’s reading</h2>
+          <div class="news-links-list" id="news-articles"><div class="loading-txt">Loading article links…</div></div>
+        </section>
       </div>
       ${renderRoutine(news.question,news.followUp,'One story')}
     </div>
@@ -1582,8 +1595,18 @@ function bigQuestionForDate(date=new Date()){
   return (S.bigQuestions||DEFAULTS.bigQuestions||[]).find(q=>q.wc===weekKey)||null;
 }
 
+// On weekends the day selector previews the next school week (the same
+// convention used by the default Monday selection), so weekly content is
+// resolved against that upcoming week rather than an already-finished one.
+function contentDateForDay(dayName){
+  const date=weekdayDate(dayName);
+  const dow=new Date().getDay();
+  if(dow===0||dow===6) date.setDate(date.getDate()+7);
+  return date;
+}
+
 function renderBigQuestion(day){
-  const scheduled=bigQuestionForDate();
+  const scheduled=bigQuestionForDate(contentDateForDay(day));
   const mainQuestion=scheduled?.question||'What do you think — and why?';
   const followUp=scheduled?.followUp||'Who might reasonably disagree with you?';
   return `
@@ -1752,16 +1775,26 @@ async function fetchNews(){
     const saved={items:data.items.map(i=>({title:i.title,link:i.link})),updatedAt:Date.now()};
     localStorage.setItem('ft-news-cache',JSON.stringify(saved));
     renderTicker(saved.items,saved.updatedAt);
+    renderNewsLinks(saved.items);
   }catch(e){
     console.warn('News fetch failed:',e);
     try{
       const cached=JSON.parse(localStorage.getItem('ft-news-cache')||'null');
-      if(cached?.items?.length){ renderTicker(cached.items,cached.updatedAt,true); return; }
+      if(cached?.items?.length){ renderTicker(cached.items,cached.updatedAt,true); renderNewsLinks(cached.items,true); return; }
     }catch{}
     const ts=document.getElementById('ticker-scroll');
     if(ts) ts.innerHTML='<span class="ticker-item">BBC headlines are temporarily unavailable</span>';
     const label=document.getElementById('ticker-updated'); if(label) label.textContent='Unavailable';
+    const panel=document.getElementById('news-articles');
+    if(panel) panel.innerHTML='<div class="loading-txt">Article links are temporarily unavailable.</div>';
   }
+}
+
+function renderNewsLinks(items,cached=false){
+  const panel=document.getElementById('news-articles');
+  if(!panel) return;
+  const links=(items||[]).filter(i=>i&&i.title&&/^https:\/\//i.test(i.link||'')).slice(0,3);
+  panel.innerHTML=links.length?links.map(i=>`<a class="news-link" href="${esc(i.link)}" target="_blank" rel="noopener noreferrer">${esc(i.title)}<small>BBC News · opens in a new tab</small></a>`).join(''):'<div class="loading-txt">No article links available right now.</div>';
 }
 
 function renderTicker(items,updatedAt,cached=false){
