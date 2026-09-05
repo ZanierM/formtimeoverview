@@ -24,17 +24,27 @@
   --ticker-bg: #50304c;
   --ticker-fg: #ffffff;
   --on-accent: #2d202c;
-  --quote-bg:  linear-gradient(135deg,#4a3047,#2a1b29);
   --input-bg:  #4a3047;
   --input-bd:  #76556f;
   --modal-bg:  #321f31;
   --task-bd:   #d5a0ce;
   --note-bg:   rgba(213,160,206,.10);
   --note-bd:   rgba(213,160,206,.28);
-  --news-bg:   #4a3047;
-  --news-bd:   #a06098;
   --shadow:    rgba(0,0,0,.4);
   --focus:     #7cc4ff;
+  --header-start:#241524;
+  --header-mid:#4b2947;
+  --header-end:#2a1928;
+  --header-text:#ffffff;
+  --header-muted:#e7d9e4;
+  --header-accent:#d5a0ce;
+  --ticker-label-bg:#140d14;
+  --studio-light:rgba(213,160,206,.09);
+  --studio-light-soft:rgba(160,96,152,.06);
+  --card-start:rgba(74,48,71,.9);
+  --card-end:rgba(50,31,49,.86);
+  --card-border:rgba(213,160,206,.18);
+  --card-shadow:rgba(0,0,0,.15);
   --control-h: 44px;
   --type-meta: clamp(.78rem,.25vw + .72rem,.88rem);
   --type-body: clamp(1rem,.3vw + .94rem,1.16rem);
@@ -56,23 +66,34 @@
   --ticker-bg: #50304c;
   --ticker-fg: #ffffff;
   --on-accent: #ffffff;
-  --quote-bg:  linear-gradient(135deg,#f3ebf1,#eadde7);
   --input-bg:  #fbf8fa;
   --input-bd:  #cdb9c9;
   --modal-bg:  #fbf8fa;
   --task-bd:   #875080;
   --note-bg:   rgba(160,96,152,.08);
   --note-bd:   rgba(135,80,128,.25);
-  --news-bg:   #f3ebf1;
-  --news-bd:   #a06098;
   --shadow:    rgba(80,48,76,.15);
   --focus:     #693e64;
+  --header-start:#442740;
+  --header-mid:#68415f;
+  --header-end:#3a2337;
+  --header-text:#ffffff;
+  --header-muted:#f0e5ee;
+  --header-accent:#f2c8ec;
+  --ticker-label-bg:#2d202c;
+  --studio-light:rgba(135,80,128,.06);
+  --studio-light-soft:rgba(160,96,152,.04);
+  --card-start:rgba(255,255,255,.97);
+  --card-end:rgba(245,237,244,.94);
+  --card-border:rgba(135,80,128,.22);
+  --card-shadow:rgba(80,48,76,.12);
 }
 
 /* ══════════════════════════════════════════
    RESET & BASE
 ══════════════════════════════════════════ */
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+[hidden] { display:none!important; }
 html,body { height:100%; overflow:hidden; }
 body {
   font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
@@ -177,14 +198,14 @@ header {
 .ticker-updated { margin-left:6px; font-size:.64rem; letter-spacing:.03em; font-weight:700; opacity:.8; white-space:nowrap; }
 .ticker-track  { overflow:hidden; flex:1; min-width:0; }
 .ticker-scroll {
-  display:inline-flex;
-  width:max-content;
+  display:flex;
+  align-items:center;
+  width:100%;
   white-space:nowrap;
-  animation:ticker-move 80s linear infinite;
+  overflow:hidden;
 }
-.ticker-sequence { display:inline-flex; }
-.ticker-scroll.paused,.ticker-track:hover .ticker-scroll,.ticker-track:focus-within .ticker-scroll { animation-play-state:paused; }
-@keyframes ticker-move { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+.ticker-scroll.changing { animation:ticker-swap .28s cubic-bezier(.16,1,.3,1); }
+@keyframes ticker-swap { from { opacity:.25; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
 .ticker-toggle {
   min-width:44px; min-height:44px; align-self:stretch; border:0; border-inline-start:1px solid rgba(255,255,255,.24);
   background:var(--ticker-bg); color:var(--ticker-fg); cursor:pointer; font:inherit; font-weight:900;
@@ -194,9 +215,10 @@ header {
   font-size:1.05rem;
   font-weight:600;
   color:var(--ticker-fg);
-  display:inline-block;
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
-.ticker-sep { color:rgba(255,255,255,.45); }
 
 /* ══════════════════════════════════════════
    MAIN LAYOUT
@@ -233,7 +255,6 @@ header {
   box-shadow:0 2px 8px var(--shadow);
 }
 .task-item > span:last-child { min-width:0; overflow-wrap:anywhere; }
-.ti-icon { font-size:1.2rem; flex-shrink:0; }
 .note-box {
   background:var(--note-bg);
   border:1px solid var(--note-bd);
@@ -244,49 +265,6 @@ header {
   font-style:italic;
   line-height:1.6;
 }
-
-/* Big Question */
-.wisdom-layout { display:flex; gap:18px; align-items:flex-start; }
-.wisdom-main   { flex:1; display:flex; flex-direction:column; gap:14px; min-width:0; }
-.book-cover-wrap {
-  flex-shrink:0;
-  width:120px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:8px;
-}
-.book-cover {
-  width:120px;
-  height:180px;
-  object-fit:cover;
-  border-radius:6px;
-  box-shadow:4px 4px 16px var(--shadow);
-  display:block;
-}
-.book-cover-placeholder {
-  width:120px; height:180px;
-  background:var(--surface);
-  border:2px dashed var(--border);
-  border-radius:6px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:2.5rem; color:var(--text2);
-}
-.quote-card {
-  background:var(--quote-bg);
-  border-inline-start:1px solid var(--accent);
-  border-radius:10px;
-  padding:20px 22px 16px;
-  box-shadow:0 2px 10px var(--shadow);
-}
-.quote-text   { font-size:clamp(1.45rem,1.8vw,1.85rem); font-style:italic; line-height:1.5; color:var(--text); margin-bottom:12px; max-width:56ch; }
-.quote-attr   { font-size:1.12rem; color:var(--accent); font-weight:750; }
-.quote-note   { font-size:1rem; color:var(--text2); font-style:italic; margin-top:7px; }
-.wq-box       { background:var(--surface); border-radius:10px; padding:18px 20px; box-shadow:0 2px 8px var(--shadow); }
-.wq-title     { font-size:0.85rem; font-weight:900; text-transform:uppercase; letter-spacing:0.12em; color:var(--accent); margin-bottom:12px; }
-.wq-list      { list-style:none; display:flex; flex-direction:column; gap:10px; }
-.wq-item      { font-size:1.1rem; line-height:1.6; color:var(--text); padding-left:24px; position:relative; }
-.wq-item::before { content:"?"; position:absolute; left:0; color:var(--accent); font-weight:900; font-size:1.1rem; }
 
 /* Tuesday — News */
 .yt-wrap {
@@ -300,21 +278,6 @@ header {
   width:100%; height:100%;
   border:none; display:block;
 }
-.news-grid { display:flex; flex-direction:column; gap:8px; }
-.news-card {
-  background:var(--news-bg);
-  border-radius:9px;
-  padding:11px 16px;
-  border-inline-start:1px solid var(--news-bd);
-  cursor:pointer;
-  text-decoration:none;
-  display:block;
-  transition:background .15s;
-}
-.news-card:hover { filter:brightness(1.1); }
-.nc-title { font-size:1.08rem; font-weight:650; color:var(--text); line-height:1.4; }
-.nc-src   { font-size:.92rem; color:var(--text2); margin-top:3px; }
-
 /* Friday */
 .no-form-time {
   flex:1; min-height:280px; display:grid; place-content:center; text-align:center;
@@ -681,8 +644,6 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
   .day-sub { font-size:1.18rem; }
   .task-item { padding:14px; gap:10px; }
   .note-box,.action-bar { padding:12px; }
-  .wisdom-layout { flex-direction:column; }
-  .book-cover-wrap { align-self:center; }
   #sidebar { display:block; }
   .s-panel { border-right:0; border-bottom:1px solid var(--border); padding:18px 16px; }
   #otd-bar { display:block; overflow:visible; }
@@ -727,46 +688,34 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .tuesday-grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:start; }
 .tuesday-grid .yt-wrap { padding-top:0; aspect-ratio:16/9; }
 .tuesday-grid .micro-routine { align-self:stretch; }
-.big-question-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(300px,.85fr); gap:18px; align-items:start; }
-.big-question-grid .wisdom-layout { min-width:0; }
-@media(max-width:900px){.tuesday-grid,.big-question-grid{grid-template-columns:1fr}.tuesday-grid .micro-routine{order:-1}}
+@media(max-width:900px){.tuesday-grid{grid-template-columns:1fr}.tuesday-grid .micro-routine{order:-1}}
 @media(max-width:640px){.routine-steps.four-step{grid-template-columns:repeat(2,minmax(0,1fr))}.routine-steps.four-step .routine-step:nth-child(2){border-right:0}.routine-steps.four-step .routine-step:nth-child(-n+2){border-bottom:1px solid var(--border)}.routine-step{padding:9px 6px}.step-name,.step-time{font-size:.78rem}.prompt-card{padding:18px}.prompt-question{font-size:1.5rem}.prompt-followup{font-size:1rem}.activity-purpose{font-size:1rem}}
 /* BROADCAST STUDIO */
-@property --studio-sweep { syntax:'<angle>'; inherits:false; initial-value:100deg; }
 body { position:relative; isolation:isolate; }
 body::before {
   content:""; position:fixed; inset:-30% -15%; z-index:-1; pointer-events:none;
-  background:conic-gradient(from var(--studio-sweep) at 52% 8%,transparent 0 27%,rgba(213,160,206,.11) 32%,transparent 38% 74%,rgba(160,96,152,.08) 80%,transparent 86%);
-  animation:studioSweep 18s linear infinite;
+  background:conic-gradient(from 100deg at 52% 8%,transparent 0 27%,var(--studio-light) 32%,transparent 38% 74%,var(--studio-light-soft) 80%,transparent 86%);
 }
-@keyframes studioSweep { to { --studio-sweep:460deg; } }
-header { padding-block:12px; background:linear-gradient(110deg,#241524 0%,#4b2947 56%,#2a1928 100%); box-shadow:0 8px 28px rgba(0,0,0,.28); }
-header .form-title { color:#fff; }
-header .purpose-line,header #date-display { color:#e7d9e4; }
-header .year-label,header #week-display { color:#d5a0ce; }
-.school-badge { border-radius:999px; box-shadow:0 0 0 4px rgba(213,160,206,.11); }
+header { padding-block:12px; background:linear-gradient(110deg,var(--header-start) 0%,var(--header-mid) 56%,var(--header-end) 100%); box-shadow:0 8px 28px var(--shadow); }
+header .form-title { color:var(--header-text); }
+header .purpose-line,header #date-display { color:var(--header-muted); }
+header .year-label,header #week-display { color:var(--header-accent); }
+.school-badge { border-radius:999px; box-shadow:0 2px 10px var(--shadow); }
 .form-title { font-size:2.25rem; text-shadow:0 3px 18px rgba(0,0,0,.22); }
-#ticker-wrap { height:44px; border-bottom:1px solid rgba(255,255,255,.18); box-shadow:0 6px 22px rgba(0,0,0,.2); }
-.ticker-label { background:#140d14; }
+#ticker-wrap { height:44px; border-bottom:1px solid var(--border); box-shadow:0 6px 22px var(--shadow); }
+.ticker-label { background:var(--ticker-label-bg); }
 #day-panel { padding:18px 28px; gap:14px; }
-.day-name { text-transform:uppercase; font-size:clamp(3.1rem,4.5vw,4.5rem); color:#f8f3f7; }
+.day-name { text-transform:uppercase; font-size:clamp(3.1rem,4.5vw,4.5rem); color:var(--text); }
 .day-header { padding-bottom:9px; }
 .day-sub { margin-top:3px; }
 .day-header { position:relative; }
-.day-header::after { content:""; position:absolute; right:0; bottom:-2px; width:38%; height:3px; background:linear-gradient(90deg,transparent,#fff); opacity:.72; }
-.task-item,.quote-card,.news-card,.action-bar,.note-box { background:linear-gradient(105deg,rgba(74,48,71,.9),rgba(50,31,49,.86)); border:1px solid rgba(213,160,206,.18); box-shadow:0 8px 24px rgba(0,0,0,.15); }
+.day-header::after { content:""; position:absolute; right:0; bottom:-2px; width:38%; height:3px; background:linear-gradient(90deg,transparent,var(--header-text)); opacity:.72; }
+.task-item,.action-bar,.note-box { background:linear-gradient(105deg,var(--card-start),var(--card-end)); border:1px solid var(--card-border); box-shadow:0 8px 24px var(--card-shadow); }
 .task-item { transform:translateZ(0); transition:transform .28s cubic-bezier(.2,.8,.2,1),border-color .28s; }
 .task-item:hover { transform:translateX(4px); border-color:var(--accent); }
 [data-theme="light"] body::before { opacity:.32; }
-[data-theme="light"] .day-name { color:#50304c; }
-[data-theme="light"] .task-item,
-[data-theme="light"] .quote-card,
-[data-theme="light"] .news-card,
-[data-theme="light"] .action-bar,
-[data-theme="light"] .note-box {
-  background:linear-gradient(105deg,rgba(255,255,255,.97),rgba(245,237,244,.94));
-  border-color:rgba(135,80,128,.22); box-shadow:0 8px 24px rgba(80,48,76,.1);
-}
+[data-theme="light"] .day-name { color:var(--accent2); }
+[data-theme="light"] .task-item,[data-theme="light"] .action-bar,[data-theme="light"] .note-box { background:linear-gradient(105deg,var(--card-start),var(--card-end)); border-color:var(--card-border); box-shadow:0 8px 24px var(--card-shadow); }
 #otd-bar { min-height:52px; max-height:52px; }
 .otd-bar-hdr { min-width:230px; padding:5px 14px; flex-direction:row; align-items:center; gap:9px; }
 .otd-bar-label { white-space:nowrap; }
@@ -783,7 +732,8 @@ header .year-label,header #week-display { color:#d5a0ce; }
   .form-title{font-size:1.85rem}.day-name{font-size:clamp(2.7rem,14vw,4.1rem)}
   #otd-bar { display:flex; min-height:50px; max-height:50px; overflow:hidden; }
   .otd-bar-hdr { width:auto; min-width:0; flex:0 0 auto; border-right:1px solid var(--border); border-bottom:0; padding:5px 10px; }
-  .otd-bar-date { display:none; }
+  #otd-date-lbl { display:none; }
+  #otd-updated { display:inline; font-size:.7rem; white-space:nowrap; }
   #otd-content { display:flex; min-width:0; }
   .otd-card { display:flex; padding:5px 10px; border-bottom:0; }
   .otd-meta { display:none; }
@@ -831,11 +781,11 @@ header .year-label,header #week-display { color:#d5a0ce; }
 <div id="ticker-wrap">
   <div class="ticker-label">NEWS <span id="ticker-updated" class="ticker-updated"></span></div>
   <div class="ticker-track">
-    <div class="ticker-scroll" id="ticker-scroll">
+    <div class="ticker-scroll" id="ticker-scroll" role="region" aria-label="Latest news headline">
       <span class="ticker-item">Loading latest headlines…</span>
     </div>
   </div>
-  <button class="ticker-toggle" id="ticker-toggle" type="button" onclick="toggleTicker()" aria-pressed="false" aria-label="Pause news headlines">Ⅱ</button>
+  <button class="ticker-toggle" id="ticker-toggle" type="button" onclick="toggleTicker()" aria-pressed="false" aria-label="Pause headline rotation">Ⅱ</button>
 </div>
 
 <!-- ══ MAIN ══ -->
@@ -880,45 +830,45 @@ header .year-label,header #week-display { color:#d5a0ce; }
       <div class="editor-section-body">
 
     <div class="em-s">
-      <span class="em-lbl">Week Label (leave blank to auto-calculate)</span>
+      <label class="em-lbl" for="ed-week">Week label (leave blank to calculate automatically)</label>
       <input class="em-in" id="ed-week" type="text" placeholder="Auto: current Mon–Fri week">
       <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Leave empty and the page works out this week's dates itself. Only fill in for holidays/exceptions.</span>
     </div>
     <div class="em-s">
-      <span class="em-lbl">This Week's Big Question Day</span>
+      <label class="em-lbl" for="ed-wisdomday">This week's Big Question day</label>
       <select class="em-in" id="ed-wisdomday">
         <option value="wednesday">Wednesday (default)</option>
         <option value="thursday">Thursday — Assembly on Wednesday this week</option>
       </select>
     </div>
     <div class="em-s">
-      <span class="em-lbl">Key Dates (one per line)</span>
+      <label class="em-lbl" for="ed-dates">Key dates (one per line)</label>
       <textarea class="em-ta" id="ed-dates" rows="8"></textarea>
     </div>
 
     <hr class="em-div">
 
     <div class="em-s">
-      <span class="em-lbl">Purpose Line (shown in the header every day)</span>
+      <label class="em-lbl" for="ed-purpose">Purpose line (shown in the header every day)</label>
       <input class="em-in" id="ed-purpose" placeholder="Why form time exists — in one sentence">
       <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Keep it short. This is the answer to &ldquo;what is form time for?&rdquo;</span>
     </div>
 
     <div class="em-s">
-      <span class="em-lbl">Assembly Rota (one per line: week | type | day | details)</span>
+      <label class="em-lbl" for="ed-asm">Assembly rota (one per line: week | type | day | details)</label>
       <textarea class="em-ta" id="ed-asm" rows="8"></textarea>
       <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Use <strong>all</strong> for an assembly location, <strong>houses</strong> for named houses, or <strong>none</strong>. Example: <em>2026-09-07 | all | Tuesday | Dance Studio</em>. Use the week-commencing Monday.</span>
     </div>
 
     <div class="em-s">
-      <span class="em-lbl">Our Standards (one per line — sidebar panel)</span>
+      <label class="em-lbl" for="ed-expect">Our standards (one per line)</label>
       <textarea class="em-ta" id="ed-expect" rows="5"></textarea>
     </div>
 
     <div class="em-s">
-      <span class="em-lbl">Student Rota — who leads this week</span>
+      <label class="em-lbl" for="ed-rota">Student rota: who leads this week</label>
       <input class="em-in" id="ed-rota" placeholder="e.g. 12P — Aisha K.">
-      <span class="em-lbl" style="margin-top:8px;display:block">Starter Timer (minutes)</span>
+      <label class="em-lbl" for="ed-timer" style="margin-top:8px;display:block">Starter timer (minutes)</label>
       <input class="em-in" id="ed-timer" type="number" min="1" max="30" step="1">
     </div>
 
@@ -927,13 +877,13 @@ header .year-label,header #week-display { color:#d5a0ce; }
     <div class="em-s">
       <span class="em-lbl">Daily guidance</span>
       <span style="font-size:.82rem;color:var(--text2);margin-bottom:8px;display:block">A short delivery reminder shown below the activity. Leave blank to hide.</span>
-      <span class="em-lbl" style="display:block">Monday</span>
+      <label class="em-lbl" for="ed-act-monday" style="display:block">Monday</label>
       <input class="em-in" id="ed-act-monday">
-      <span class="em-lbl" style="margin-top:8px;display:block">Tuesday</span>
+      <label class="em-lbl" for="ed-act-tuesday" style="margin-top:8px;display:block">Tuesday</label>
       <input class="em-in" id="ed-act-tuesday">
-      <span class="em-lbl" style="margin-top:8px;display:block">Wednesday</span>
+      <label class="em-lbl" for="ed-act-wednesday" style="margin-top:8px;display:block">Wednesday</label>
       <input class="em-in" id="ed-act-wednesday">
-      <span class="em-lbl" style="margin-top:8px;display:block">Thursday</span>
+      <label class="em-lbl" for="ed-act-thursday" style="margin-top:8px;display:block">Thursday</label>
       <input class="em-in" id="ed-act-thursday">
     </div>
       </div>
@@ -943,7 +893,7 @@ header .year-label,header #week-display { color:#d5a0ce; }
       <summary>Big Question</summary>
       <div class="editor-section-body">
     <div class="em-s">
-      <span class="em-lbl">Weekly questions (YYYY-MM-DD | question | follow-up)</span>
+      <label class="em-lbl" for="ed-bigquestions">Weekly questions (YYYY-MM-DD | question | follow-up)</label>
       <textarea class="em-ta" id="ed-bigquestions" rows="9"></textarea>
       <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Use the week-commencing Monday. The matching question appears automatically that week.</span>
     </div>
@@ -954,34 +904,34 @@ header .year-label,header #week-display { color:#d5a0ce; }
       <summary>Daily content</summary>
       <div class="editor-section-body">
     <div class="em-s">
-      <span class="em-lbl">Monday — Weekly Pulse question</span>
+      <label class="em-lbl" for="ed-pulse-question">Monday: Weekly Pulse question</label>
       <input class="em-in" id="ed-pulse-question">
-      <span class="em-lbl" style="margin-top:8px;display:block">Optional follow-up</span>
+      <label class="em-lbl" for="ed-pulse-followup" style="margin-top:8px;display:block">Optional follow-up</label>
       <input class="em-in" id="ed-pulse-followup">
     </div>
 
     <hr class="em-div">
 
     <div class="em-s">
-      <span class="em-lbl">Tuesday — Sky News / YouTube Embed URL</span>
+      <label class="em-lbl" for="ed-yturl">Tuesday: Sky News or YouTube URL</label>
       <input class="em-in" id="ed-yturl" placeholder="https://www.youtube.com/embed/…">
       <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Default: Sky News UK live stream. Update if the link stops working.</span>
-      <span class="em-lbl" style="margin-top:10px;display:block">One Story question</span>
+      <label class="em-lbl" for="ed-news-question" style="margin-top:10px;display:block">One Story question</label>
       <input class="em-in" id="ed-news-question">
-      <span class="em-lbl" style="margin-top:8px;display:block">Optional follow-up</span>
+      <label class="em-lbl" for="ed-news-followup" style="margin-top:8px;display:block">Optional follow-up</label>
       <input class="em-in" id="ed-news-followup">
     </div>
 
     <hr class="em-div">
 
     <div class="em-s">
-      <span class="em-lbl">Thursday — Quick Challenge title</span>
+      <label class="em-lbl" for="ed-challenge-title">Thursday: Quick Challenge title</label>
       <input class="em-in" id="ed-challenge-title">
-      <span class="em-lbl" style="margin-top:8px;display:block">Scenario</span>
+      <label class="em-lbl" for="ed-challenge-scenario" style="margin-top:8px;display:block">Scenario</label>
       <textarea class="em-ta" id="ed-challenge-scenario" rows="3"></textarea>
-      <span class="em-lbl" style="margin-top:8px;display:block">Main question</span>
+      <label class="em-lbl" for="ed-challenge-question" style="margin-top:8px;display:block">Main question</label>
       <input class="em-in" id="ed-challenge-question">
-      <span class="em-lbl" style="margin-top:8px;display:block">Optional follow-up</span>
+      <label class="em-lbl" for="ed-challenge-followup" style="margin-top:8px;display:block">Optional follow-up</label>
       <input class="em-in" id="ed-challenge-followup">
     </div>
 
@@ -995,15 +945,15 @@ header .year-label,header #week-display { color:#d5a0ce; }
       <span class="em-lbl">Show / Hide Panels</span>
       <div class="tog-row">
         <span class="tog-lbl">News Ticker</span>
-        <label class="tog"><input type="checkbox" id="tog-ticker"><span class="tog-sl"></span></label>
+        <label class="tog"><input type="checkbox" id="tog-ticker" aria-label="Show news ticker"><span class="tog-sl"></span></label>
       </div>
       <div class="tog-row">
         <span class="tog-lbl">Key Dates</span>
-        <label class="tog"><input type="checkbox" id="tog-dates"><span class="tog-sl"></span></label>
+        <label class="tog"><input type="checkbox" id="tog-dates" aria-label="Show key dates"><span class="tog-sl"></span></label>
       </div>
       <div class="tog-row">
         <span class="tog-lbl">Our Standards</span>
-        <label class="tog"><input type="checkbox" id="tog-expect"><span class="tog-sl"></span></label>
+        <label class="tog"><input type="checkbox" id="tog-expect" aria-label="Show our standards"><span class="tog-sl"></span></label>
       </div>
     </div>
 
@@ -1023,14 +973,14 @@ header .year-label,header #week-display { color:#d5a0ce; }
 
       <button type="button" class="ord-btn" id="sync-retry" style="display:none;margin-bottom:12px;padding:9px 14px;font-size:0.85rem;" onclick="retrySync()">Retry cloud save</button>
 
-      <span class="em-lbl">1. GitHub Personal Access Token (this device only — never shared)</span>
+      <label class="em-lbl" for="ed-token">1. GitHub personal access token (this device only; never shared)</label>
       <input class="em-in" id="ed-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
 
       <div class="em-row">
         <button type="button" class="ord-btn" style="flex:1;padding:9px;font-size:0.85rem;" onclick="createSharedGist()">Create Shared Gist</button>
       </div>
 
-      <span class="em-lbl" style="margin-top:10px;display:block;">2. Shared Gist ID (auto-fills above, or paste an existing one)</span>
+      <label class="em-lbl" for="ed-gistid" style="margin-top:10px;display:block;">2. Shared Gist ID (filled automatically, or paste an existing one)</label>
       <input class="em-in" id="ed-gistid" type="text" placeholder="e.g. 8f3a1c9b2e7d4f6a...">
 
       <span style="font-size:.82rem;color:var(--text2);margin-top:8px;display:block;line-height:1.5">
@@ -1175,7 +1125,9 @@ function normaliseAssemblyDay(day){ return ASSEMBLY_DAYS[String(day||'').trim().
 function normaliseAssemblies(entries){
   const result=[];
   (Array.isArray(entries)?entries:[]).forEach(entry=>{
-    if(!entry||!/^\d{4}-\d{2}-\d{2}$/.test(entry.wc||'')) return;
+    if(!entry||typeof entry!=='object'){ result.push({type:'legacy',raw:entry??null}); return; }
+    if(entry.type==='legacy'){ result.push(clone(entry)); return; }
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(entry.wc||'')){ result.push({type:'legacy',raw:clone(entry)}); return; }
     if(entry.type==='none'){ result.push({wc:entry.wc,type:'none'}); return; }
     if(entry.type==='all'&&normaliseAssemblyDay(entry.day)&&String(entry.location||'').trim()){
       result.push({wc:entry.wc,type:'all',day:normaliseAssemblyDay(entry.day),location:String(entry.location).trim()}); return;
@@ -1194,7 +1146,10 @@ function normaliseAssemblies(entries){
       if(house) result.push({wc:entry.wc,type:'houses',day,houses:details.split(/\s*&\s*|\s*,\s*/).filter(Boolean)});
       else result.push({wc:entry.wc,type:'all',day,location:details});
     });
-    if(result.length===before && text) result.push({wc:entry.wc,type:'note',label:text});
+    if(result.length===before){
+      if(text) result.push({wc:entry.wc,type:'note',label:text});
+      else result.push({type:'legacy',raw:clone(entry)});
+    }
   });
   return result;
 }
@@ -1214,7 +1169,6 @@ function migrateState(input){
   const state={...clone(DEFAULTS),...raw};
   state.panels={...clone(DEFAULTS.panels),...(raw.panels||{})};
   state.assemblies=normaliseAssemblies(Array.isArray(raw.assemblies)?raw.assemblies:DEFAULTS.assemblies);
-  if(!state.assemblies.length) state.assemblies=clone(DEFAULTS.assemblies);
   state.bigQuestions=Array.isArray(raw.bigQuestions)?raw.bigQuestions:clone(DEFAULTS.bigQuestions);
 
   const allowedPanels=['dates','expect'];
@@ -1739,21 +1693,11 @@ async function fetchOTD(dayName){
 
   const base=`https://en.wikipedia.org/api/rest_v1/feed/onthisday`;
   try{
-    const [evR,brR,deR]=await Promise.all([
-      fetch(`${base}/events/${m}/${d}`),
-      fetch(`${base}/births/${m}/${d}`),
-      fetch(`${base}/deaths/${m}/${d}`)
-    ]);
-    if(!evR.ok||!brR.ok||!deR.ok) throw new Error('On This Day service unavailable');
-    const [evD,brD,deD]=await Promise.all([evR.json(),brR.json(),deR.json()]);
-    const ev=pickBest(evD.events||[]);
-    const br=pickBest(brD.births||[]);
-    const de=pickBest(deD.deaths||[]);
-    const cards=[
-      ev?{type:'Event', year:ev.year, text:ev.text}:null,
-      br?{type:'Born',  year:br.year, text:br.text}:null,
-      de?{type:'Died',  year:de.year, text:de.text}:null
-    ].filter(Boolean);
+    const response=await fetch(`${base}/events/${m}/${d}`);
+    if(!response.ok) throw new Error('On This Day service unavailable');
+    const data=await response.json();
+    const event=pickBest(data.events||[]);
+    const cards=event?[{type:'Event',year:event.year,text:event.text}]:[];
     if(!cards.length) throw new Error();
     const saved={cards,updatedAt:Date.now()};
     localStorage.setItem(cacheKey,JSON.stringify(saved));
@@ -1771,14 +1715,29 @@ async function fetchOTD(dayName){
 // ════════════════════════════════════════════════
 //  NEWS — BBC RSS via rss2json
 // ════════════════════════════════════════════════
-function toggleTicker(){
+let tickerItems=[],tickerIndex=0,tickerPaused=false,tickerTimer=null;
+function paintTicker(animate=true){
   const ts=document.getElementById('ticker-scroll');
+  if(!ts||!tickerItems.length) return;
+  ts.classList.remove('changing');
+  ts.innerHTML=`<span class="ticker-item">${esc(tickerItems[tickerIndex].title)}</span>`;
+  if(animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    requestAnimationFrame(()=>ts.classList.add('changing'));
+  }
+}
+function startTickerRotation(){
+  clearInterval(tickerTimer);
+  if(tickerPaused||tickerItems.length<2||document.hidden) return;
+  tickerTimer=setInterval(()=>{ tickerIndex=(tickerIndex+1)%tickerItems.length; paintTicker(); },12000);
+}
+function toggleTicker(){
   const btn=document.getElementById('ticker-toggle');
-  if(!ts||!btn) return;
-  const paused=ts.classList.toggle('paused');
-  btn.setAttribute('aria-pressed',String(paused));
-  btn.setAttribute('aria-label',paused?'Resume news headlines':'Pause news headlines');
-  btn.textContent=paused?'▶':'Ⅱ';
+  if(!btn) return;
+  tickerPaused=!tickerPaused;
+  btn.setAttribute('aria-pressed',String(tickerPaused));
+  btn.setAttribute('aria-label',tickerPaused?'Resume headline rotation':'Pause headline rotation');
+  btn.textContent=tickerPaused?'▶':'Ⅱ';
+  startTickerRotation();
 }
 
 async function fetchNews(){
@@ -1806,36 +1765,19 @@ async function fetchNews(){
 }
 
 function renderTicker(items,updatedAt,cached=false){
-  const ts=document.getElementById('ticker-scroll');
-  if(ts){
-    const headlines=items.map(i=>`<span class="ticker-item">${esc(i.title)}</span><span class="ticker-sep" aria-hidden="true">◆</span>`).join('');
-    ts.innerHTML=`<span class="ticker-sequence">${headlines}</span><span class="ticker-sequence" aria-hidden="true">${headlines}</span>`;
-    ts.style.animationDuration=Math.max(55,items.length*7)+'s';
-  }
+  tickerItems=items;
+  tickerIndex=0;
+  paintTicker(false);
+  startTickerRotation();
   const label=document.getElementById('ticker-updated');
   if(label) label.textContent=`${cached?'Cached':'Updated'} ${new Date(updatedAt).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
 }
+document.addEventListener('visibilitychange',startTickerRotation);
 
 // ════════════════════════════════════════════════
 //  EDIT MODAL
 // ════════════════════════════════════════════════
 let editReturnFocus=null;
-
-function enhanceEditorA11y(){
-  const names={
-    'ed-week':'Week label','ed-wisdomday':'Big Question day','ed-dates':'Key dates','ed-purpose':'Purpose line',
-    'ed-expect':'Our standards','ed-rota':'Student rota','ed-asm':'Assembly rota','ed-timer':'Starter timer minutes',
-    'ed-act-monday':'Monday required action','ed-act-tuesday':'Tuesday required action','ed-act-wednesday':'Wednesday required action',
-    'ed-act-thursday':'Thursday required action','ed-bigquestions':'Dated weekly Big Questions','ed-pulse-question':'Monday Weekly Pulse question',
-    'ed-pulse-followup':'Monday follow-up question','ed-yturl':'Sky News or YouTube URL','ed-news-question':'Tuesday One Story question',
-    'ed-news-followup':'Tuesday follow-up question','ed-challenge-title':'Quick Challenge title','ed-challenge-scenario':'Quick Challenge scenario',
-    'ed-challenge-question':'Quick Challenge question','ed-challenge-followup':'Quick Challenge follow-up',
-    'ed-token':'GitHub personal access token','ed-gistid':'Shared Gist ID'
-  };
-  Object.entries(names).forEach(([id,name])=>document.getElementById(id)?.setAttribute('aria-label',name));
-  [['tog-ticker','Show news ticker'],['tog-dates','Show key dates'],['tog-expect','Show our standards']]
-    .forEach(([id,name])=>document.getElementById(id)?.setAttribute('aria-label',name));
-}
 
 function openEdit(){
   editReturnFocus=document.activeElement;
@@ -1912,7 +1854,8 @@ async function saveEdit(){
   S.purpose=document.getElementById('ed-purpose').value.trim();
   S.expectations=document.getElementById('ed-expect').value.split('\n').map(l=>l.trim()).filter(Boolean);
   S.rota=document.getElementById('ed-rota').value.trim();
-  S.assemblies=document.getElementById('ed-asm').value.split('\n')
+  const preservedAssemblyRecords=(S.assemblies||[]).filter(a=>a?.type==='legacy');
+  S.assemblies=preservedAssemblyRecords.concat(document.getElementById('ed-asm').value.split('\n')
     .map(l=>l.trim()).filter(Boolean)
     .flatMap(l=>{ const p=l.split('|').map(v=>v.trim()); const wc=p[0],type=(p[1]||'').toLowerCase(),day=normaliseAssemblyDay(p[2]);
       if(!/^\d{4}-\d{2}-\d{2}$/.test(wc)) return [];
@@ -1921,7 +1864,7 @@ async function saveEdit(){
       if(type==='all'&&day&&p.slice(3).join(' | ')) return [{wc,type:'all',day,location:p.slice(3).join(' | ')}];
       if(type==='houses'&&day&&p.slice(3).join(' | ')) return [{wc,type:'houses',day,houses:p.slice(3).join(' | ').split(',').map(h=>h.trim()).filter(Boolean)}];
       return [];
-    });
+    }));
   S.timerMins=Math.min(30,Math.max(1,parseInt(document.getElementById('ed-timer').value,10)||DEFAULTS.timerMins));
   S.actions={};
   DAYS.forEach(d=>{ S.actions[d]=document.getElementById('ed-act-'+d).value.trim(); });
@@ -2227,7 +2170,6 @@ function renderAll(){
 }
 
 async function init(){
-  enhanceEditorA11y();
   initDay();
   await pullFromGist();
   renderAll();
