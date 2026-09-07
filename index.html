@@ -1802,7 +1802,10 @@ function renderTicker(items,updatedAt,cached=false){
   const label=document.getElementById('ticker-updated');
   if(label) label.textContent=`${cached?'Cached':'Updated'} ${new Date(updatedAt).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
 }
-document.addEventListener('visibilitychange',startTickerRotation);
+document.addEventListener('visibilitychange',()=>{
+  startTickerRotation();
+  if(!document.hidden) pullFromGist().then(ok=>{ if(ok) renderAll(); });
+});
 
 // ════════════════════════════════════════════════
 //  EDIT MODAL
@@ -1974,6 +1977,7 @@ function mvPanel(i,dir){
 const GIST_FILE='formtime-data.json';
 const GIST_OWNER='ZanierM';
 const SYNC_DIRTY_KEY='ft-sync-dirty';
+const SYNC_POLL_MS=120000;
 let syncState='pending';
 
 function getSyncToken(){ return localStorage.getItem('ft-sync-token')||''; }
@@ -2070,7 +2074,7 @@ async function pullFromGist(){
   }
   try{
     // The raw Gist host is cacheable and does not consume GitHub REST API quota.
-    const cacheWindow=Math.floor(Date.now()/600000);
+    const cacheWindow=Math.floor(Date.now()/SYNC_POLL_MS);
     const rawUrl=`https://gist.githubusercontent.com/${GIST_OWNER}/${gistId}/raw/${GIST_FILE}?v=${cacheWindow}`;
     const res=await fetch(rawUrl,{headers:{'Accept':'application/json'}});
     if(!res.ok) throw new Error('HTTP '+res.status);
@@ -2211,7 +2215,7 @@ init();
 setInterval(fetchNews,   600000);
 setInterval(()=>fetchOTD(currentDay()), 3600000);
 setInterval(updateHeader,  60000);
-setInterval(async()=>{ const ok=await pullFromGist(); if(ok) renderAll(); }, 600000);
+setInterval(async()=>{ const ok=await pullFromGist(); if(ok) renderAll(); }, SYNC_POLL_MS);
 </script>
 </body>
 </html>
