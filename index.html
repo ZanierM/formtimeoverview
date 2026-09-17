@@ -216,9 +216,14 @@ header {
   font-weight:600;
   color:var(--ticker-fg);
   display:block;
+  width:100%;
   overflow:hidden;
   text-overflow:ellipsis;
+  text-decoration-color:rgba(255,255,255,.42);
+  text-decoration-thickness:1px;
+  text-underline-offset:4px;
 }
+.ticker-item[href]:hover,.ticker-item[href]:focus-visible { text-decoration-thickness:2px; text-decoration-color:currentColor; }
 
 /* ══════════════════════════════════════════
    MAIN LAYOUT
@@ -685,6 +690,11 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .debate-prompt { padding-block:clamp(28px,4vw,48px); }
 .debate-prompt .prompt-question { max-width:none; font-size:clamp(2rem,3.4vw,3.5rem); }
 .debate-prompt .prompt-followup { max-width:55ch; font-size:clamp(1.15rem,1.5vw,1.4rem); }
+.question-toolbar { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:0 0 14px; }
+.question-category { color:var(--text2); font-size:1rem; font-weight:750; }
+.question-category strong { color:var(--accent); }
+.question-swap { min-height:44px; padding:9px 15px; border:1px solid var(--accent); border-radius:10px; background:var(--surface); color:var(--accent); font:inherit; font-weight:800; cursor:pointer; }
+.question-swap:hover,.question-swap:focus-visible { background:var(--accent); color:var(--on-accent); }
 .tuesday-grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:start; }
 .tuesday-grid .yt-wrap { padding-top:0; aspect-ratio:16/9; }
 .tuesday-grid .micro-routine { align-self:start; }
@@ -695,7 +705,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .news-link:hover,.news-link:focus-visible { border-color:var(--accent); background:var(--surface2); }
 .news-link small { display:block; margin-top:3px; color:var(--text2); font-size:.8rem; font-weight:600; }
 @media(max-width:900px){.tuesday-grid{grid-template-columns:1fr}.tuesday-grid .micro-routine{order:-1}.news-links{grid-column:auto}}
-@media(max-width:640px){.routine-steps.four-step{grid-template-columns:repeat(2,minmax(0,1fr))}.routine-steps.four-step .routine-step:nth-child(2){border-right:0}.routine-steps.four-step .routine-step:nth-child(-n+2){border-bottom:1px solid var(--border)}.routine-step{padding:9px 6px}.step-name,.step-time{font-size:.78rem}.prompt-card{padding:18px}.prompt-question{font-size:1.5rem}.prompt-followup{font-size:1rem}.activity-purpose{font-size:1rem}}
+@media(max-width:640px){.routine-steps.four-step{grid-template-columns:repeat(2,minmax(0,1fr))}.routine-steps.four-step .routine-step:nth-child(2){border-right:0}.routine-steps.four-step .routine-step:nth-child(-n+2){border-bottom:1px solid var(--border)}.routine-step{padding:9px 6px}.step-name,.step-time{font-size:.78rem}.prompt-card{padding:18px}.prompt-question{font-size:1.5rem}.prompt-followup{font-size:1rem}.activity-purpose{font-size:1rem}.question-toolbar{align-items:flex-start;flex-direction:column}.question-swap{width:100%}}
 /* BROADCAST STUDIO */
 body { position:relative; isolation:isolate; }
 body::before {
@@ -901,7 +911,7 @@ header .year-label,header #week-display { color:var(--header-accent); }
     <div class="em-s">
       <label class="em-lbl" for="ed-bigquestions">Weekly questions (YYYY-MM-DD | question | follow-up)</label>
       <textarea class="em-ta" id="ed-bigquestions" rows="9"></textarea>
-      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Use the week-commencing Monday. The matching question appears automatically that week.</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Use the week-commencing Monday. A matching question appears first that week; tutors can then choose another from the approved question bank.</span>
     </div>
       </div>
     </details>
@@ -1029,7 +1039,94 @@ header .year-label,header #week-display { color:var(--header-accent); }
 // ════════════════════════════════════════════════
 //  DEFAULTS  (pre-filled from your PowerPoint)
 // ════════════════════════════════════════════════
-const CURRENT_DATA_VERSION = 10;
+const QUESTION_BANK=[
+  {c:"Technology",q:"Should people be allowed to remain anonymous online?",f:"When does privacy become a way to avoid responsibility?"},
+  {c:"Education",q:"Should students be able to choose every subject they study from age 14?",f:"What knowledge should everyone share?"},
+  {c:"Society",q:"Is equality of opportunity enough if outcomes remain very unequal?",f:"What would a genuinely fair starting point look like?"},
+  {c:"Ethics",q:"Is it ever right to break a rule because you believe the rule is wrong?",f:"Who should decide when an exception is justified?"},
+  {c:"The future",q:"Will life be better for your generation than for your parents' generation?",f:"Which change will matter most?"},
+  {c:"Media",q:"Should social-media companies decide what counts as misinformation?",f:"Who else could make that decision?"},
+  {c:"Environment",q:"Should environmentally harmful choices cost more?",f:"Would that be effective, or simply unfair to people with less money?"},
+  {c:"Success",q:"Is enjoying your work more important than earning a high salary?",f:"Would your answer change if other people depended on you?"},
+  {c:"Freedom",q:"Should freedom of speech protect opinions that most people find offensive?",f:"Where, if anywhere, should the boundary be?"},
+  {c:"Community",q:"Do people have a duty to help strangers?",f:"Does distance change that responsibility?"},
+  {c:"Science",q:"Should scientific progress ever be slowed down because of possible risks?",f:"How much evidence of harm should be needed?"},
+  {c:"Culture",q:"Should museums return objects acquired during the British Empire?",f:"Who can fairly decide where an object belongs?"},
+  {c:"Technology",q:"Should AI be allowed to make decisions that significantly affect people's lives?",f:"Which decisions must always involve a human?"},
+  {c:"Education",q:"Are examinations the fairest way to measure what someone knows?",f:"What would a better alternative need to avoid?"},
+  {c:"Society",q:"Should everyone receive a basic income, whether they work or not?",f:"Would it increase freedom or weaken responsibility?"},
+  {c:"Ethics",q:"Does a good result justify a dishonest action?",f:"Can you think of a case where it might?"},
+  {c:"The future",q:"Should governments plan for people to live to 120?",f:"What would have to change first?"},
+  {c:"Media",q:"Is a news organisation ever truly neutral?",f:"Is fairness more realistic than neutrality?"},
+  {c:"Environment",q:"Should frequent flyers pay substantially more tax?",f:"Should the purpose of the journey matter?"},
+  {c:"Success",q:"Is ambition always a positive quality?",f:"At what point can ambition become harmful?"},
+  {c:"Freedom",q:"Should people be free to make choices that are seriously harmful to themselves?",f:"When is intervention justified?"},
+  {c:"Community",q:"Should volunteering be a compulsory part of education?",f:"Does compulsory service still count as volunteering?"},
+  {c:"Science",q:"Should parents be allowed to select characteristics of future children?",f:"Is preventing illness different from choosing an advantage?"},
+  {c:"Culture",q:"Can you appreciate a work of art while rejecting the person who made it?",f:"Should some actions change how work is celebrated?"},
+  {c:"Technology",q:"Would society be better if smartphones had never been invented?",f:"Which benefit would be hardest to give up?"},
+  {c:"Education",q:"Should attendance at university be free for everyone?",f:"Who should pay for the wider benefits of higher education?"},
+  {c:"Society",q:"Should wealth have an upper limit?",f:"Would a limit be fair, practical or desirable?"},
+  {c:"Ethics",q:"Is doing nothing a moral choice when you could prevent harm?",f:"Does your responsibility depend on the personal cost?"},
+  {c:"The future",q:"Should today's voters be able to make decisions with consequences lasting a century?",f:"How could future generations be represented?"},
+  {c:"Media",q:"Do photographs show the truth?",f:"How can framing change a story without altering the image?"},
+  {c:"Environment",q:"Should economic growth remain a national priority during a climate emergency?",f:"Can prosperity be measured in another way?"},
+  {c:"Success",q:"Is failure necessary for meaningful success?",f:"Can people learn the same lessons without failing?"},
+  {c:"Freedom",q:"Should voting be a duty as well as a right?",f:"What should happen if someone refuses?"},
+  {c:"Community",q:"Do richer countries have a greater duty to accept refugees?",f:"What should determine a country's fair share?"},
+  {c:"Science",q:"Should extinct species be brought back if the technology becomes safe?",f:"Would conservation money be better spent elsewhere?"},
+  {c:"Culture",q:"Should public statues reflect history as it happened or values held today?",f:"Is adding context enough?"},
+  {c:"Technology",q:"Should there be a legal right to disconnect from work messages?",f:"Would the same rule suit every type of job?"},
+  {c:"Education",q:"Should schools reward effort as much as achievement?",f:"Can effort be measured fairly?"},
+  {c:"Society",q:"Is it fair for where someone lives to affect the opportunities they receive?",f:"Which services should be identical everywhere?"},
+  {c:"Ethics",q:"Is loyalty still a virtue when a friend is clearly wrong?",f:"What does a loyal response look like?"},
+  {c:"The future",q:"Will artificial intelligence make human creativity more or less valuable?",f:"What makes something genuinely creative?"},
+  {c:"Media",q:"Should public figures have less right to privacy than everyone else?",f:"Does public interest mean the same as public curiosity?"},
+  {c:"Environment",q:"Should individuals feel guilty about climate change?",f:"Does focusing on personal choices distract from larger responsibilities?"},
+  {c:"Success",q:"Is it better to be excellent at one thing or capable at many things?",f:"Which matters more in an uncertain future?"},
+  {c:"Freedom",q:"Should governments be able to restrict protest when it seriously disrupts daily life?",f:"Can an undisruptive protest still be effective?"},
+  {c:"Community",q:"Are we responsible for problems created before we were born?",f:"Does benefiting from the past create a duty today?"},
+  {c:"Science",q:"Should medical treatments be prioritised by need, likely benefit or personal responsibility?",f:"Which principle is fairest when resources are limited?"},
+  {c:"Culture",q:"Does a shared national identity matter?",f:"Can it include people with very different values and traditions?"},
+  {c:"Technology",q:"Should employers be allowed to use AI to select job applicants?",f:"Could an algorithm be fairer than a person?"},
+  {c:"Education",q:"Should students evaluate their teachers?",f:"How could feedback be useful without becoming a popularity contest?"},
+  {c:"Society",q:"Should inherited wealth be taxed more heavily than earned income?",f:"How much should parents be free to pass on?"},
+  {c:"Ethics",q:"Is an action still generous if the person doing it wants recognition?",f:"Do motives matter more than outcomes?"},
+  {c:"The future",q:"Should humanity invest more in exploring space than solving problems on Earth?",f:"Could the two goals support each other?"},
+  {c:"Media",q:"Does giving every viewpoint equal airtime always make coverage fair?",f:"When is one side not supported by enough evidence?"},
+  {c:"Environment",q:"Should future generations have legal rights today?",f:"Who could speak on their behalf?"},
+  {c:"Success",q:"Should people choose careers for their own fulfilment or for their value to society?",f:"Can one career satisfy both aims?"},
+  {c:"Freedom",q:"Should sixteen-year-olds have the right to vote in every UK election?",f:"Which responsibilities should come with that right?"},
+  {c:"Community",q:"Is social trust more important than strict rules?",f:"What happens when people expect others to behave badly?"},
+  {c:"Science",q:"Should scientific knowledge ever be kept secret?",f:"When could openness create unacceptable danger?"},
+  {c:"Culture",q:"Is preserving tradition a good enough reason to continue a practice?",f:"How should traditions change when values change?"},
+  {c:"Technology",q:"Should people own the data generated by their everyday activities?",f:"What would meaningful ownership allow them to do?"},
+  {c:"Education",q:"Is competition between students helpful or harmful?",f:"When does competition improve learning?"},
+  {c:"Society",q:"Should essential public services ever be run for profit?",f:"Can competition improve a service without weakening fairness?"},
+  {c:"Ethics",q:"Can a person be good while repeatedly making harmful choices?",f:"Should character be judged by intentions, actions or change?"},
+  {c:"The future",q:"Would a four-day working week improve society?",f:"Who might benefit least from the change?"},
+  {c:"Media",q:"Should news organisations avoid reporting some details during an unfolding crisis?",f:"When can speed or openness cause harm?"},
+  {c:"Environment",q:"Should access to nature be treated as a basic right?",f:"What responsibility would that place on landowners and government?"},
+  {c:"Success",q:"Does comparing yourself with others help you improve?",f:"When does comparison stop being useful?"},
+  {c:"Freedom",q:"Should there be limits on how much companies can influence people's choices?",f:"Where is the line between persuasion and manipulation?"},
+  {c:"Community",q:"Is it possible to build a strong community entirely online?",f:"What does physical presence add?"},
+  {c:"Science",q:"Should animals have legal rights similar to human rights?",f:"Which rights would make sense, and who would enforce them?"},
+  {c:"Culture",q:"Should popular culture be studied as seriously as classic literature and art?",f:"Who decides what deserves lasting attention?"},
+  {c:"Technology",q:"Should realistic AI-generated people have to be clearly labelled?",f:"Would a label be enough to prevent deception?"},
+  {c:"Education",q:"Should schools teach more practical life skills even if it means less academic content?",f:"Which knowledge would you remove to make room?"},
+  {c:"Society",q:"Is privacy becoming a luxury available mainly to wealthy people?",f:"What level of privacy should everyone be guaranteed?"},
+  {c:"Ethics",q:"Should people be judged by the standards of their own time or by ours?",f:"Can understanding context become an excuse?"},
+  {c:"The future",q:"Would you choose to know important events from your own future?",f:"Could that knowledge reduce your freedom?"},
+  {c:"Media",q:"Are people responsible for checking information before sharing it?",f:"How much checking is reasonable for an ordinary user?"},
+  {c:"Environment",q:"Should access to air travel be rationed rather than priced?",f:"Would equal allowances be genuinely fair?"},
+  {c:"Success",q:"Is being respected more valuable than being liked?",f:"Can seeking respect damage relationships?"},
+  {c:"Freedom",q:"Should schools be allowed to restrict students' social-media use outside school?",f:"When does an off-site action become the school's concern?"},
+  {c:"Community",q:"Does living in a diverse society require people to compromise some beliefs?",f:"Which beliefs should never be negotiable?"},
+  {c:"Science",q:"Should healthy people be paid to take part in medical research?",f:"When might payment become pressure?"},
+  {c:"Culture",q:"Does language shape what people are able to think?",f:"Can a new word change how society understands an issue?"}
+];
+
+const CURRENT_DATA_VERSION = 11;
 const DEFAULTS = {
   dataVersion:CURRENT_DATA_VERSION,
   week:"",
@@ -1044,6 +1141,7 @@ const DEFAULTS = {
     {wc:"2026-10-12",question:"Should private schools continue to exist?",followUp:"Should parents be free to buy educational advantages for their children?"},
     {wc:"2026-10-19",question:"Should AI-generated work receive any academic credit?",followUp:"Where is the boundary between assistance and cheating?"}
   ],
+  questionBank:QUESTION_BANK,
   keyDates:[],
   pulse:{
     question:"What would make your first full week of sixth form feel successful?",
@@ -1176,6 +1274,11 @@ function migrateState(input){
   state.panels={...clone(DEFAULTS.panels),...(raw.panels||{})};
   state.assemblies=normaliseAssemblies(Array.isArray(raw.assemblies)?raw.assemblies:DEFAULTS.assemblies);
   state.bigQuestions=Array.isArray(raw.bigQuestions)?raw.bigQuestions:clone(DEFAULTS.bigQuestions);
+  const incomingBank=Array.isArray(raw.questionBank)?raw.questionBank:DEFAULTS.questionBank;
+  state.questionBank=incomingBank
+    .filter(item=>item&&typeof item.q==='string'&&item.q.trim())
+    .map(item=>({c:String(item.c||'Discussion').trim(),q:item.q.trim(),f:String(item.f||'').trim()}));
+  if(!state.questionBank.length) state.questionBank=clone(DEFAULTS.questionBank);
 
   const allowedPanels=['dates','expect'];
   const requested=Array.isArray(raw.panelOrder)?raw.panelOrder:DEFAULTS.panelOrder;
@@ -1592,6 +1695,40 @@ function bigQuestionForDate(date=new Date()){
   return (S.bigQuestions||DEFAULTS.bigQuestions||[]).find(q=>q.wc===weekKey)||null;
 }
 
+const questionChoiceByWeek={};
+function questionOptionsForDate(date){
+  const bank=Array.isArray(S.questionBank)&&S.questionBank.length?S.questionBank:DEFAULTS.questionBank;
+  const monday=mondayOf(date);
+  const scheduled=bigQuestionForDate(date);
+  const weekNumber=Math.abs(Math.floor(monday.getTime()/604800000));
+  const start=(weekNumber*13)%bank.length;
+  const options=[];
+  if(scheduled) options.push({category:'Planned question',question:scheduled.question,followUp:scheduled.followUp||''});
+  for(let i=0;i<bank.length;i++){
+    const item=bank[(start+i)%bank.length];
+    if(!options.some(existing=>existing.question===item.q)){
+      options.push({category:item.c||'Discussion',question:item.q,followUp:item.f||''});
+    }
+  }
+  return options;
+}
+
+function selectedQuestionForDate(date){
+  const weekKey=isoDate(mondayOf(date));
+  const options=questionOptionsForDate(date);
+  const choice=questionChoiceByWeek[weekKey]||0;
+  return options[choice%options.length];
+}
+
+function cycleBigQuestion(day){
+  const date=contentDateForDay(day);
+  const weekKey=isoDate(mondayOf(date));
+  const options=questionOptionsForDate(date);
+  questionChoiceByWeek[weekKey]=((questionChoiceByWeek[weekKey]||0)+1)%options.length;
+  renderDay(day);
+  requestAnimationFrame(()=>document.getElementById('another-question')?.focus());
+}
+
 // On weekends the day selector previews the next school week (the same
 // convention used by the default Monday selection), so weekly content is
 // resolved against that upcoming week rather than an already-finished one.
@@ -1603,16 +1740,20 @@ function contentDateForDay(dayName){
 }
 
 function renderBigQuestion(day){
-  const scheduled=bigQuestionForDate(contentDateForDay(day));
-  const mainQuestion=scheduled?.question||'What do you think — and why?';
-  const followUp=scheduled?.followUp||'Who might reasonably disagree with you?';
+  const selected=selectedQuestionForDate(contentDateForDay(day));
   return `
     <div class="day-header">
       <h1 class="day-name">${cap(day)}</h1>
       <div class="day-sub">Big Question</div>
     </div>
     <p class="activity-purpose">Use one worthwhile question to practise listening, reasoning and respectful disagreement.</p>
-    ${renderDebateRoutine(mainQuestion,followUp)}`;
+    <div class="question-toolbar">
+      <div class="question-category">${selected.category==='Planned question'?'<strong>Planned question</strong>':`Topic: <strong>${esc(selected.category)}</strong>`}</div>
+      <button class="question-swap" id="another-question" type="button" onclick="cycleBigQuestion('${esc(day)}')">Another question</button>
+    </div>
+    <div aria-live="polite">
+      ${renderDebateRoutine(selected.question,selected.followUp)}
+    </div>`;
 }
 
 function renderChallenge(day){
@@ -1740,7 +1881,11 @@ function paintTicker(animate=true){
   const ts=document.getElementById('ticker-scroll');
   if(!ts||!tickerItems.length) return;
   ts.classList.remove('changing');
-  ts.innerHTML=`<span class="ticker-item">${esc(tickerItems[tickerIndex].title)}</span>`;
+  const item=tickerItems[tickerIndex];
+  const safeLink=/^https:\/\//i.test(item.link||'')?item.link:'';
+  ts.innerHTML=safeLink
+    ?`<a class="ticker-item" href="${esc(safeLink)}" target="_blank" rel="noopener noreferrer" aria-label="Open BBC News article: ${esc(item.title)} (opens in a new tab)">${esc(item.title)}</a>`
+    :`<span class="ticker-item">${esc(item.title)}</span>`;
   if(animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
     requestAnimationFrame(()=>ts.classList.add('changing'));
   }
