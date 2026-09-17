@@ -272,17 +272,22 @@ header {
 }
 
 /* Tuesday — News */
-.yt-wrap {
-  position:relative; width:100%;
-  padding-top:56.25%;
-  border-radius:12px; overflow:hidden;
-  box-shadow:0 4px 20px var(--shadow);
+.live-news-card {
+  min-height:clamp(260px,30vw,430px);
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  padding:clamp(26px,4vw,52px);
+  border-radius:14px;
+  background:var(--header-start);
+  color:var(--header-text);
+  box-shadow:0 10px 30px var(--shadow);
 }
-.yt-wrap iframe {
-  position:absolute; top:0; left:0;
-  width:100%; height:100%;
-  border:none; display:block;
-}
+.live-news-card h2 { max-width:15ch; margin:0; color:inherit; font-size:clamp(2rem,3.7vw,3.8rem); line-height:1; letter-spacing:-.035em; text-wrap:balance; }
+.live-news-card p { max-width:52ch; margin:18px 0 24px; color:var(--header-muted); font-size:1.08rem; line-height:1.5; }
+.live-news-link { min-height:44px; display:inline-flex; align-items:center; padding:10px 17px; border-radius:10px; background:var(--accent); color:var(--on-accent); font-weight:850; text-decoration:none; }
+.live-news-link:hover,.live-news-link:focus-visible { filter:brightness(1.1); text-decoration:underline; text-underline-offset:3px; }
 /* Friday */
 .no-form-time {
   flex:1; min-height:280px; display:grid; place-content:center; text-align:center;
@@ -696,7 +701,6 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .question-swap { min-height:44px; padding:9px 15px; border:1px solid var(--accent); border-radius:10px; background:var(--surface); color:var(--accent); font:inherit; font-weight:800; cursor:pointer; }
 .question-swap:hover,.question-swap:focus-visible { background:var(--accent); color:var(--on-accent); }
 .tuesday-grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:start; }
-.tuesday-grid .yt-wrap { padding-top:0; aspect-ratio:16/9; }
 .tuesday-grid .micro-routine { align-self:start; }
 .news-links { grid-column:1/-1; padding:16px; border:1px solid var(--border); border-radius:12px; background:var(--surface2); }
 .news-links h2 { margin:0 0 10px; color:var(--accent); font-size:1rem; letter-spacing:.08em; text-transform:uppercase; }
@@ -929,10 +933,7 @@ header .year-label,header #week-display { color:var(--header-accent); }
     <hr class="em-div">
 
     <div class="em-s">
-      <label class="em-lbl" for="ed-yturl">Tuesday: Sky News or YouTube URL</label>
-      <input class="em-in" id="ed-yturl" placeholder="https://www.youtube.com/embed/…">
-      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Default: Sky News UK live stream. Update if the link stops working.</span>
-      <label class="em-lbl" for="ed-news-question" style="margin-top:10px;display:block">One Story question</label>
+      <label class="em-lbl" for="ed-news-question">Tuesday: One Story question</label>
       <input class="em-in" id="ed-news-question">
       <label class="em-lbl" for="ed-news-followup" style="margin-top:8px;display:block">Optional follow-up</label>
       <input class="em-in" id="ed-news-followup">
@@ -1157,7 +1158,7 @@ const DEFAULTS = {
     question:"What are the three most useful pieces of advice you would give them?",
     followUp:"Which piece of advice matters most — and why?"
   },
-  ytUrl:"https://www.youtube.com/embed/YDvsBbKfLPA?autoplay=0&rel=0&modestbranding=1",
+  liveNewsUrl:"https://news.sky.com/watch-live",
   purpose:"Your tutor writes your reference — form time is how they get to know you.",
   actions:{
     monday:"Choose one small action that will help you have a successful week.",
@@ -1204,25 +1205,6 @@ const FIVE_LETTER_GAMES=[
 let S = (()=>{ try{ const s=localStorage.getItem('ft-v3'); return migrateState(s?JSON.parse(s):{}); }catch{return clone(DEFAULTS);} })();
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function persist(){localStorage.setItem('ft-v3',JSON.stringify(S));}
-
-function normaliseYouTubeUrl(value){
-  const cleaned=(value||'').trim().replace(/^[`'\"]+|[`'\"]+$/g,'');
-  if(!cleaned) return '';
-  try{
-    const url=new URL(cleaned);
-    const host=url.hostname.replace(/^www\./,'');
-    let videoId='';
-    if(host==='youtu.be') videoId=url.pathname.split('/').filter(Boolean)[0]||'';
-    if(host==='youtube.com'||host==='m.youtube.com'||host==='youtube-nocookie.com'){
-      if(url.pathname==='/watch') videoId=url.searchParams.get('v')||'';
-      else if(/^\/(embed|live)\//.test(url.pathname)) videoId=url.pathname.split('/')[2]||'';
-    }
-    if(/^[A-Za-z0-9_-]{6,20}$/.test(videoId)){
-      return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=0&rel=0&modestbranding=1`;
-    }
-  }catch{}
-  return '';
-}
 
 const ASSEMBLY_DAYS={mon:'monday',monday:'monday',tue:'tuesday',tuesday:'tuesday',wed:'wednesday',wednesday:'wednesday',thu:'thursday',thursday:'thursday',fri:'friday',friday:'friday'};
 function normaliseAssemblyDay(day){ return ASSEMBLY_DAYS[String(day||'').trim().toLowerCase()]||''; }
@@ -1299,7 +1281,8 @@ function migrateState(input){
     state.challenge={...clone(DEFAULTS.challenge),...(raw.challenge||{})};
   }
 
-  state.ytUrl=normaliseYouTubeUrl(state.ytUrl||DEFAULTS.ytUrl);
+  state.liveNewsUrl=DEFAULTS.liveNewsUrl;
+  delete state.ytUrl;
   delete state.theme;
   delete state.usedQuotes;
   delete state.wisdom;
@@ -1665,8 +1648,8 @@ function renderPulse(){
 }
 
 function renderTuesday(){
-  const yt=esc(normaliseYouTubeUrl(S.ytUrl||DEFAULTS.ytUrl));
   const news=S.newsPrompt||DEFAULTS.newsPrompt;
+  const liveUrl=esc(DEFAULTS.liveNewsUrl);
   return `
     <div class="day-header">
       <h1 class="day-name">Tuesday</h1>
@@ -1674,12 +1657,10 @@ function renderTuesday(){
     </div>
     <p class="activity-purpose">Use one current story to understand what happened, why it matters and what you want to know next.</p>
     <div class="tuesday-grid">
-      <div class="yt-wrap">
-        <iframe src="${yt}"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          sandbox="allow-scripts allow-same-origin allow-presentation"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen title="Sky News Live"></iframe>
+      <div class="live-news-card">
+        <h2>Watch Sky News live</h2>
+        <p>The official live channel opens on Sky News, avoiding YouTube sign-in prompts on school devices.</p>
+        <a class="live-news-link" href="${liveUrl}" target="_blank" rel="noopener noreferrer">Open the live channel</a>
       </div>
       ${renderRoutine(news.question,news.followUp,'One story')}
       <section class="news-links" aria-labelledby="news-links-title">
@@ -1976,7 +1957,6 @@ function openEdit(){
   const pulse=S.pulse||DEFAULTS.pulse;
   document.getElementById('ed-pulse-question').value=pulse.question||'';
   document.getElementById('ed-pulse-followup').value=pulse.followUp||'';
-  document.getElementById('ed-yturl').value=S.ytUrl||DEFAULTS.ytUrl;
   const news=S.newsPrompt||DEFAULTS.newsPrompt;
   document.getElementById('ed-news-question').value=news.question||'';
   document.getElementById('ed-news-followup').value=news.followUp||'';
@@ -2017,15 +1997,6 @@ async function saveEdit(){
   const saveBtn=document.getElementById('edit-save');
   saveBtn.disabled=true;
   saveBtn.textContent='Saving…';
-  const enteredVideoUrl=document.getElementById('ed-yturl').value.trim();
-  const safeVideoUrl=normaliseYouTubeUrl(enteredVideoUrl);
-  if(enteredVideoUrl&&!safeVideoUrl){
-    alert('Enter a valid YouTube video, live stream or embed URL. Other websites cannot be displayed in the video panel.');
-    document.getElementById('ed-yturl').focus();
-    saveBtn.disabled=false;
-    saveBtn.textContent='Save Changes';
-    return;
-  }
   S.week=document.getElementById('ed-week').value.trim();
   S.wisdomDay=document.getElementById('ed-wisdomday').value;
   S.keyDates=document.getElementById('ed-dates').value.split('\n').map(l=>l.trim()).filter(Boolean);
@@ -2054,7 +2025,6 @@ async function saveEdit(){
     question:document.getElementById('ed-pulse-question').value.trim(),
     followUp:document.getElementById('ed-pulse-followup').value.trim()
   };
-  S.ytUrl=safeVideoUrl||DEFAULTS.ytUrl;
   S.newsPrompt={
     question:document.getElementById('ed-news-question').value.trim(),
     followUp:document.getElementById('ed-news-followup').value.trim()
