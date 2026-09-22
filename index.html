@@ -924,13 +924,12 @@ header .year-label,header #week-display { color:var(--header-accent); }
       <summary>Daily content</summary>
       <div class="editor-section-body">
     <div class="em-s">
-      <label class="em-lbl" for="ed-weekly-pulses">Monday: dated Weekly Pulse questions (YYYY-MM-DD | question | follow-up)</label>
+      <label class="em-lbl" for="ed-pulse-rotation">Monday: rotating questions (theme | question | follow-up)</label>
+      <textarea class="em-ta" id="ed-pulse-rotation" rows="8"></textarea>
+      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">One question per line. The site moves to the next theme each Monday, then starts again.</span>
+      <label class="em-lbl" for="ed-weekly-pulses" style="margin-top:12px;display:block">Optional dated questions (YYYY-MM-DD | question | follow-up)</label>
       <textarea class="em-ta" id="ed-weekly-pulses" rows="7"></textarea>
-      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Use the week-commencing Monday. Each question appears only during its own week.</span>
-      <label class="em-lbl" for="ed-pulse-question" style="margin-top:12px;display:block">Monday: question for weeks without a dated entry</label>
-      <input class="em-in" id="ed-pulse-question">
-      <label class="em-lbl" for="ed-pulse-followup" style="margin-top:8px;display:block">Optional follow-up</label>
-      <input class="em-in" id="ed-pulse-followup">
+      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Use the week-commencing Monday. A dated question takes priority over the rotation for that week.</span>
     </div>
 
     <hr class="em-div">
@@ -1130,7 +1129,33 @@ const QUESTION_BANK=[
   {c:"Culture",q:"Does language shape what people are able to think?",f:"Can a new word change how society understands an issue?"}
 ];
 
-const CURRENT_DATA_VERSION = 11;
+const PULSE_ROTATION=[
+  {theme:"Learning",question:"What helped you understand something difficult last week?",followUp:"How could you use that approach again this week?"},
+  {theme:"Workload",question:"What is taking more time than you expected?",followUp:"What could you change this week? If you need support, speak to your tutor privately."},
+  {theme:"Belonging",question:"When have you felt most comfortable contributing in sixth form?",followUp:"What made that possible?"},
+  {theme:"Looking ahead",question:"What is one thing you want to be able to say you did by Friday?",followUp:"What is the first step you can take today?"},
+  {theme:"Learning",question:"What is one question from a lesson that you are still thinking about?",followUp:"Where could you look for an answer?"},
+  {theme:"Workload",question:"Which part of your week feels most manageable?",followUp:"What could you borrow from that routine for a harder day?"},
+  {theme:"Belonging",question:"Who has helped you settle in so far?",followUp:"How could you offer the same help to someone else?"},
+  {theme:"Looking ahead",question:"What upcoming task would be easier if you started it earlier?",followUp:"What could you do today?"},
+  {theme:"Learning",question:"Which study method has actually helped you remember something?",followUp:"How do you know it worked?"},
+  {theme:"Workload",question:"When do you do your best independent work?",followUp:"What gets in the way of using that time well?"},
+  {theme:"Belonging",question:"What makes it easier to ask a question in class?",followUp:"How could you make that easier for someone else?"},
+  {theme:"Looking ahead",question:"What do you want to be more confident doing by the end of this term?",followUp:"What small practice would help?"},
+  {theme:"Learning",question:"What have you changed your mind about in a subject recently?",followUp:"What evidence or conversation helped you reconsider?"},
+  {theme:"Workload",question:"What is one small task you could finish this week to free up attention?",followUp:"When will you do it?"},
+  {theme:"Belonging",question:"What helps someone feel part of a group when they are new?",followUp:"What could your form do more of?"},
+  {theme:"Looking ahead",question:"What would make the next month feel purposeful?",followUp:"Which step could begin this week?"}
+];
+const PULSE_START_WEEK=new Date(2026,8,21);
+const RETIRED_WEEKLY_PULSES=[
+  {wc:"2026-09-21",question:"What is starting to work well for you in sixth form, and what still feels difficult?",followUp:"What could you try this week, or ask your tutor for help with?"},
+  {wc:"2026-09-28",question:"Which part of your week is taking more time or energy than it should?",followUp:"What is one change you could test this week?"},
+  {wc:"2026-10-05",question:"When have you felt most engaged in a lesson recently?",followUp:"What helped, and how could you bring more of that into this week?"},
+  {wc:"2026-10-12",question:"Which sixth-form routine would you like to strengthen before half term?",followUp:"What would a realistic first step look like?"},
+  {wc:"2026-10-19",question:"What have you learned about how you work best this half term?",followUp:"What will you keep or change after the break?"}
+];
+const CURRENT_DATA_VERSION = 12;
 const DEFAULTS = {
   dataVersion:CURRENT_DATA_VERSION,
   week:"",
@@ -1151,13 +1176,8 @@ const DEFAULTS = {
     question:"What is one thing going well for you this week, and one thing you would like to improve?",
     followUp:"What small step would help, and what support would make it easier?"
   },
-  weeklyPulses:[
-    {wc:"2026-09-21",question:"What is starting to work well for you in sixth form, and what still feels difficult?",followUp:"What could you try this week, or ask your tutor for help with?"},
-    {wc:"2026-09-28",question:"Which part of your week is taking more time or energy than it should?",followUp:"What is one change you could test this week?"},
-    {wc:"2026-10-05",question:"When have you felt most engaged in a lesson recently?",followUp:"What helped, and how could you bring more of that into this week?"},
-    {wc:"2026-10-12",question:"Which sixth-form routine would you like to strengthen before half term?",followUp:"What would a realistic first step look like?"},
-    {wc:"2026-10-19",question:"What have you learned about how you work best this half term?",followUp:"What will you keep or change after the break?"}
-  ],
+  pulseRotation:PULSE_ROTATION,
+  weeklyPulses:[],
   newsPrompt:{
     question:"What happened, and why is it news today?",
     followUp:"What would you want to know next?"
@@ -1270,6 +1290,22 @@ function migrateState(input){
     .filter(p=>p&&/^\d{4}-\d{2}-\d{2}$/.test(p.wc||'')&&typeof p.question==='string'&&p.question.trim())
     .map(p=>({wc:p.wc,question:p.question.trim(),followUp:String(p.followUp||'').trim()}))
     :clone(DEFAULTS.weeklyPulses);
+  if((Number(raw.dataVersion)||0)<12){
+    state.weeklyPulses=state.weeklyPulses.filter(p=>{
+      const old=RETIRED_WEEKLY_PULSES.find(item=>item.wc===p.wc);
+      return !old||p.question!==old.question||p.followUp!==old.followUp;
+    });
+  }
+  const incomingRotation=Array.isArray(raw.pulseRotation)?raw.pulseRotation:DEFAULTS.pulseRotation;
+  state.pulseRotation=incomingRotation
+    .filter(p=>p&&typeof p.question==='string'&&p.question.trim())
+    .map(p=>({theme:String(p.theme||'Check in').trim(),question:p.question.trim(),followUp:String(p.followUp||'').trim()}));
+  if(!state.pulseRotation.length) state.pulseRotation=clone(DEFAULTS.pulseRotation);
+  if(!Array.isArray(raw.pulseRotation)&&raw.pulse?.question&&
+     raw.pulse.question!=="What would make your first full week of sixth form feel successful?"&&
+     raw.pulse.question!==DEFAULTS.pulse.question){
+    state.pulseRotation[0]={theme:"Check in",question:raw.pulse.question,followUp:String(raw.pulse.followUp||'')};
+  }
   const incomingBank=Array.isArray(raw.questionBank)?raw.questionBank:DEFAULTS.questionBank;
   state.questionBank=incomingBank
     .filter(item=>item&&typeof item.q==='string'&&item.q.trim())
@@ -1655,15 +1691,19 @@ function renderDebateRoutine(question,followUp){
 }
 
 function renderPulse(){
-  const weekKey=isoDate(mondayOf(new Date()));
-  const pulse=(S.weeklyPulses||[]).find(p=>p.wc===weekKey)||S.pulse||DEFAULTS.pulse;
+  const monday=mondayOf(new Date());
+  const weekKey=isoDate(monday);
+  const weeksSinceStart=Math.round((monday-PULSE_START_WEEK)/604800000);
+  const rotation=S.pulseRotation?.length?S.pulseRotation:DEFAULTS.pulseRotation;
+  const rotationIndex=((weeksSinceStart%rotation.length)+rotation.length)%rotation.length;
+  const pulse=(S.weeklyPulses||[]).find(p=>p.wc===weekKey)||rotation[rotationIndex];
   return `
     <div class="day-header">
       <h1 class="day-name">Monday</h1>
       <div class="day-sub">Weekly Pulse</div>
     </div>
     <p class="activity-purpose">A quick check-in to start the week with intention and help your tutor understand what you need.</p>
-    ${renderRoutine(pulse.question,pulse.followUp,'Check in')}`;
+    ${renderRoutine(pulse.question,pulse.followUp,pulse.theme||'Check in')}`;
 }
 
 function renderTuesday(){
@@ -1973,11 +2013,10 @@ function openEdit(){
   });
   document.getElementById('ed-bigquestions').value=(S.bigQuestions||DEFAULTS.bigQuestions||[])
     .map(q=>`${q.wc} | ${q.question} | ${q.followUp||''}`).join('\n');
+  document.getElementById('ed-pulse-rotation').value=(S.pulseRotation||DEFAULTS.pulseRotation||[])
+    .map(p=>`${p.theme} | ${p.question} | ${p.followUp||''}`).join('\n');
   document.getElementById('ed-weekly-pulses').value=(S.weeklyPulses||DEFAULTS.weeklyPulses||[])
     .map(p=>`${p.wc} | ${p.question} | ${p.followUp||''}`).join('\n');
-  const pulse=S.pulse||DEFAULTS.pulse;
-  document.getElementById('ed-pulse-question').value=pulse.question||'';
-  document.getElementById('ed-pulse-followup').value=pulse.followUp||'';
   const news=S.newsPrompt||DEFAULTS.newsPrompt;
   document.getElementById('ed-news-question').value=news.question||'';
   document.getElementById('ed-news-followup').value=news.followUp||'';
@@ -2046,10 +2085,11 @@ async function saveEdit(){
     .map(l=>l.trim()).filter(Boolean)
     .map(l=>{ const parts=l.split('|').map(p=>p.trim()); return parts.length<2?null:{wc:parts[0],question:parts[1],followUp:parts.slice(2).join(' | ')}; })
     .filter(p=>p && /^\d{4}-\d{2}-\d{2}$/.test(p.wc) && p.question);
-  S.pulse={
-    question:document.getElementById('ed-pulse-question').value.trim(),
-    followUp:document.getElementById('ed-pulse-followup').value.trim()
-  };
+  S.pulseRotation=document.getElementById('ed-pulse-rotation').value.split('\n')
+    .map(l=>l.trim()).filter(Boolean)
+    .map(l=>{ const parts=l.split('|').map(p=>p.trim()); return parts.length<2?null:{theme:parts[0]||'Check in',question:parts[1],followUp:parts.slice(2).join(' | ')}; })
+    .filter(p=>p&&p.question);
+  if(!S.pulseRotation.length) S.pulseRotation=clone(DEFAULTS.pulseRotation);
   S.newsPrompt={
     question:document.getElementById('ed-news-question').value.trim(),
     followUp:document.getElementById('ed-news-followup').value.trim()
