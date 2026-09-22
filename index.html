@@ -924,7 +924,10 @@ header .year-label,header #week-display { color:var(--header-accent); }
       <summary>Daily content</summary>
       <div class="editor-section-body">
     <div class="em-s">
-      <label class="em-lbl" for="ed-pulse-question">Monday: Weekly Pulse question</label>
+      <label class="em-lbl" for="ed-weekly-pulses">Monday: dated Weekly Pulse questions (YYYY-MM-DD | question | follow-up)</label>
+      <textarea class="em-ta" id="ed-weekly-pulses" rows="7"></textarea>
+      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">Use the week-commencing Monday. Each question appears only during its own week.</span>
+      <label class="em-lbl" for="ed-pulse-question" style="margin-top:12px;display:block">Monday: question for weeks without a dated entry</label>
       <input class="em-in" id="ed-pulse-question">
       <label class="em-lbl" for="ed-pulse-followup" style="margin-top:8px;display:block">Optional follow-up</label>
       <input class="em-in" id="ed-pulse-followup">
@@ -1145,9 +1148,16 @@ const DEFAULTS = {
   questionBank:QUESTION_BANK,
   keyDates:[],
   pulse:{
-    question:"What would make your first full week of sixth form feel successful?",
-    followUp:"What is one small action you can take today to help that happen?"
+    question:"What is one thing going well for you this week, and one thing you would like to improve?",
+    followUp:"What small step would help, and what support would make it easier?"
   },
+  weeklyPulses:[
+    {wc:"2026-09-21",question:"What is starting to work well for you in sixth form, and what still feels difficult?",followUp:"What could you try this week, or ask your tutor for help with?"},
+    {wc:"2026-09-28",question:"Which part of your week is taking more time or energy than it should?",followUp:"What is one change you could test this week?"},
+    {wc:"2026-10-05",question:"When have you felt most engaged in a lesson recently?",followUp:"What helped, and how could you bring more of that into this week?"},
+    {wc:"2026-10-12",question:"Which sixth-form routine would you like to strengthen before half term?",followUp:"What would a realistic first step look like?"},
+    {wc:"2026-10-19",question:"What have you learned about how you work best this half term?",followUp:"What will you keep or change after the break?"}
+  ],
   newsPrompt:{
     question:"What happened, and why is it news today?",
     followUp:"What would you want to know next?"
@@ -1256,6 +1266,10 @@ function migrateState(input){
   state.panels={...clone(DEFAULTS.panels),...(raw.panels||{})};
   state.assemblies=normaliseAssemblies(Array.isArray(raw.assemblies)?raw.assemblies:DEFAULTS.assemblies);
   state.bigQuestions=Array.isArray(raw.bigQuestions)?raw.bigQuestions:clone(DEFAULTS.bigQuestions);
+  state.weeklyPulses=Array.isArray(raw.weeklyPulses)?raw.weeklyPulses
+    .filter(p=>p&&/^\d{4}-\d{2}-\d{2}$/.test(p.wc||'')&&typeof p.question==='string'&&p.question.trim())
+    .map(p=>({wc:p.wc,question:p.question.trim(),followUp:String(p.followUp||'').trim()}))
+    :clone(DEFAULTS.weeklyPulses);
   const incomingBank=Array.isArray(raw.questionBank)?raw.questionBank:DEFAULTS.questionBank;
   state.questionBank=incomingBank
     .filter(item=>item&&typeof item.q==='string'&&item.q.trim())
@@ -1279,6 +1293,10 @@ function migrateState(input){
     }
     state.pulse={...clone(DEFAULTS.pulse),...(raw.pulse||{})};
     state.challenge={...clone(DEFAULTS.challenge),...(raw.challenge||{})};
+  }
+  // Replace only the retired first-week default; leave tutor-written prompts intact.
+  if(raw.pulse?.question==="What would make your first full week of sixth form feel successful?"){
+    state.pulse=clone(DEFAULTS.pulse);
   }
 
   state.liveNewsUrl=DEFAULTS.liveNewsUrl;
@@ -1637,7 +1655,8 @@ function renderDebateRoutine(question,followUp){
 }
 
 function renderPulse(){
-  const pulse=S.pulse||DEFAULTS.pulse;
+  const weekKey=isoDate(mondayOf(new Date()));
+  const pulse=(S.weeklyPulses||[]).find(p=>p.wc===weekKey)||S.pulse||DEFAULTS.pulse;
   return `
     <div class="day-header">
       <h1 class="day-name">Monday</h1>
@@ -1954,6 +1973,8 @@ function openEdit(){
   });
   document.getElementById('ed-bigquestions').value=(S.bigQuestions||DEFAULTS.bigQuestions||[])
     .map(q=>`${q.wc} | ${q.question} | ${q.followUp||''}`).join('\n');
+  document.getElementById('ed-weekly-pulses').value=(S.weeklyPulses||DEFAULTS.weeklyPulses||[])
+    .map(p=>`${p.wc} | ${p.question} | ${p.followUp||''}`).join('\n');
   const pulse=S.pulse||DEFAULTS.pulse;
   document.getElementById('ed-pulse-question').value=pulse.question||'';
   document.getElementById('ed-pulse-followup').value=pulse.followUp||'';
@@ -2021,6 +2042,10 @@ async function saveEdit(){
     .map(l=>l.trim()).filter(Boolean)
     .map(l=>{ const parts=l.split('|').map(p=>p.trim()); return parts.length<2?null:{wc:parts[0],question:parts[1],followUp:parts.slice(2).join(' | ')}; })
     .filter(q=>q && /^\d{4}-\d{2}-\d{2}$/.test(q.wc) && q.question);
+  S.weeklyPulses=document.getElementById('ed-weekly-pulses').value.split('\n')
+    .map(l=>l.trim()).filter(Boolean)
+    .map(l=>{ const parts=l.split('|').map(p=>p.trim()); return parts.length<2?null:{wc:parts[0],question:parts[1],followUp:parts.slice(2).join(' | ')}; })
+    .filter(p=>p && /^\d{4}-\d{2}-\d{2}$/.test(p.wc) && p.question);
   S.pulse={
     question:document.getElementById('ed-pulse-question').value.trim(),
     followUp:document.getElementById('ed-pulse-followup').value.trim()
