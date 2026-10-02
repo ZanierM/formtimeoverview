@@ -108,8 +108,8 @@ header { padding:10px 22px; }
 body { min-height:100dvh; }
 #main { gap:14px; padding:14px; min-height:0; }
 #day-panel { align-self:stretch; max-height:100%; padding:20px 26px; gap:12px; overflow:auto; }
-.day-name { font-size:clamp(2.35rem,3vw,3.15rem); }
-.day-sub { font-size:1.15rem; margin-top:2px; }
+.day-name { font-size:clamp(3rem,4.3vw,4.2rem); }
+.day-sub { font-size:clamp(1.2rem,1.6vw,1.45rem); margin-top:4px; }
 .activity-purpose,.question-category,.prompt-kicker,.action-bar { display:none; }
 .question-toolbar { position:absolute; top:20px; right:26px; justify-content:flex-end; margin:0; }
 .question-swap { min-height:38px; padding:6px 12px; font-size:.9rem; }
@@ -129,9 +129,10 @@ body { min-height:100dvh; }
   flex:1 1 auto; min-height:0; display:flex; flex-direction:column;
   padding:clamp(20px,2.2vw,34px); border-radius:16px; background:var(--surface); overflow:auto;
 }
-.activity-question-head { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; }
-.activity-question-head .question-toolbar { position:static; }
-.activity-question-head .day-header { flex:1 1 auto; }
+.activity-question-head { position:relative; display:flex; flex-direction:column; align-items:center; gap:12px; }
+.activity-question-head .day-header { width:100%; text-align:center; }
+.activity-question-head .question-toolbar { position:absolute; top:10px; right:0; }
+.activity-question-head .word-launch-wrap { position:static; align-self:center; }
 .activity-question-card .prompt-card {
   flex:1 1 auto; min-height:0; display:flex; flex-direction:column;
   justify-content:safe center; padding:16px 0 4px;
@@ -143,9 +144,8 @@ body { min-height:100dvh; }
 }
 .activity-steps-card .routine-steps { border:0; }
 .activity-steps-card .routine-step { padding:2px 5px; }
-.activity-question-head .word-launch-wrap { align-self:flex-start; }
 .prompt-card,.debate-prompt { padding:0; }
-.prompt-question,.debate-prompt .prompt-question { font-size:clamp(2.2rem,4.1vw,5rem); line-height:1.1; }
+.prompt-question,.debate-prompt .prompt-question { font-size:clamp(2.5rem,4.5vw,5rem); line-height:1.1; }
 .prompt-followup,.debate-prompt .prompt-followup { margin-top:20px; padding-top:18px; font-size:clamp(1.15rem,1.65vw,1.7rem); max-width:none; }
 .routine-steps { background:transparent; border-top:1px solid var(--border); border-radius:0; }
 .routine-step { padding:14px 5px 0; border:0; }
@@ -154,8 +154,11 @@ body { min-height:100dvh; }
 #sidebar { width:300px; min-width:280px; max-height:100%; align-self:stretch; display:flex; flex-direction:column; gap:12px; overflow:visible; background:transparent; border-radius:0; }
 .side-rotator { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:12px; }
 #sidebar .s-panel { flex:1 1 0; min-height:0; overflow:auto; }
-#sidebar #panel-dates { flex-grow:1.15; }
-#sidebar #panel-expect { flex-grow:.85; }
+#sidebar #panel-dates { flex-grow:1; }
+#sidebar #panel-expect { flex-grow:1; display:flex; flex-direction:column; }
+#sidebar #panel-expect.hidden { display:none; }
+#expect-list { flex:1; display:flex; flex-direction:column; justify-content:space-evenly; }
+#expect-list .exp-item { padding:8px 0; font-size:clamp(1.1rem,1.4vw,1.22rem); line-height:1.32; }
 .s-panel-hdr { margin-bottom:10px; }
 .date-list { gap:5px; }
 .date-item,.exp-item { font-size:clamp(.9rem,1vw,1.02rem); line-height:1.35; }
@@ -169,21 +172,37 @@ body { min-height:100dvh; }
 .period-note { margin-top:6px; color:var(--text2); font-size:.9rem; line-height:1.3; }
 #ticker-wrap { order:3; height:48px; flex-shrink:0; }
 .ticker-label { font-size:.78rem; }
-.tuesday-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; }
+.tuesday-grid { flex:1 1 auto; min-height:0; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-rows:minmax(0,1fr) auto; gap:14px; align-items:stretch; }
+#day-panel > .day-header { text-align:center; }
+.tuesday-grid .micro-routine { align-self:stretch; }
 .live-news-card { min-height:0; padding:20px; }
 .live-news-card h2 { font-size:clamp(1.5rem,2.2vw,2.25rem); }
 .live-news-card p { margin:10px 0 14px; font-size:.92rem; }
 .news-links { padding:10px; }
 .news-links-list { grid-template-columns:repeat(3,minmax(0,1fr)); }
 .news-link { font-size:.86rem; padding:8px; }
+.assembly-day { font-size:clamp(2.7rem,4.3vw,4rem); line-height:1; letter-spacing:-.025em; margin-bottom:16px; }
+.no-form-time .day-name { font-size:clamp(3rem,4.3vw,4.2rem); }
 @media (max-height:800px) and (min-width:1024px) {
   #main { padding:10px; gap:10px; }
   #day-panel { padding:15px 20px; gap:8px; }
-  .prompt-question,.debate-prompt .prompt-question { font-size:clamp(2.4rem,4vw,3.3rem); }
+  .prompt-question,.debate-prompt .prompt-question { font-size:clamp(2.6rem,4.3vw,3.8rem); }
   .prompt-followup,.debate-prompt .prompt-followup { font-size:clamp(1.15rem,1.7vw,1.5rem); }
   .period-card { padding:12px 16px; }
   .side-rotator { min-height:0; }
-  .s-panel { padding:12px 16px; }
+  #sidebar .s-panel { padding:8px 14px; }
+  .s-panel-hdr { margin-bottom:6px; }
+  .date-list { gap:2px; }
+  .asm-box { padding:6px 8px; }
+  #expect-list .exp-item { padding:4px 0; }
+  #day-panel:has(.tuesday-grid) { padding:10px 20px; gap:6px; }
+  .tuesday-grid { gap:10px; }
+  .tuesday-grid .prompt-question { font-size:clamp(2.4rem,3.5vw,3rem); }
+  .tuesday-grid .prompt-followup { margin-top:10px; padding-top:10px; font-size:1.2rem; }
+  .tuesday-grid .routine-step { padding-top:8px; }
+  .tuesday-grid .news-links { padding:8px; }
+  .tuesday-grid .news-links h2 { margin-bottom:6px; }
+  .tuesday-grid .news-link { padding:6px 8px; }
 }
 @media (max-width:1023px) {
   #main { display:block; overflow:visible; padding:16px; }
@@ -199,8 +218,8 @@ body { min-height:100dvh; }
   #day-panel { min-height:0; padding:20px 18px; margin-bottom:10px; border-radius:14px; }
   #day-panel:has(.activity-question-card) { padding:0; }
   .activity-question-card { padding:20px 18px; }
-  .activity-question-head { display:block; }
-  .activity-question-head .question-toolbar { margin-top:12px; }
+  .activity-question-head .question-toolbar { position:static; margin-top:4px; }
+  .activity-question-head .word-launch-wrap { align-self:stretch; }
   .activity-steps-card { padding:12px 14px; }
   #sidebar { display:block; border-radius:14px; }
   .side-rotator { display:block; min-height:0; margin-bottom:10px; }
@@ -209,6 +228,9 @@ body { min-height:100dvh; }
   .routine-step { padding:10px 6px; }
   .prompt-card { padding:0; }
   .prompt-question { font-size:clamp(1.7rem,7vw,2.4rem); }
+  .day-name { font-size:clamp(2.7rem,11vw,3.5rem); }
+  #expect-list { gap:8px; }
+  #expect-list .exp-item { font-size:1.05rem; }
   .tuesday-grid { display:block; }
   .tuesday-grid > * { margin-bottom:10px; }
   .news-links-list { display:grid; grid-template-columns:1fr; }
