@@ -953,14 +953,9 @@ header .year-label,header #week-display { color:var(--header-accent); }
     <hr class="em-div">
 
     <div class="em-s">
-      <label class="em-lbl" for="ed-challenge-title">Thursday: Quick Challenge title</label>
-      <input class="em-in" id="ed-challenge-title">
-      <label class="em-lbl" for="ed-challenge-scenario" style="margin-top:8px;display:block">Scenario</label>
-      <textarea class="em-ta" id="ed-challenge-scenario" rows="3"></textarea>
-      <label class="em-lbl" for="ed-challenge-question" style="margin-top:8px;display:block">Main question</label>
-      <input class="em-in" id="ed-challenge-question">
-      <label class="em-lbl" for="ed-challenge-followup" style="margin-top:8px;display:block">Optional follow-up</label>
-      <input class="em-in" id="ed-challenge-followup">
+      <label class="em-lbl" for="ed-challenge-rotation">Thursday: rotating Quick Challenges</label>
+      <textarea class="em-ta" id="ed-challenge-rotation" rows="10"></textarea>
+      <span style="font-size:.82rem;color:var(--text2);margin-top:4px;display:block">One per line: title | scenario | question | follow-up. The next entry appears each week, then the list repeats. No student login or paper is needed.</span>
     </div>
 
       </div>
@@ -1157,6 +1152,24 @@ const PULSE_ROTATION=[
   {theme:"Looking ahead",question:"What would make the next month feel purposeful?",followUp:"Which step could begin this week?"}
 ];
 const PULSE_START_WEEK=new Date(2026,8,21);
+const CHALLENGE_ROTATION=[
+  {title:"The Sixth-Form Survival Guide",scenario:"A new student asks your group how to settle in and succeed.",question:"What are the three most useful pieces of advice you would give them?",followUp:"Which piece of advice matters most — and why?"},
+  {title:"Two Deadlines",scenario:"Two assignments are due on the same day, and you have a commitment after school.",question:"How would you decide what to do first?",followUp:"What would you communicate early?"},
+  {title:"Feedback You Disagree With",scenario:"A teacher's feedback surprises you because you thought your work met the brief.",question:"How could you make use of that feedback?",followUp:"What question would you ask the teacher?"},
+  {title:"The Study Group",scenario:"Your study group keeps drifting into chat rather than revision.",question:"How would you make the next meeting useful?",followUp:"How could you raise it without blaming anyone?"},
+  {title:"An Unchecked Claim",scenario:"A striking claim appears in a group chat with no source attached.",question:"What would you check before passing it on?",followUp:"When is it better not to share?"},
+  {title:"A Missed Deadline",scenario:"You realise tonight that you cannot finish a task due tomorrow.",question:"What is the most responsible next step?",followUp:"What could prevent this happening again?"},
+  {title:"Competing Priorities",scenario:"A club, a friend and an assignment all need your time this week.",question:"What would you protect, postpone or ask for help with?",followUp:"How would you explain your decision?"},
+  {title:"A Quiet Teammate",scenario:"One person has not spoken while others dominate a group discussion.",question:"How could you invite their view without putting them on the spot?",followUp:"What could the whole group change?"},
+  {title:"Changing Your Mind",scenario:"You hear a strong argument against an opinion you shared yesterday.",question:"When is changing your mind a strength?",followUp:"What evidence would make you reconsider?"},
+  {title:"A Difficult Joke",scenario:"A friend makes a joke that another student finds upsetting.",question:"How would you respond in the moment?",followUp:"What might need a private conversation later?"},
+  {title:"Starting Revision",scenario:"A test is three weeks away and you only have short gaps to prepare.",question:"Which small action would help most this week?",followUp:"How would you know it was working?"},
+  {title:"Choosing Evidence",scenario:"Two websites give different answers to the same question.",question:"How would you decide which one to trust?",followUp:"What would you do if neither is reliable?"},
+  {title:"Independent Study",scenario:"You have a free study period but no urgent task to finish.",question:"What would make that time genuinely useful?",followUp:"What would you do in the first five minutes?"},
+  {title:"A Group Decision",scenario:"Your group must choose one idea, but nobody agrees.",question:"How would you reach a fair decision in five minutes?",followUp:"How would you include a quieter voice?"},
+  {title:"Asking for Help",scenario:"You do not understand a topic, but everyone else seems confident.",question:"What is the best way to ask for help?",followUp:"What could you say to make your question specific?"},
+  {title:"One More Commitment",scenario:"You are invited to take on something interesting during a busy week.",question:"How would you decide whether to say yes?",followUp:"What would you need to give up?"}
+];
 const RETIRED_WEEKLY_PULSES=[
   {wc:"2026-09-21",question:"What is starting to work well for you in sixth form, and what still feels difficult?",followUp:"What could you try this week, or ask your tutor for help with?"},
   {wc:"2026-09-28",question:"Which part of your week is taking more time or energy than it should?",followUp:"What is one change you could test this week?"},
@@ -1187,6 +1200,7 @@ const DEFAULTS = {
   },
   pulseRotation:PULSE_ROTATION,
   weeklyPulses:[],
+  challengeRotation:CHALLENGE_ROTATION,
   newsPrompt:{
     question:"What happened, and why is it news today?",
     followUp:"What would you want to know next?"
@@ -1314,6 +1328,28 @@ function migrateState(input){
      raw.pulse.question!=="What would make your first full week of sixth form feel successful?"&&
      raw.pulse.question!==DEFAULTS.pulse.question){
     state.pulseRotation[0]={theme:"Check in",question:raw.pulse.question,followUp:String(raw.pulse.followUp||'')};
+  }
+  const incomingChallenges=Array.isArray(raw.challengeRotation)?raw.challengeRotation:DEFAULTS.challengeRotation;
+  state.challengeRotation=incomingChallenges
+    .filter(item=>item&&typeof item.question==='string'&&item.question.trim())
+    .map(item=>({
+      title:String(item.title||'Quick Challenge').trim(),
+      scenario:String(item.scenario||'').trim(),
+      question:item.question.trim(),
+      followUp:String(item.followUp||'').trim()
+    }));
+  if(!state.challengeRotation.length) state.challengeRotation=clone(DEFAULTS.challengeRotation);
+  // An older tutor-edited single challenge becomes part of the rotation.
+  const legacyChallenge=raw.challenge;
+  if(!Array.isArray(raw.challengeRotation)&&legacyChallenge?.question?.trim()&&
+     ['title','scenario','question','followUp'].some(key=>
+       String(legacyChallenge[key]||'').trim()!==String(DEFAULTS.challenge[key]||'').trim())){
+    state.challengeRotation[0]={
+      title:String(legacyChallenge.title||'Quick Challenge').trim(),
+      scenario:String(legacyChallenge.scenario||'').trim(),
+      question:legacyChallenge.question.trim(),
+      followUp:String(legacyChallenge.followUp||'').trim()
+    };
   }
   const incomingBank=Array.isArray(raw.questionBank)?raw.questionBank:DEFAULTS.questionBank;
   state.questionBank=incomingBank
@@ -1699,13 +1735,16 @@ function renderDebateRoutine(question,followUp){
     </div>`;
 }
 
+function rotationIndexForWeek(date,length){
+  const weeksSinceStart=Math.round((mondayOf(date)-PULSE_START_WEEK)/604800000);
+  return ((weeksSinceStart%length)+length)%length;
+}
+
 function renderPulse(){
-  const monday=mondayOf(new Date());
+  const monday=mondayOf(contentDateForDay('monday'));
   const weekKey=isoDate(monday);
-  const weeksSinceStart=Math.round((monday-PULSE_START_WEEK)/604800000);
   const rotation=S.pulseRotation?.length?S.pulseRotation:DEFAULTS.pulseRotation;
-  const rotationIndex=((weeksSinceStart%rotation.length)+rotation.length)%rotation.length;
-  const pulse=(S.weeklyPulses||[]).find(p=>p.wc===weekKey)||rotation[rotationIndex];
+  const pulse=(S.weeklyPulses||[]).find(p=>p.wc===weekKey)||rotation[rotationIndexForWeek(monday,rotation.length)];
   return `
     <div class="day-header">
       <h1 class="day-name">Monday</h1>
@@ -1806,7 +1845,8 @@ function renderBigQuestion(day){
 }
 
 function renderChallenge(day){
-  const challenge=S.challenge||DEFAULTS.challenge;
+  const rotation=S.challengeRotation?.length?S.challengeRotation:DEFAULTS.challengeRotation;
+  const challenge=rotation[rotationIndexForWeek(contentDateForDay(day),rotation.length)];
   return `
     <div class="day-header">
       <h1 class="day-name">${cap(day)}</h1>
@@ -1821,7 +1861,7 @@ function renderChallenge(day){
       </div>
       <div class="prompt-card">
         <div class="prompt-kicker">${esc(challenge.title)}</div>
-        <div class="scenario">${esc(challenge.scenario)}</div>
+        ${challenge.scenario?`<div class="scenario">${esc(challenge.scenario)}</div>`:''}
         <div class="prompt-question">${esc(challenge.question)}</div>
         ${challenge.followUp?`<div class="prompt-followup"><strong>Go further:</strong> ${esc(challenge.followUp)}</div>`:''}
       </div>
@@ -2029,11 +2069,8 @@ function openEdit(){
   const news=S.newsPrompt||DEFAULTS.newsPrompt;
   document.getElementById('ed-news-question').value=news.question||'';
   document.getElementById('ed-news-followup').value=news.followUp||'';
-  const challenge=S.challenge||DEFAULTS.challenge;
-  document.getElementById('ed-challenge-title').value=challenge.title||'';
-  document.getElementById('ed-challenge-scenario').value=challenge.scenario||'';
-  document.getElementById('ed-challenge-question').value=challenge.question||'';
-  document.getElementById('ed-challenge-followup').value=challenge.followUp||'';
+  document.getElementById('ed-challenge-rotation').value=(S.challengeRotation||DEFAULTS.challengeRotation)
+    .map(item=>`${item.title||''} | ${item.scenario||''} | ${item.question} | ${item.followUp||''}`).join('\n');
   const p=S.panels||DEFAULTS.panels;
   document.getElementById('tog-ticker').checked=p.ticker!==false;
   document.getElementById('tog-dates').checked=p.dates!==false;
@@ -2103,12 +2140,12 @@ async function saveEdit(){
     question:document.getElementById('ed-news-question').value.trim(),
     followUp:document.getElementById('ed-news-followup').value.trim()
   };
-  S.challenge={
-    title:document.getElementById('ed-challenge-title').value.trim(),
-    scenario:document.getElementById('ed-challenge-scenario').value.trim(),
-    question:document.getElementById('ed-challenge-question').value.trim(),
-    followUp:document.getElementById('ed-challenge-followup').value.trim()
-  };
+  S.challengeRotation=document.getElementById('ed-challenge-rotation').value.split('\n')
+    .map(line=>line.trim()).filter(Boolean)
+    .map(line=>{ const parts=line.split('|').map(part=>part.trim());
+      return parts.length<3?null:{title:parts[0]||'Quick Challenge',scenario:parts[1],question:parts[2],followUp:parts.slice(3).join(' | ')};
+    }).filter(item=>item&&item.question);
+  if(!S.challengeRotation.length) S.challengeRotation=clone(DEFAULTS.challengeRotation);
   S.panels={
     ticker:document.getElementById('tog-ticker').checked,
     dates:document.getElementById('tog-dates').checked,

@@ -138,6 +138,7 @@ body { min-height:100dvh; }
   justify-content:safe center; padding:16px 0 4px;
 }
 .activity-question-card .prompt-question { max-width:100%; }
+.activity-question-card .debate-prompt .prompt-question { width:100%; max-width:none; text-wrap:wrap; }
 .activity-steps-card {
   flex:0 0 auto; padding:13px clamp(20px,2.2vw,34px) 17px;
   border-radius:16px; background:var(--surface);
