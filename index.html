@@ -645,7 +645,7 @@ hr.em-div { border:none; border-top:1px solid var(--border); margin:14px 0; }
   .date-block { flex:1 1 100%; text-align:left; display:flex; gap:8px; align-items:baseline; flex-wrap:wrap; }
   #day-select { flex:1 1 170px; min-width:130px; }
   .timer-group { flex:0 0 auto; }
-  #sync-indicator { min-width:44px; min-height:44px; display:inline-flex!important; align-items:center; justify-content:center; }
+  #sync-indicator { min-width:44px; min-height:44px; align-items:center; justify-content:center; }
   #ticker-wrap { height:44px; }
   .ticker-label { padding:0 10px; }
   .ticker-item { font-size:.9rem; padding:0 20px; }
@@ -760,13 +760,13 @@ header .year-label,header #week-display { color:var(--header-accent); }
   .otd-text { font-size:.82rem; }
 }
 </style>
+<link rel="stylesheet" href="display.css">
 </head>
 <body>
 
 <!-- ══ HEADER ══ -->
 <header>
   <div class="hdr-left">
-    <div class="school-badge">Mayfield Grammar</div>
     <div>
       <div class="form-title">Form Time</div>
       <div class="year-label">YEAR 12 · SIXTH FORM</div>
@@ -785,15 +785,17 @@ header .year-label,header #week-display { color:var(--header-accent); }
       <option value="thursday">Thursday</option>
     </select>
     <span id="friday-status" class="day-select-status" hidden>Friday — lessons</span>
-    <div class="timer-group" role="group" aria-label="Starter timer">
-      <button id="timer-pill" type="button" onclick="toggleTimer(event)" aria-pressed="false" aria-label="Start or pause the starter timer">
-        <span aria-hidden="true">⏱</span><span id="timer-val">5:00</span>
-      </button>
-      <button class="timer-reset" type="button" onclick="resetTimer(event)" aria-label="Reset starter timer">↺</button>
-    </div>
     <button class="hdr-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Use light theme">🌙</button>
-    <span id="sync-indicator" role="status" aria-live="polite" aria-label="Cloud sync status" style="display:none;font-size:.78rem;font-weight:800;">SYNC</span>
-    <button class="hdr-btn" onclick="openEdit()">Edit</button>
+    <div class="header-options">
+      <button class="options-button" id="options-button" type="button" aria-label="More options" aria-expanded="false" aria-controls="options-menu">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+      </button>
+      <div class="options-menu" id="options-menu" hidden>
+        <span id="sync-indicator" role="status" aria-live="polite" aria-label="Cloud sync status" style="display:none;font-size:.78rem;font-weight:800;">SYNC</span>
+        <button type="button" id="refresh-news">Refresh news</button>
+        <button type="button" id="display-edit" onclick="openEdit()">Edit content</button>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -812,16 +814,23 @@ header .year-label,header #week-display { color:var(--header-accent); }
 <main id="main">
   <div id="day-panel"></div>
 
-  <aside id="sidebar">
-    <div id="panel-dates" class="s-panel">
-      <h2 class="s-panel-hdr">Key Dates</h2>
-      <div id="asm-next"></div>
-      <ul class="date-list" id="dates-list"></ul>
-    </div>
+  <aside id="sidebar" aria-label="Also on today">
+    <div class="side-rotator" id="side-rotator">
+      <div id="panel-dates" class="s-panel">
+        <h2 class="s-panel-hdr">Key Dates</h2>
+        <div id="asm-next"></div>
+        <ul class="date-list" id="dates-list"></ul>
+      </div>
 
-    <div id="panel-expect" class="s-panel">
-      <h2 class="s-panel-hdr">Our Standards</h2>
-      <div id="expect-list"></div>
+      <div id="panel-expect" class="s-panel">
+        <h2 class="s-panel-hdr">Our Standards</h2>
+        <div id="expect-list"></div>
+      </div>
+    </div>
+    <div class="period-card" aria-live="off">
+      <h2 id="period-title">Period 1 begins in</h2>
+      <div class="period-time" id="period-countdown">--:--</div>
+      <div class="period-note" id="period-note">08:55 · school time</div>
     </div>
   </aside>
 </main>
@@ -2320,7 +2329,6 @@ document.getElementById('day-select').addEventListener('change',e=>{
   showingFridayNoForm=false;
   renderDay(e.target.value);
   if(e.target.value==='tuesday') fetchNews();
-  fetchOTD(e.target.value);
 });
 
 // ════════════════════════════════════════════════
@@ -2387,15 +2395,14 @@ async function init(){
   initDay();
   await pullFromGist();
   renderAll();
-  fetchOTD(currentDay());
   fetchNews();
 }
 init();
 
 setInterval(fetchNews,   600000);
-setInterval(()=>fetchOTD(currentDay()), 3600000);
 setInterval(updateHeader,  60000);
 setInterval(async()=>{ const ok=await pullFromGist(); if(ok) renderAll(); }, SYNC_POLL_MS);
 </script>
+<script src="display.js"></script>
 </body>
 </html>
