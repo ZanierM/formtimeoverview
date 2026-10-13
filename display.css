@@ -110,7 +110,7 @@ header { padding:10px 22px; }
 body { min-height:100dvh; }
 #main { gap:14px; padding:14px; min-height:0; }
 #day-panel { align-self:stretch; max-height:100%; padding:20px 26px; gap:12px; overflow:auto; }
-.day-name { font-size:clamp(3rem,4.3vw,4.2rem); }
+.day-name { font-size:clamp(3rem,3.5vw,3.6rem); }
 .day-sub { font-size:clamp(1.2rem,1.6vw,1.45rem); margin-top:4px; }
 .activity-purpose,.question-category,.prompt-kicker,.action-bar { display:none; }
 .question-toolbar { position:absolute; top:20px; right:26px; justify-content:flex-end; margin:0; }
@@ -131,8 +131,8 @@ body { min-height:100dvh; }
   flex:1 1 auto; min-height:0; display:flex; flex-direction:column;
   padding:clamp(20px,2.2vw,34px); border-radius:16px; background:var(--surface); overflow:auto;
 }
-.activity-question-head { position:relative; display:flex; flex-direction:column; align-items:center; gap:12px; }
-.activity-question-head .day-header { width:100%; text-align:center; }
+.activity-question-head { position:relative; display:flex; flex-direction:column; align-items:stretch; gap:12px; }
+.activity-question-head .day-header { width:100%; text-align:left; }
 .activity-question-head .question-toolbar { position:absolute; top:10px; right:0; }
 .activity-question-head .word-launch-wrap { position:static; align-self:center; }
 .activity-question-card .prompt-card {
@@ -176,7 +176,7 @@ body { min-height:100dvh; }
 #ticker-wrap { order:3; height:48px; flex-shrink:0; }
 .ticker-label { font-size:.78rem; }
 .tuesday-grid { flex:1 1 auto; min-height:0; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-rows:minmax(0,1fr) auto; gap:14px; align-items:stretch; }
-#day-panel > .day-header { text-align:center; }
+#day-panel > .day-header { text-align:left; }
 .tuesday-grid .micro-routine { align-self:stretch; }
 .live-news-card { min-height:0; padding:20px; }
 .live-news-card h2 { font-size:clamp(1.5rem,2.2vw,2.25rem); }
@@ -185,7 +185,7 @@ body { min-height:100dvh; }
 .news-links-list { grid-template-columns:repeat(3,minmax(0,1fr)); }
 .news-link { font-size:.86rem; padding:8px; }
 .assembly-day { font-size:clamp(2.7rem,4.3vw,4rem); line-height:1; letter-spacing:-.025em; margin-bottom:16px; }
-.no-form-time .day-name { font-size:clamp(3rem,4.3vw,4.2rem); }
+.no-form-time .day-name { font-size:clamp(3rem,3.5vw,3.6rem); }
 @media (max-height:800px) and (min-width:1024px) {
   #main { padding:10px; gap:10px; }
   #day-panel { padding:15px 20px; gap:8px; }
