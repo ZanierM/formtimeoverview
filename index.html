@@ -1177,6 +1177,44 @@ const RETIRED_WEEKLY_PULSES=[
   {wc:"2026-10-12",question:"Which sixth-form routine would you like to strengthen before half term?",followUp:"What would a realistic first step look like?"},
   {wc:"2026-10-19",question:"What have you learned about how you work best this half term?",followUp:"What will you keep or change after the break?"}
 ];
+// Term 2 is scheduled in the page itself, so every device sees the same week.
+// Tutor-edited entries in the shared Gist take precedence where present.
+const TERM2_PLAN={
+  "2026-11-02":{
+    question:"What should you keep — or change — from your first half term?",followUp:"Which one change could you test this week?",
+    challenge:{title:"A fresh start",scenario:"You want this half term to feel more manageable than the last.",question:"Which one habit would you change first?",followUp:"How will you know whether it helps?"}
+  },
+  "2026-11-09":{
+    pulse:{theme:"Looking ahead",question:"What is one thing you want to improve this week?",followUp:"What is one action you could take today?"},
+    question:"Should schools teach practical life skills at the expense of academic content?",followUp:"Which subject or topic would you reduce to make room?",
+    challenge:{title:"Two deadlines",scenario:"Two assignments are due on the same day, and you have a commitment after school.",question:"How would you decide what to do first?",followUp:"What would you communicate early?"}
+  },
+  "2026-11-16":{
+    pulse:{theme:"Learning",question:"What feedback have you acted on recently?",followUp:"What difference did it make?"},
+    question:"Are exams the fairest way to show what someone knows?",followUp:"What would a fair alternative need to measure?",
+    challenge:{title:"Useful feedback",scenario:"A teacher’s feedback surprises you because you thought your work met the brief.",question:"What question could you ask to make the feedback useful?",followUp:"How would you use the answer next time?"}
+  },
+  "2026-11-23":{
+    question:"Should people be expected to check a claim before sharing it?",followUp:"How much checking is reasonable in an ordinary group chat?",
+    challenge:{title:"Two sources",scenario:"Two websites give different answers to the same question.",question:"How would you decide which one to trust?",followUp:"What would you do if neither is reliable?"}
+  },
+  "2026-11-30":{
+    pulse:{theme:"Workload",question:"What is taking more time than it should?",followUp:"What could you change or ask for help with this week?"},
+    question:"Should everyone have a right to disconnect from messages?",followUp:"Would the same rule work for students and adults?",
+    challenge:{title:"Independent study",scenario:"You have a free study period but no urgent task to finish.",question:"What would make that time genuinely useful?",followUp:"What would you do in the first five minutes?"}
+  },
+  "2026-12-07":{
+    pulse:{theme:"Learning",question:"Which study method has actually worked for you?",followUp:"How do you know it helped you remember something?"},
+    question:"Is competition between students helpful or harmful?",followUp:"When does it motivate, and when does it put people off?",
+    challenge:{title:"Starting revision",scenario:"A test is three weeks away and you only have short gaps to prepare.",question:"Which small action would help most this week?",followUp:"How would you know it was working?"}
+  },
+  "2026-12-14":{
+    pulse:{theme:"Looking back",question:"What have you learned about how you work this term?",followUp:"What will you keep doing in January?"},
+    question:"Is giving more valuable than receiving?",followUp:"Does your answer change if the gift is time rather than money?",
+    challenge:{title:"A contribution worth noticing",scenario:"Someone in your form has helped others this term without drawing attention to it.",question:"How could you recognise their contribution meaningfully?",followUp:"What is one thing you would like to contribute next term?"}
+  }
+};
+const TERM2_DEVELOPMENT_DAYS=new Set(["2026-11-02","2026-11-03","2026-11-23"]);
 const CURRENT_DATA_VERSION = 12;
 const DEFAULTS = {
   dataVersion:CURRENT_DATA_VERSION,
@@ -1249,7 +1287,11 @@ const DEFAULTS = {
 const FIVE_LETTER_GAMES=[
   {date:"2026-09-07",word:"START",clue:"To begin something new.",reveal:"START — to begin. Every strong week starts with one useful action."},
   {date:"2026-09-09",word:"VOICE",clue:"The ability to express what you think.",reveal:"VOICE — the power to express an opinion. A strong voice also makes room to hear others."},
-  {date:"2026-09-10",word:"ADAPT",clue:"To change so that you can succeed in new conditions.",reveal:"ADAPT — to adjust successfully when circumstances change."}
+  {date:"2026-09-10",word:"ADAPT",clue:"To change so that you can succeed in new conditions.",reveal:"ADAPT — to adjust successfully when circumstances change."},
+  {date:"2026-11-09",word:"FOCUS",clue:"To give something your full attention.",reveal:"FOCUS — choose one task and give it your full attention."},
+  {date:"2026-11-25",word:"CHECK",clue:"To make sure a claim is accurate.",reveal:"CHECK — a useful habit before passing information on."},
+  {date:"2026-12-10",word:"RECAP",clue:"A short review of what you have learned.",reveal:"RECAP — revisit key ideas before they fade."},
+  {date:"2026-12-16",word:"SHARE",clue:"To give others access to something useful.",reveal:"SHARE — your time and ideas can matter too."}
 ];
 
 // ════════════════════════════════════════════════
@@ -1509,7 +1551,12 @@ function renderNextAssembly(){
   const key=isoDate(nw);
   const list=S.assemblies||DEFAULTS.assemblies||[];
   const hit=list.filter(a=>a.wc===key);
-  if(!hit.length){ box.innerHTML=''; return; }
+  if(!hit.length){
+    box.innerHTML=TERM2_PLAN[key]
+      ?`<div class="asm-box"><span class="asm-lbl">Next week's assembly</span><div class="asm-txt none">Timetable to be confirmed</div><div class="asm-wc">${prettyWC(nw)}</div></div>`
+      :'';
+    return;
+  }
   const none=hit.some(a=>a.type==='none');
   box.innerHTML=`
     <div class="asm-box">
@@ -1535,6 +1582,11 @@ function assemblyForDay(day,date=new Date()){
 // ════════════════════════════════════════════════
 function renderDay(day){
   const p=document.getElementById('day-panel');
+  if(day!=='friday'&&TERM2_DEVELOPMENT_DAYS.has(isoDate(contentDateForDay(day)))){
+    p.innerHTML=`<div class="no-form-time"><h1 class="day-name">${cap(day)}</h1><strong>Development day — no form time.</strong></div>`;
+    p.scrollTop=0;
+    return;
+  }
   const wisdomDay=S.wisdomDay||'wednesday';
   const challengeDay=wisdomDay==='wednesday'?'thursday':'wednesday';
   const assembly=day==='friday'?null:assemblyForDay(day);
@@ -1744,7 +1796,7 @@ function renderPulse(){
   const monday=mondayOf(contentDateForDay('monday'));
   const weekKey=isoDate(monday);
   const rotation=S.pulseRotation?.length?S.pulseRotation:DEFAULTS.pulseRotation;
-  const pulse=(S.weeklyPulses||[]).find(p=>p.wc===weekKey)||rotation[rotationIndexForWeek(monday,rotation.length)];
+  const pulse=(S.weeklyPulses||[]).find(p=>p.wc===weekKey)||TERM2_PLAN[weekKey]?.pulse||rotation[rotationIndexForWeek(monday,rotation.length)];
   return `
     <div class="day-header">
       <h1 class="day-name">Monday</h1>
@@ -1780,7 +1832,8 @@ function renderTuesday(){
 
 function bigQuestionForDate(date=new Date()){
   const weekKey=isoDate(mondayOf(date));
-  return (S.bigQuestions||DEFAULTS.bigQuestions||[]).find(q=>q.wc===weekKey)||null;
+  return (S.bigQuestions||DEFAULTS.bigQuestions||[]).find(q=>q.wc===weekKey)
+    ||(TERM2_PLAN[weekKey]?.question?{wc:weekKey,question:TERM2_PLAN[weekKey].question,followUp:TERM2_PLAN[weekKey].followUp}:null);
 }
 
 const questionChoiceByWeek={};
@@ -1846,7 +1899,9 @@ function renderBigQuestion(day){
 
 function renderChallenge(day){
   const rotation=S.challengeRotation?.length?S.challengeRotation:DEFAULTS.challengeRotation;
-  const challenge=rotation[rotationIndexForWeek(contentDateForDay(day),rotation.length)];
+  const date=contentDateForDay(day);
+  const weekKey=isoDate(mondayOf(date));
+  const challenge=TERM2_PLAN[weekKey]?.challenge||rotation[rotationIndexForWeek(date,rotation.length)];
   return `
     <div class="day-header">
       <h1 class="day-name">${cap(day)}</h1>
@@ -2441,5 +2496,7 @@ setInterval(updateHeader,  60000);
 setInterval(async()=>{ const ok=await pullFromGist(); if(ok) renderAll(); }, SYNC_POLL_MS);
 </script>
 <script src="display.js"></script>
+<script src="term2-preview.js"></script>
+<script src="seasonal.js"></script>
 </body>
 </html>

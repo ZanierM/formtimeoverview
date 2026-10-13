@@ -1,0 +1,66 @@
+/* Comparison-only Term 2 treatments; no effect on the published site. */
+html[data-term2-preview] header { position:relative; isolation:isolate; }
+html[data-term2-preview] .hdr-left,html[data-term2-preview] .hdr-right { position:relative; z-index:2; }
+html[data-term2-preview] .preview-identity { display:none; }
+html[data-term2-preview]:not([data-seasonal-live]) .period-card > * { display:none; }
+html[data-term2-preview]:not([data-seasonal-live]) .period-card::after { content:attr(data-preview-note); display:block; color:var(--text2); font-size:.95rem; font-weight:700; line-height:1.35; }
+html[data-term2-preview]:not([data-seasonal-live]) #display-edit { display:none; }
+
+/* Curved cable, dark metal sockets and translucent, tapered glass bulbs. */
+html[data-term2-preview] .season-lights { position:absolute; left:28%; right:44%; top:0; height:49px; z-index:1; display:flex; align-items:flex-start; justify-content:space-between; pointer-events:none; }
+html[data-term2-preview] .season-lights::before { content:""; position:absolute; inset:-25px 0 auto; height:49px; border-bottom:2px solid rgba(24,24,28,.86); border-radius:0 0 50% 50%; box-shadow:0 1px 0 rgba(255,255,255,.15); }
+html[data-term2-preview] .lamp { position:relative; display:block; flex:none; width:20px; height:47px; }
+html[data-term2-preview] .lamp::before { content:""; position:absolute; top:0; left:9px; width:2px; height:20px; background:#24252a; box-shadow:1px 0 0 rgba(255,255,255,.15); }
+html[data-term2-preview] .lamp:nth-child(3n+1)::before { height:17px; }
+html[data-term2-preview] .lamp:nth-child(4n)::before { height:23px; }
+html[data-term2-preview] .socket { position:absolute; top:16px; left:5px; width:10px; height:9px; border-radius:2px 2px 4px 4px; background:linear-gradient(90deg,#1c1e23,#54565c 42%,#1e2025); box-shadow:0 1px 2px rgba(0,0,0,.42); }
+html[data-term2-preview] .lamp:nth-child(3n+1) .socket { top:13px; }
+html[data-term2-preview] .lamp:nth-child(4n) .socket { top:19px; }
+html[data-term2-preview] .bulb { position:absolute; top:22px; left:2px; width:16px; height:21px; border-radius:8px 8px 10px 10px / 7px 7px 13px 13px; background:radial-gradient(ellipse at 34% 24%,#fff 0%,var(--glass) 23%,var(--bulb) 64%,var(--edge) 100%); border:1px solid rgba(255,255,255,.45); box-shadow:inset -2px -3px 4px rgba(46,28,34,.26),0 2px 10px 2px var(--glow); transform-origin:50% 0; animation:bulb-twinkle 4.3s steps(1,end) infinite; }
+html[data-term2-preview] .lamp:nth-child(3n+1) .bulb { top:19px; }
+html[data-term2-preview] .lamp:nth-child(4n) .bulb { top:25px; }
+html[data-term2-preview] .lamp:nth-child(2n) .bulb { animation-delay:-1.7s; }
+html[data-term2-preview] .lamp:nth-child(3n) .bulb { animation-delay:-3.1s; }
+html[data-term2-preview] .bulb::after { content:""; position:absolute; top:3px; left:3px; width:4px; height:7px; border-radius:50%; transform:rotate(-22deg); background:rgba(255,255,255,.76); }
+@keyframes bulb-twinkle { 0%,31%,38%,72%,100% { opacity:1; filter:brightness(1); } 32%,37%,73%,78% { opacity:.46; filter:brightness(.58); } }
+
+html[data-term2-preview] .season-snow { position:fixed; inset:0; z-index:10; overflow:hidden; pointer-events:none; }
+html[data-term2-preview] .season-snow span { position:absolute; top:-8px; left:var(--x); width:var(--size); height:var(--size); border-radius:50%; background:rgba(255,255,255,.78); box-shadow:0 0 4px rgba(255,255,255,.55); animation:snowfall var(--duration) linear var(--delay) infinite; }
+@keyframes snowfall { from { transform:translate3d(0,-10px,0); opacity:0; } 8% { opacity:.68; } 85% { opacity:.58; } to { transform:translate3d(var(--drift),105vh,0); opacity:0; } }
+
+html[data-term2-preview="warm"] { --bg:#24232d; --surface:#302b36; --surface2:#403745; --accent:#f0d3a7; --accent2:#b98183; --border:#62515d; --bulb:#ffd48b; --glass:#fff1ca; --edge:#a86e45; --glow:rgba(255,194,98,.85); }
+html[data-term2-preview="warm"] header { background:#754555; }
+html[data-term2-preview="warm"] .day-sub,html[data-term2-preview="warm"] .step-name,html[data-term2-preview="warm"] .s-panel-hdr { color:#f0d3a7; }
+html[data-term2-preview="warm"] .live-news-link { background:#f0d3a7; color:#24232d; }
+html[data-term2-preview="warm"] .season-lights .lamp:nth-child(3n+2) { --bulb:#f5a6a5; --glass:#ffe4de; --edge:#a25561; --glow:rgba(255,130,139,.7); }
+
+html[data-term2-preview="lights"] { --bg:#222130; --surface:#2e2b3e; --surface2:#3c374c; --accent:#e7c8e8; --border:#5c536b; --bulb:#ffd27b; --glass:#fff3c2; --edge:#aa7042; --glow:rgba(255,198,99,.85); }
+html[data-term2-preview="lights"] header { background:#633b70; }
+html[data-term2-preview="lights"] .season-lights .lamp:nth-child(4n+1) { --bulb:#f47b7e; --glass:#ffd5d5; --edge:#9a4057; --glow:rgba(245,103,118,.85); }
+html[data-term2-preview="lights"] .season-lights .lamp:nth-child(4n+2) { --bulb:#8ad2bd; --glass:#e0fff0; --edge:#458c82; --glow:rgba(118,220,188,.8); }
+html[data-term2-preview="lights"] .season-lights .lamp:nth-child(4n+3) { --bulb:#9ebff2; --glass:#e7f4ff; --edge:#5776ad; --glow:rgba(139,184,251,.85); }
+
+html[data-term2-preview="evergreen"] { --bg:#1d2a2d; --surface:#27383a; --surface2:#34494a; --accent:#f0d4a1; --accent2:#92c7b5; --border:#536f6a; --bulb:#ffe2a8; --glass:#fff8df; --edge:#ac8250; --glow:rgba(255,219,145,.82); }
+html[data-term2-preview="evergreen"] header { background:#2a5a4c; }
+html[data-term2-preview="evergreen"] .season-lights { left:20%; right:44%; }
+html[data-term2-preview="evergreen"] #ticker-wrap { border-top:1px solid rgba(223,201,160,.25); }
+html[data-term2-preview="evergreen"] .season-lights .lamp:nth-child(4n+2) { --bulb:#d8f0d9; --glass:#f1fff2; --edge:#749d81; --glow:rgba(196,245,196,.76); }
+html[data-term2-preview="evergreen"] .day-sub,html[data-term2-preview="evergreen"] .step-name,html[data-term2-preview="evergreen"] .s-panel-hdr { color:#f0d4a1; }
+html[data-term2-preview="evergreen"] .live-news-link { background:#f0d4a1; color:#20332f; }
+
+/* Light mode needs its own surfaces and ink; dark preview tokens are not reusable. */
+html[data-term2-preview="warm"][data-theme="light"] { --bg:#f8f2ed; --surface:#fffaf6; --surface2:#f2e5e0; --text:#30242b; --text2:#51414a; --accent:#754555; --accent2:#754555; --border:#d7bbb4; --card-start:#fffaf6; --card-end:#fffaf6; --card-border:#d7bbb4; }
+html[data-term2-preview="lights"][data-theme="light"] { --bg:#f4f1fa; --surface:#fdfbff; --surface2:#ebe5f4; --text:#2b2434; --text2:#4c4057; --accent:#633b70; --accent2:#633b70; --border:#d3c5df; --card-start:#fdfbff; --card-end:#fdfbff; --card-border:#d3c5df; }
+html[data-term2-preview="evergreen"][data-theme="light"] { --bg:#eef5ef; --surface:#fbfdf9; --surface2:#e2eee7; --text:#20332f; --text2:#3b534a; --accent:#2a5a4c; --accent2:#2a5a4c; --border:#b8d1c2; --card-start:#fbfdf9; --card-end:#fbfdf9; --card-border:#b8d1c2; }
+html[data-term2-preview][data-theme="light"] .day-name { color:var(--accent2); }
+html[data-term2-preview][data-theme="light"] .day-sub,
+html[data-term2-preview][data-theme="light"] .step-name,
+html[data-term2-preview][data-theme="light"] .s-panel-hdr { color:var(--accent); }
+html[data-term2-preview][data-theme="light"] .season-snow span { background:rgba(85,95,110,.34); box-shadow:none; }
+
+@media (prefers-reduced-motion:reduce) { html[data-term2-preview] .bulb { animation:none; } html[data-term2-preview] .season-snow { display:none; } }
+@media (min-width:641px) and (max-width:1050px) { html[data-term2-preview] .season-lights { left:39%; right:5%; } }
+@media (min-width:751px) and (max-width:1023px) { html[data-term2-preview="evergreen"] .season-lights { left:25%; right:5%; } }
+@media (min-width:641px) and (max-width:750px) { html[data-term2-preview="evergreen"] .season-lights { left:39%; right:5%; } }
+@media (min-width:1301px) { html[data-term2-preview="evergreen"] .season-lights { left:max(210px,12%); right:max(500px,28%); } }
+@media (max-width:640px) { html[data-term2-preview] .season-lights,html[data-term2-preview] .preview-identity { display:none; } html[data-term2-preview] .season-snow span:nth-child(n+13) { display:none; } }
