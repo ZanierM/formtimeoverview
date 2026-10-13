@@ -1425,7 +1425,7 @@ function initDay(){
 function currentDay(){ return showingFridayNoForm?'friday':document.getElementById('day-select').value; }
 function updateHeader(){
   document.getElementById('date-display').textContent=
-    new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
   const label=(S.week&&S.week.trim())?S.week.trim():autoWeekLabel();
   document.getElementById('week-display').textContent='Week: '+label;
 }
