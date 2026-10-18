@@ -1793,6 +1793,24 @@ function rotationIndexForWeek(date,length){
 }
 
 function renderPulse(){
+  // One-day paper task: never carry it into another Monday's preview or rotation.
+  if(isoDate(new Date())==='2026-10-19') return `
+    <div class="day-header">
+      <h1 class="day-name">Monday</h1>
+      <div class="day-sub">Half-term reflection</div>
+    </div>
+    <div class="micro-routine">
+      <div class="routine-steps" aria-label="Reflection sheet steps">
+        <div class="routine-step"><span class="step-name">Complete</span></div>
+        <div class="routine-step"><span class="step-name">Name</span></div>
+        <div class="routine-step"><span class="step-name">Hand in</span></div>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-kicker">Today's task</div>
+        <div class="prompt-question">Complete your reflection sheet in honest detail.</div>
+        <div class="prompt-followup">Write your name on it, then hand it to your tutor.</div>
+      </div>
+    </div>`;
   const monday=mondayOf(contentDateForDay('monday'));
   const weekKey=isoDate(monday);
   const rotation=S.pulseRotation?.length?S.pulseRotation:DEFAULTS.pulseRotation;
