@@ -1794,7 +1794,7 @@ function rotationIndexForWeek(date,length){
 
 function renderPulse(){
   // One-day paper task: never carry it into another Monday's preview or rotation.
-  if(isoDate(new Date())==='2026-10-19') return `
+  if(isoDate(new Date())==='2026-10-19'||new URLSearchParams(location.search).get('reflectionPreview')==='1') return `
     <div class="day-header">
       <h1 class="day-name">Monday</h1>
       <div class="day-sub">Half-term reflection</div>
