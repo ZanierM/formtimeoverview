@@ -1215,7 +1215,7 @@ const TERM2_PLAN={
   }
 };
 const TERM2_DEVELOPMENT_DAYS=new Set(["2026-11-02","2026-11-03","2026-11-23"]);
-const CURRENT_DATA_VERSION = 12;
+const CURRENT_DATA_VERSION = 13;
 const DEFAULTS = {
   dataVersion:CURRENT_DATA_VERSION,
   week:"",
@@ -1270,7 +1270,17 @@ const DEFAULTS = {
     {wc:"2026-09-28",type:"all",day:"tuesday",location:"Dance Studio"},
     {wc:"2026-10-05",type:"all",day:"tuesday",location:"Mrs Absolon"},
     {wc:"2026-10-12",type:"none"},
-    {wc:"2026-10-19",type:"all",day:"tuesday",location:"Hall"}
+    {wc:"2026-10-19",type:"all",day:"tuesday",location:"Hall"},
+    {wc:"2026-11-02",type:"none"},
+    {wc:"2026-11-09",type:"all",day:"tuesday",location:"Dance Studio"},
+    {wc:"2026-11-16",type:"houses",day:"monday",houses:["Darnley"]},
+    {wc:"2026-11-16",type:"houses",day:"tuesday",houses:["Westbrook","Lynton"]},
+    {wc:"2026-11-16",type:"houses",day:"wednesday",houses:["Atholl","Penfold"]},
+    {wc:"2026-11-16",type:"houses",day:"thursday",houses:["Chadwick","Reekie"]},
+    {wc:"2026-11-23",type:"all",day:"wednesday",location:"Hall"},
+    {wc:"2026-11-30",type:"all",day:"tuesday",location:"Dance Studio"},
+    {wc:"2026-12-07",type:"all",day:"tuesday",location:"Hall"},
+    {wc:"2026-12-14",type:"all",day:"thursday",location:"Dance Studio"}
   ],
   expectations:[
     "Seated by the bell, bag down",
@@ -1350,6 +1360,11 @@ function migrateState(input){
   const state={...clone(DEFAULTS),...raw};
   state.panels={...clone(DEFAULTS.panels),...(raw.panels||{})};
   state.assemblies=normaliseAssemblies(Array.isArray(raw.assemblies)?raw.assemblies:DEFAULTS.assemblies);
+  // Add the Term 2 rota to saved data without touching weeks a tutor has already set.
+  if((Number(raw.dataVersion)||0)<13){
+    const savedWeeks=new Set(state.assemblies.map(a=>a.wc));
+    state.assemblies=state.assemblies.concat(normaliseAssemblies(DEFAULTS.assemblies).filter(a=>!savedWeeks.has(a.wc)));
+  }
   state.bigQuestions=Array.isArray(raw.bigQuestions)?raw.bigQuestions:clone(DEFAULTS.bigQuestions);
   state.weeklyPulses=Array.isArray(raw.weeklyPulses)?raw.weeklyPulses
     .filter(p=>p&&/^\d{4}-\d{2}-\d{2}$/.test(p.wc||'')&&typeof p.question==='string'&&p.question.trim())
