@@ -54,6 +54,8 @@
       const hours=Math.floor(seconds%86400/3600);
       const mins=Math.floor(seconds%3600/60);
       const secs=seconds%60;
+      // Only useful in the run-up to the school day; hide overnight and at weekends.
+      title.closest('.period-card').hidden=seconds>7200;
       title.textContent=offset===0?'Period 1 begins in':'Next Period 1 in';
       value.textContent=days?days+'d '+String(hours).padStart(2,'0')+'h':
         hours?hours+'h '+String(mins).padStart(2,'0')+'m':
